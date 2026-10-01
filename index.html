@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Richards lab</title>
+<meta name="color-scheme" content="light dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Richards lab">
@@ -47,13 +48,14 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;overflow:hidden}
-.app{height:100%;display:flex;flex-direction:column}
-.hd{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--surface)}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg)}
+.hd{display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--surface)}
 .hd h1{margin:0;font-size:18px;letter-spacing:-.01em;white-space:nowrap}
 .hd .seg{margin-left:auto}
 .status{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;color:var(--muted);white-space:nowrap}
 @media (max-width:520px){ .hd .status{display:none} }
-.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.scroll::after{content:"";display:block;height:env(safe-area-inset-bottom,0px)}
 .page[hidden]{display:none}
 
 /* lab layout */
@@ -63,7 +65,7 @@ body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui
 @media (min-width:960px){
   .scroll.labmode{overflow:hidden}
   .lab{grid-template-columns:minmax(0,1fr) 400px;height:100%;padding-bottom:0}
-  .lab .colA,.lab .colB{overflow-y:auto;height:100%;padding-bottom:24px}
+  .lab .colA,.lab .colB{overflow-y:auto;height:100%;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
   .viewer{position:static}
   .plot{height:clamp(280px,48vh,540px)!important}
 }

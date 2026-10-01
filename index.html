@@ -270,6 +270,26 @@ details.check p{font-size:14px;margin:6px 0}
 .goodbad.ok{color:var(--s-up)} .goodbad.bad{color:var(--s-wp)}
 .hd .seg button[data-mode]{flex:1 1 auto;padding-left:6px;padding-right:6px}
 .eqin[hidden]{display:none}
+
+.quiz{border-color:var(--accent)}
+.qz-q{border-top:1px solid var(--line);padding:10px 0 6px}
+.qz-p{margin:0 0 8px;font-size:15px}
+.qz-n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--surface);font-size:12px;font-weight:700;margin-right:8px;vertical-align:1px}
+.qz-opts{display:grid;gap:6px}
+.qz-opt{font:inherit;font-size:14.5px;text-align:left;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer}
+.qz-opt:disabled{cursor:default;opacity:.75}
+.qz-opt.ok{border-color:var(--s-up);background:color-mix(in srgb, var(--s-up) 18%, var(--bg));opacity:1}
+.qz-opt.no{border-color:var(--s-wp);background:color-mix(in srgb, var(--s-wp) 18%, var(--bg));opacity:1}
+.qz-numrow{display:flex;gap:8px;align-items:center}
+.qz-numrow input{flex:1;min-width:0;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.qz-unit{font-size:13px;color:var(--muted);white-space:nowrap}
+.qz-fb{margin-top:8px;font-size:14px;border-radius:8px;padding:8px 10px;background:var(--bg)}
+.qz-q.right .qz-fb{border-left:3px solid var(--s-up)} .qz-q.right .qz-fb b:first-child{color:var(--s-up)}
+.qz-q.wrong .qz-fb{border-left:3px solid var(--s-wp)} .qz-q.wrong .qz-fb b:first-child{color:var(--s-wp)}
+.qz-foot{border-top:1px solid var(--line);padding-top:8px;margin-top:4px}
+.qz-score{font-size:14.5px;margin:4px 0}
+.toc .qz-toc{border-color:var(--accent)}
+.toc .qz-toc span{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;color:var(--s-up);margin-left:4px}
 </style>
 </head>
 <body>
@@ -409,36 +429,44 @@ details.check p{font-size:14px;margin:6px 0}
           <div><b>ODE</b>, ordinary differential equation: one quantity changing over time. The total water in a pot, W(t).</div>
           <div><b>PDE</b>, partial differential equation: a quantity changing over time <i>and</i> space. The water content at each depth, θ(z, t).</div>
         </div>
-        <p>Part 1 builds up ODEs from the idea of a slope. Part 2 extends the same ideas to PDEs. Part 3 gives θ its real units, adds the second variable h, gravity and roots, and ends with the Richards equation read term by term. The primer uses the Richards equation's own letters throughout: θ for water content, q for flux, z for depth (measured down), K for conductivity, h for pressure head, S for roots. Work through in order; each step uses the one before. Every step ends with a <b>key idea</b> and a <b>check yourself</b> question: answer it in your head, then tap to compare. The hardest ideas have an <b>Explain it more slowly</b> box that walks through them with numbers, and <b>Try it in the Primer lab</b> buttons open the same equation in the Primer lab tab so you can change it yourself. Steps with a letter, like 7a, slow down the parts of Part 2 that need more room.</p>
+        <p>Part 1 builds up ODEs from the idea of a slope. Part 2 extends the same ideas to PDEs. Part 3 gives θ its real units, adds the second variable h, gravity and roots, and ends with the Richards equation read term by term. The primer uses the Richards equation's own letters throughout: θ for water content, q for flux, z for depth (measured down), K for conductivity, h for pressure head, S for roots. Work through in order; each step uses the one before. Every step ends with a <b>key idea</b> and a <b>check yourself</b> question: answer it in your head, then tap to compare. The hardest ideas have an <b>Explain it more slowly</b> box that walks through them with numbers, and <b>Try it in the Primer lab</b> buttons open the same equation in the Primer lab tab so you can change it yourself. Seven <b>quizzes</b>, marked Q in the list below, check your understanding as you go. Steps with a letter, like 7a, slow down the parts of Part 2 that need more room.</p>
+        <p class="key" id="qzProgress"></p>
         <div class="toc" style="margin-top:8px">
           <button type="button" data-goto="pr-1"><b>1</b>Derivatives</button>
           <button type="button" data-goto="pr-2"><b>2</b>Slope fields</button>
           <button type="button" data-goto="pr-3"><b>3</b>Euler steps</button>
+          <button type="button" class="qz-toc" data-goto="pr-q1"><b>Q1</b>Quiz <span data-qs="q1"></span></button>
           <button type="button" data-goto="pr-4"><b>4</b>Exact solution</button>
           <button type="button" data-goto="pr-5"><b>5</b>Nonlinear ODEs</button>
           <button type="button" data-goto="pr-6"><b>6</b>Two tanks</button>
+          <button type="button" class="qz-toc" data-goto="pr-q2"><b>Q2</b>Quiz <span data-qs="q2"></span></button>
           <button type="button" data-goto="pr-7"><b>7</b>Two variables</button>
           <button type="button" data-goto="pr-7a"><b>7a</b>Three views</button>
           <button type="button" data-goto="pr-7b"><b>7b</b>Numbers grid</button>
           <button type="button" data-goto="pr-7c"><b>7c</b>Second derivative</button>
+          <button type="button" class="qz-toc" data-goto="pr-q3"><b>Q3</b>Quiz <span data-qs="q3"></span></button>
           <button type="button" data-goto="pr-8"><b>8</b>Shape to change</button>
           <button type="button" data-goto="pr-8a"><b>8a</b>Layer budget</button>
           <button type="button" data-goto="pr-9"><b>9</b>Heat equation</button>
           <button type="button" data-goto="pr-9a"><b>9a</b>Time scales</button>
           <button type="button" data-goto="pr-9b"><b>9b</b>Steady state</button>
+          <button type="button" class="qz-toc" data-goto="pr-q4"><b>Q4</b>Quiz <span data-qs="q4"></span></button>
           <button type="button" data-goto="pr-10"><b>10</b>Drift</button>
           <button type="button" data-goto="pr-10a"><b>10a</b>Sand vs clay</button>
           <button type="button" data-goto="pr-10b"><b>10b</b>Stacked layers</button>
           <button type="button" data-goto="pr-10c"><b>10c</b>Flux first</button>
           <button type="button" data-goto="pr-10d"><b>10d</b>Layers in series</button>
           <button type="button" data-goto="pr-10e"><b>10e</b>Conservation test</button>
+          <button type="button" class="qz-toc" data-goto="pr-q5"><b>Q5</b>Quiz <span data-qs="q5"></span></button>
           <button type="button" data-goto="pr-10f"><b>10f</b>D from wetness</button>
           <button type="button" data-goto="pr-10g"><b>10g</b>Bucket front</button>
           <button type="button" data-goto="pr-10h"><b>10h</b>Nonlinear D</button>
           <button type="button" data-goto="pr-11"><b>11</b>Gravity fronts</button>
+          <button type="button" class="qz-toc" data-goto="pr-q6"><b>Q6</b>Quiz <span data-qs="q6"></span></button>
           <button type="button" data-goto="pr-12"><b>12</b>θ and h</button>
           <button type="button" data-goto="pr-13"><b>13</b>Total head</button>
           <button type="button" data-goto="pr-14"><b>14</b>Roots</button>
+          <button type="button" class="qz-toc" data-goto="pr-q7"><b>Q7</b>Quiz <span data-qs="q7"></span></button>
           <button type="button" data-goto="pr-15"><b>15</b>All together</button>
         </div>
       </section>
@@ -513,6 +541,13 @@ details.check p{font-size:14px;margin:6px 0}
         <div class="btnrow"><button class="btn" type="button" data-plab="ode:leaky">Try it in the Primer lab</button></div>
       </section>
 
+      <section class="card quiz" id="pr-q1">
+        <h2>Quiz 1: rates and ODEs</h2>
+        <p class="sub">Steps 1–3 · 6 questions · new numbers every time you press New questions</p>
+        <p>Answer in your head or on paper first, then commit. Each answer comes with the reasoning, and anything you miss links back to its step. Your best score is saved on this device.</p>
+        <div class="qz-body" data-quiz="q1"></div>
+      </section>
+
       <section class="card" id="pr-4">
         <h2>4. The exact solution and the time constant</h2>
         <p>This particular ODE can be solved by hand. Write W∞ = q·τ for the equilibrium, so the rule is dW/dt = (W∞ − W)/τ. Then separate the variables and integrate:</p>
@@ -575,6 +610,13 @@ details.check p{font-size:14px;margin:6px 0}
         <p class="notice"><b>Notice:</b> the solution is a mix of two <b>modes</b>, the eigenvectors of A (dashed lines). The fast mode is the tanks evening out; the slow mode is both draining together. A trajectory first runs parallel to the fast direction (red dashes, drawn through the start), then crawls in along the slow line toward empty. When the two time constants are far apart, the system is stiff.</p>
         <p class="key"><b>Key idea:</b> Coupled ODEs are tanks talking to each other. The motion splits into modes, each with its own time constant. Very different time constants make the system stiff.</p>
         <details class="check"><summary><b>Check yourself:</b> Make the pipe g ten times bigger. Which time constant changes a lot?</summary><p>The fast one, the tanks evening out, gets about ten times shorter. The slow one, both tanks draining together, barely changes because it is set by the drain d.</p></details>
+      </section>
+
+      <section class="card quiz" id="pr-q2">
+        <h2>Quiz 2: time constants, stability, systems</h2>
+        <p class="sub">Steps 4–6 · 6 questions · new numbers every time you press New questions</p>
+        <p>Answer in your head or on paper first, then commit. Each answer comes with the reasoning, and anything you miss links back to its step. Your best score is saved on this device.</p>
+        <div class="qz-body" data-quiz="q2"></div>
       </section>
 
       <h3 class="part">Part 2: change over time and space (PDEs)</h3>
@@ -655,6 +697,13 @@ details.check p{font-size:14px;margin:6px 0}
         <p class="notice"><b>Notice:</b> in a valley, the point sits below its neighbors' average, the gap is positive, and so is ∂²θ/∂z². On a hilltop it's the reverse. Shrink Δz and the last two readouts agree more and more closely. That neighbor comparison is exactly how the lab's solver computes curvature: (above − 2·this + below)/Δz².</p>
         <p class="key"><b>Key idea:</b> ∂²θ/∂z² compares a point with the average of its neighbors: positive in valleys, negative on hilltops, zero on straight lines.</p>
         <details class="check"><summary><b>Check yourself:</b> θ above = 0.1, here = 0.2, below = 0.3: a straight ramp. What is ∂²θ/∂z²?</summary><p>Above − 2·here + below = 0.1 − 0.4 + 0.3 = 0. A straight line has no curvature, so under the heat equation it does not change at all.</p></details>
+      </section>
+
+      <section class="card quiz" id="pr-q3">
+        <h2>Quiz 3: partial derivatives and curvature</h2>
+        <p class="sub">Steps 7–7c · 4 questions · new numbers every time you press New questions</p>
+        <p>Answer in your head or on paper first, then commit. Each answer comes with the reasoning, and anything you miss links back to its step. Your best score is saved on this device.</p>
+        <div class="qz-body" data-quiz="q3"></div>
       </section>
 
       <section class="card" id="pr-8">
@@ -773,6 +822,13 @@ details.check p{font-size:14px;margin:6px 0}
         <p class="notice"><b>Notice:</b> at steady state the flux is the same at every depth. It has to be: if any layer took in more than it passed on, it would be changing. While the profile is still settling, the flux varies with depth. In a pot, "full after draining" in the lab is a steady state with zero flux everywhere, where gravity and the pressure gradient cancel. In terms of h, that profile is a straight line: h = −(height above the base).</p>
         <p class="key"><b>Key idea:</b> At steady state ∂θ/∂t = 0. The PDE becomes an ODE in z alone; with no drift the profile is a straight line and the flux is the same at every depth.</p>
         <details class="check"><summary><b>Check yourself:</b> Top held at 0.8, bottom at 0.2, D = 2 cm²/h, 20 cm deep, no drift. What is the steady flux?</summary><p>The slope is (0.2 − 0.8)/20 = −0.03 per cm, so q = −D·slope = −2 × (−0.03) = 0.06 cm/h, flowing down.</p></details>
+      </section>
+
+      <section class="card quiz" id="pr-q4">
+        <h2>Quiz 4: flux, boundaries, time scales</h2>
+        <p class="sub">Steps 8–9b · 6 questions · new numbers every time you press New questions</p>
+        <p>Answer in your head or on paper first, then commit. Each answer comes with the reasoning, and anything you miss links back to its step. Your best score is saved on this device.</p>
+        <div class="qz-body" data-quiz="q4"></div>
       </section>
 
       <section class="card" id="pr-10">
@@ -901,6 +957,13 @@ details.check p{font-size:14px;margin:6px 0}
         <details class="check"><summary><b>Check yourself:</b> Why can't formula B's mistake happen inside a single material?</summary><p>Inside one material D is the same on both sides of every face, so D·∂²θ/∂z² and ∂/∂z[D·∂θ/∂z] are identical. They only differ where D changes.</p></details>
       </section>
 
+      <section class="card quiz" id="pr-q5">
+        <h2>Quiz 5: drift and layered soil</h2>
+        <p class="sub">Steps 10–10e · 6 questions · new numbers every time you press New questions</p>
+        <p>Answer in your head or on paper first, then commit. Each answer comes with the reasoning, and anything you miss links back to its step. Your best score is saved on this device.</p>
+        <div class="qz-body" data-quiz="q5"></div>
+      </section>
+
       <section class="card" id="pr-10f">
         <h2>10f. When D depends on wetness: the numbers</h2>
         <p>In soil, the width of the pipe depends on how wet the soil is right there. In wet soil the pores form connected channels. In dry soil only thin films and isolated pockets remain. The simplest model with that behavior is a power law:</p>
@@ -989,6 +1052,13 @@ details.check p{font-size:14px;margin:6px 0}
         <div class="btnrow"><button class="btn" type="button" data-plab="pde:gravity">Try it in the Primer lab</button></div>
       </section>
 
+      <section class="card quiz" id="pr-q6">
+        <h2>Quiz 6: nonlinear D and gravity fronts</h2>
+        <p class="sub">Steps 10f–11 · 6 questions · new numbers every time you press New questions</p>
+        <p>Answer in your head or on paper first, then commit. Each answer comes with the reasoning, and anything you miss links back to its step. Your best score is saved on this device.</p>
+        <div class="qz-body" data-quiz="q6"></div>
+      </section>
+
       <section class="card" id="pr-12">
         <h2>12. Two numbers for wetness: θ and h</h2>
         <p>Until now θ ran from 0 to 1. Real θ is the fraction of the soil's volume that is water, and it never reaches either end. Even oven-dry soil keeps a little (θr, the residual content), and even saturated soil stays well below 1, because much of its volume is solid grains (θs, the saturated content, is around 0.4 for sand and loam and 0.7 for potting mix). The 0-to-1 version used in Part 2 is the <b>effective saturation</b> Se = (θ − θr)/(θs − θr), which Basics also uses. Diffusion doesn't care about the rescaling: every equation in Part 2 holds with real θ too.</p>
@@ -1063,6 +1133,13 @@ details.check p{font-size:14px;margin:6px 0}
         <p class="key"><b>Key idea:</b> The sink S takes water by depth and time. Uptake falls when the soil holds its water too tightly, even if water remains elsewhere in the pot.</p>
         <details class="check"><summary><b>Check yourself:</b> In sandy soil, why does uptake fall short while the bottom still holds water?</summary><p>The top dries until α(h) drops to 0, and dry sand has such tiny K that water from below cannot move up fast enough to replace it.</p></details>
         <div class="btnrow"><button class="btn" type="button" data-plab="pde:roots">Try it in the Primer lab</button></div>
+      </section>
+
+      <section class="card quiz" id="pr-q7">
+        <h2>Quiz 7: real soil water</h2>
+        <p class="sub">Steps 12–14 · 6 questions · new numbers every time you press New questions</p>
+        <p>Answer in your head or on paper first, then commit. Each answer comes with the reasoning, and anything you miss links back to its step. Your best score is saved on this device.</p>
+        <div class="qz-body" data-quiz="q7"></div>
       </section>
 
       <section class="card" id="pr-15">
@@ -2249,7 +2326,7 @@ const REFS = [
     $('#scroll').scrollTop = 0;
     if (m === 'lab') setTimeout(draw, 0);
     if (m === 'basics') setTimeout(drawBasics, 0);
-    if (m === 'primer') setTimeout(drawPrimer, 0);
+    if (m === 'primer') setTimeout(() => { drawQuizzes(); drawPrimer(); }, 0);
     if (m === 'plab') setTimeout(drawPlab, 0);
   }
   document.querySelectorAll('#modeSeg [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -3961,6 +4038,218 @@ const REFS = [
     if (kind === 'ode') ploLoad(key); else plpLoad(key);
     setTimeout(() => document.getElementById(kind === 'ode' ? 'pl-ode' : 'pl-pde').scrollIntoView({block:'start'}), 40);
   }
+  // ---------- Primer quizzes ----------
+  const QR = {
+    pick:a => a[Math.floor(Math.random() * a.length)],
+    int:(a, b) => a + Math.floor(Math.random() * (b - a + 1)),
+    real:(a, b, d) => +(a + Math.random() * (b - a)).toFixed(d == null ? 1 : d),
+    shuffle:a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+  };
+  const qn = (v, d) => { const x = +v.toFixed(d == null ? 3 : d); return (x < 0 ? '−' : '') + Math.abs(x); };
+  const QUIZ = {
+    q1:{title:'Quiz 1: rates and ODEs', steps:'Steps 1–3', qs:[
+      () => { const t1 = QR.int(6, 10), t2 = t1 + QR.int(2, 5), A = QR.int(30, 70), B = A + QR.pick([-1, 1]) * QR.int(3, 15), ans = (B - A) / (t2 - t1);
+        return {type:'num', prompt:`W is ${A} mm at ${t1}:00 and ${B} mm at ${t2}:00. What is the average dW/dt over that time?`, answer:ans, tol:0.02, unit:'mm/h', step:'pr-1',
+          why:`Change divided by time: (${B} − ${A}) / (${t2} − ${t1}) = ${qn(ans, 2)} mm/h. ${ans < 0 ? 'Negative means the pot was draining.' : 'Positive means it was filling.'}`}; },
+      () => ({type:'mc', prompt:'At one moment the graph of W(t) is perfectly flat (a peak). Which is true at that moment?', step:'pr-1',
+        options:[{t:'dW/dt = 0', ok:true}, {t:'W = 0'}, {t:'W will stay at this value forever'}, {t:'dW/dt is at its largest'}],
+        why:'Flat means zero slope, and the slope is dW/dt. W itself can be anything, and a peak is only a momentary pause: just after it, W falls.'}),
+      () => { const q = QR.int(2, 8), tau = QR.pick([5, 10, 15, 20, 25]);
+        return {type:'num', prompt:`dW/dt = q − W/τ with q = ${q} mm/h and τ = ${tau} h. At what level W does the pot settle?`, answer:q * tau, tol:0.01, rel:true, unit:'mm', step:'pr-2',
+          why:`It settles where dW/dt = 0: q = W/τ, so W* = q·τ = ${q} × ${tau} = ${q * tau} mm.`}; },
+      () => { const q = QR.int(2, 8), tau = QR.pick([5, 10, 20]), W = q * tau + QR.pick([-1, 1]) * QR.int(10, 30), ans = q - W / tau;
+        return {type:'num', prompt:`Same rule, q = ${q} mm/h, τ = ${tau} h, and the pot holds W = ${W} mm right now. What is dW/dt right now?`, answer:ans, tol:0.01, unit:'mm/h', step:'pr-2',
+          why:`Plug in: ${q} − ${W}/${tau} = ${qn(ans, 2)} mm/h, so the pot is ${ans < 0 ? 'draining' : 'filling'} toward ${q * tau} mm.`}; },
+      () => { const W0 = QR.int(20, 90), dt = QR.pick([0.5, 1, 2]), q = QR.int(1, 6), tau = 10, r = q - W0 / tau, ans = W0 + dt * r;
+        return {type:'num', prompt:`Euler step: dW/dt = ${q} − W/${tau}, W = ${W0} mm, Δt = ${dt} h. What is W after one step?`, answer:ans, tol:0.01, unit:'mm', step:'pr-3',
+          why:`Rate = ${q} − ${W0}/${tau} = ${qn(r, 2)} mm/h. Change = Δt × rate = ${dt} × ${qn(r, 2)} = ${qn(dt * r, 2)} mm. New W = ${qn(ans, 2)} mm.`}; },
+      () => { const q = QR.int(3, 6), tau = 10, W0 = 80, Wst = q * tau;
+        return {type:'mc', prompt:'Which rule produced this curve? Each starts at W = 80 mm.', step:'pr-2',
+          chart:svg => lineChart({el:svg, x0:0, x1:50, y0:0, y1:90, Lp:40, T:8, xLabel:'t (h)', yLabel:'W (mm)', xTicks:tk([0, 25, 50]), yTicks:tk([0, 40, 80]), series:[{pts:lin(0, 50, 80).map(t => [t, Wst + (W0 - Wst) * Math.exp(-t / tau)]), c:'var(--accent)', w:2.6}], aria:'Mystery curve'}),
+          options:[{t:`dW/dt = ${q} − W/10`, ok:true}, {t:'dW/dt = −W/10'}, {t:`dW/dt = ${q}`}, {t:`dW/dt = ${q} + W/10`}],
+          why:`The curve falls and levels off at ${Wst} mm. −W/10 alone would drain to 0; a constant rate would be a straight rising line; + W/10 would run away upward. Only ${q} − W/10 settles at ${q} × 10 = ${Wst}.`}; }
+    ]},
+    q2:{title:'Quiz 2: time constants, stability, systems', steps:'Steps 4–6', qs:[
+      () => { const tau = QR.pick([4, 5, 8, 10]), k = QR.pick([1, 2, 3]), g0 = QR.int(20, 60), ans = g0 * Math.exp(-k);
+        return {type:'num', prompt:`τ = ${tau} h and the pot starts ${g0} mm below its equilibrium. How far below is it after ${k * tau} h?`, answer:ans, tol:0.03, rel:true, unit:'mm', step:'pr-4',
+          why:`${k * tau} h is ${k} time constant${k > 1 ? 's' : ''}, so the gap is multiplied by e^(−${k}) ≈ ${qn(Math.exp(-k), 3)}: ${g0} × ${qn(Math.exp(-k), 3)} ≈ ${qn(ans, 1)} mm.`}; },
+      () => { const a = QR.pick([0.1, 0.2, 0.25, 0.5]), c = QR.int(2, 9);
+        return {type:'num', prompt:`dW/dt = ${c} − ${a}·W. What is the time constant τ, in hours?`, answer:1 / a, tol:0.01, rel:true, unit:'h', step:'pr-4',
+          why:`Rewrite as ${c} − W/τ: the coefficient of W is 1/τ, so τ = 1/${a} = ${qn(1 / a, 2)} h. (It settles at ${qn(c / a, 1)} mm.)`}; },
+      () => { const a = QR.int(15, 35), b = a + QR.int(25, 45), start = QR.pick(['mid', 'low']), W0 = start === 'mid' ? Math.round((a + b) / 2) : Math.max(1, a - QR.int(5, 10));
+        const f = W => 0.004 * (W - a) * (b - W);
+        return {type:'mc', prompt:`This is the rate curve dW/dt = f(W). A pot starts at W = ${W0} mm. Where does it end up?`, step:'pr-5',
+          chart:svg => { const vs = lin(0, b + 20, 60).map(f), hi = Math.max(...vs), lo = Math.min(...vs) * 1.1; lineChart({el:svg, x0:0, x1:b + 20, y0:lo, y1:hi * 1.3, Lp:40, T:8, xLabel:'W (mm)', yLabel:'dW/dt', xTicks:tk([0, a, b]), yTicks:[{v:0, l:'0'}], extra:(x, y) => `<text x="${x(2)}" y="${y(hi * 1.15)}" fill="var(--muted)" font-size="10.5">+ rising</text><text x="${x(2)}" y="${y(lo * 0.85)}" fill="var(--muted)" font-size="10.5">− falling</text>`, hlines:[{v:0, c:'var(--ink)'}], series:[{pts:lin(0, b + 20, 120).map(W => [W, f(W)]), c:'var(--s-in)', w:2.4}], dots:[{pts:[[W0, f(W0)]], c:'var(--accent)', r:5}], aria:'Rate curve'}); },
+          options:start === 'mid' ? [{t:`At ${b} mm`, ok:true}, {t:`At ${a} mm`}, {t:'It keeps rising forever'}, {t:`It stays at ${W0} mm`}] : [{t:'It keeps falling, away from both', ok:true}, {t:`At ${a} mm`}, {t:`At ${b} mm`}, {t:`It stays at ${W0} mm`}],
+          why:start === 'mid' ? `Between ${a} and ${b} the rate is positive, so W rises until it reaches ${b}, where f crosses zero going from + to −: a stable equilibrium. ${a} is unstable.` : `Below ${a} the rate is negative, so W falls, moving away from ${a}. ${a} is an unstable equilibrium: f goes from − to + across it, pushing W away on both sides.`}; },
+      () => { const k = QR.pick([0.01, 0.02, 0.04]), Ws = QR.pick([10, 20, 25]), q = k * Ws * Ws, ans = 1 / (2 * k * Ws);
+        return {type:'num', prompt:`dW/dt = ${qn(q, 2)} − ${k}·W². It settles at W* = ${Ws} mm. What is the local time constant near W*?`, answer:ans, tol:0.03, rel:true, unit:'h', step:'pr-5',
+          why:`The slope of the rate curve at W* is −2·${k}·${Ws} = −${qn(2 * k * Ws, 3)} per hour. τ = 1/${qn(2 * k * Ws, 3)} ≈ ${qn(ans, 2)} h.`}; },
+      () => ({type:'mc', prompt:'Two tanks: a wide pipe between them (large g) and a small drain at the bottom (small d). What does the motion look like?', step:'pr-6',
+        options:[{t:'The levels match quickly, then both drain together slowly', ok:true}, {t:'Both levels fall at the same rate from the start'}, {t:'The levels oscillate up and down'}, {t:'The top tank empties first, then the bottom'}],
+        why:'Two modes: the fast one (τ ≈ 1/2g) evens out the levels, the slow one (τ ≈ 2/d) drains the total. Any start is a mix, so you see the fast one first, then the slow one.'}),
+      () => ({type:'mc', prompt:'Why does a soil model cut into many thin layers usually need an implicit solver?', step:'pr-6',
+        options:[{t:'It is stiff: thin layers have very fast modes that force tiny explicit steps', ok:true}, {t:'Explicit methods cannot handle more than two layers'}, {t:'Implicit methods are always more accurate'}, {t:'Thin layers make the equation nonlinear'}],
+        why:'Stiffness. The fastest modes (thin layers evening out) die out almost at once but still limit an explicit method\u2019s step size. An implicit step stays stable however large it is.'})
+    ]},
+    q3:{title:'Quiz 3: partial derivatives and curvature', steps:'Steps 7–7c', qs:[
+      () => ({type:'mc', prompt:'A moisture sensor buried at 12 cm logs a reading every minute. What is it measuring the change of?', step:'pr-7',
+        options:[{t:'∂θ/∂t at z = 12 cm', ok:true}, {t:'∂θ/∂z at z = 12 cm'}, {t:'∂²θ/∂z²'}, {t:'dW/dt for the whole pot'}],
+        why:'It stays at one depth and watches time pass, so it sees change in t only: ∂θ/∂t at 12 cm.'}),
+      () => { const z1 = QR.pick([2, 4, 6]), dz = QR.pick([2, 4]), a = QR.real(0.15, 0.35, 2), b = +(a + QR.pick([-1, 1]) * QR.real(0.04, 0.12, 2)).toFixed(2), ans = (b - a) / (2 * dz);
+        return {type:'num', prompt:`At one moment θ is ${a} at ${z1} cm and ${b} at ${z1 + 2 * dz} cm. Estimate ∂θ/∂z at ${z1 + dz} cm.`, answer:ans, tol:0.0006, unit:'per cm', step:'pr-7b',
+          why:`Same time, neighbors in depth: (${b} − ${a}) / ${2 * dz} = ${qn(ans, 4)} per cm. ${ans > 0 ? 'Positive: wetter as you go down.' : 'Negative: drier as you go down.'}`}; },
+      () => { const dz = QR.pick([1, 2]), h = QR.real(0.2, 0.4, 2), up = +(h + QR.real(-0.1, 0.1, 2)).toFixed(2), dn = +(h + QR.real(-0.1, 0.1, 2)).toFixed(2), ans = (up - 2 * h + dn) / (dz * dz);
+        return {type:'num', prompt:`Layers ${dz} cm apart: θ above = ${up}, here = ${h}, below = ${dn}. Estimate ∂²θ/∂z² here.`, answer:ans, tol:0.002, unit:'per cm²', step:'pr-7c',
+          why:`(above − 2·here + below) / Δz² = (${up} − ${qn(2 * h, 2)} + ${dn}) / ${dz * dz} = ${qn(ans, 4)}. ${ans > 0 ? 'Positive: a valley, so under the heat equation it gets wetter.' : ans < 0 ? 'Negative: a hilltop, so it gets drier.' : 'Zero: straight, no change.'}`}; },
+      () => { const s = QR.int(3, 4) / 10, z0 = 10;
+        const pts = [{n:'A', z:z0, why:'the top of the bump: curvature negative, so it is drying'}, {n:'B', z:z0 + s * 10 * 1.0, why:'the bump\u2019s flank where it is nearly straight: curvature about zero'}, {n:'C', z:z0 + s * 10 * 2.0, why:'the foot of the bump, where the curve bends upward: curvature positive, so it is wetting'}];
+        const sig = s * 10, th = z => 0.1 + 0.3 * Math.exp(-((z - z0) ** 2) / (2 * sig * sig));
+        return {type:'mc', prompt:'Under the heat equation, which marked point is getting wetter right now?', step:'pr-7c',
+          chart:svg => zChart({el:svg, x0:0, x1:0.45, xLabel:'θ', xTicks:tk([0, 0.2, 0.4]), series:[{pts:lin(0, 20, 120).map(z => [th(z), z]), c:'var(--accent)', w:2.4}], dots:[{pts:pts.map(p => [th(p.z), p.z]), c:'var(--s-wp)', r:5}],
+            extra:(x, y) => pts.map(p => `<text x="${x(th(p.z)) + 9}" y="${y(p.z) + 4}" fill="var(--s-wp)" font-size="12" font-weight="700">${p.n}</text>`).join(''), aria:'Profile with three marked points'}),
+          options:[{t:'C, at the foot of the bump', ok:true}, {t:'A, at the top'}, {t:'B, on the flank'}, {t:'None: θ only moves where it is highest'}],
+          why:`A is ${pts[0].why}. B is ${pts[1].why}. C is ${pts[2].why}: its neighbors average higher than it does.`}; }
+    ]},
+    q4:{title:'Quiz 4: flux, boundaries, time scales', steps:'Steps 8–9b', qs:[
+      () => { const qi = QR.real(0.2, 0.8, 2), qo = +(qi + QR.pick([-1, 1]) * QR.real(0.05, 0.2, 2)).toFixed(2), dz = QR.pick([1, 2, 5]), ans = (qi - qo) / dz;
+        return {type:'num', prompt:`${qi} cm/h of water enters a ${dz} cm layer through its top and ${qo} cm/h leaves through its bottom. What is ∂θ/∂t for the layer?`, answer:ans, tol:0.0006, unit:'per hour', step:'pr-8',
+          why:`In − out = ${qn(qi - qo, 2)} cm/h, spread over ${dz} cm: ${qn(ans, 4)} per hour. ${ans > 0 ? 'Getting wetter.' : 'Getting drier.'}`}; },
+      () => { const D = QR.pick([2, 4, 5, 10]), a = QR.real(0.2, 0.4, 2), b = +(a + QR.pick([-1, 1]) * QR.real(0.05, 0.15, 2)).toFixed(2), z = QR.pick([4, 6, 8]), ans = -D * (b - a) / 2;
+        return {type:'num', prompt:`D = ${D} cm²/h. θ is ${a} at ${z} cm and ${b} at ${z + 2} cm. What is the flux q between them (positive = downward)?`, answer:ans, tol:0.002, unit:'cm/h', step:'pr-8',
+          why:`Slope = (${b} − ${a}) / 2 = ${qn((b - a) / 2, 3)} per cm. q = −D·slope = ${qn(ans, 3)} cm/h: water moves ${ans > 0 ? 'down, toward the drier soil below' : 'up, toward the drier soil above'}.`}; },
+      () => { const sc = QR.pick([['a drip emitter on the surface delivering a fixed 2 mm/h', 'Flux in at the top', 'The rate is set from outside, whatever the soil does.'], ['a pot standing in a tray of water', 'Held value at the bottom', 'The base is kept saturated, h = 0, no matter what.'], ['a pot base with no drain hole', 'Sealed bottom', 'Nothing can cross it: zero flux.'], ['a drain hole that lets gravity pull water out', 'Free drainage at the bottom', 'Water leaves at rate K, driven by gravity alone.']]);
+        const all = ['Flux in at the top', 'Held value at the bottom', 'Sealed bottom', 'Free drainage at the bottom'];
+        return {type:'mc', prompt:`Which boundary condition fits ${sc[0]}?`, step:'pr-9', options:all.map(t => ({t, ok:t === sc[1]})), why:`${sc[1]}. ${sc[2]}`}; },
+      () => { const L1 = QR.pick([2, 3, 4, 5]), k = QR.pick([2, 3, 4]), T1 = QR.pick([1, 2, 3]), ans = T1 * k * k;
+        return {type:'num', prompt:`Diffusion evens things out over ${L1} cm in about ${T1} h. Roughly how long over ${L1 * k} cm?`, answer:ans, tol:0.02, rel:true, unit:'h', step:'pr-9a',
+          why:`Time grows like distance squared: ${k}× the distance takes ${k}² = ${k * k}× as long, about ${ans} h.`}; },
+      () => { const ta = QR.real(0.6, 0.9, 1), tb = QR.real(0.1, 0.3, 1), D = QR.pick([1, 2, 5]), L = QR.pick([10, 20]), ans = D * (ta - tb) / L;
+        return {type:'num', prompt:`Steady state, no drift: top held at θ = ${ta}, bottom at ${tb}, D = ${D} cm²/h, ${L} cm deep. What is the steady flux?`, answer:ans, tol:0.02, rel:true, unit:'cm/h', step:'pr-9b',
+          why:`The steady profile is a straight line with slope (${tb} − ${ta}) / ${L}. q = −D·slope = ${D} × ${qn(ta - tb, 1)} / ${L} = ${qn(ans, 4)} cm/h, the same at every depth.`}; },
+      () => ({type:'mc', prompt:'A column sealed at both ends is left until nothing changes. What does its profile look like?', step:'pr-9b',
+        options:[{t:'Flat: the same θ everywhere', ok:true}, {t:'A straight sloping line'}, {t:'Wettest in the middle'}, {t:'Whatever shape it started with'}],
+        why:'Steady means the flux is the same everywhere, and sealed ends make that flux zero. Zero flux means zero slope, so the profile is flat at the starting average.'})
+    ]},
+    q5:{title:'Quiz 5: drift and layered soil', steps:'Steps 10–10e', qs:[
+      () => { const v = QR.pick([0.5, 1, 1.5, 2, 3]), t = QR.pick([2, 3, 4, 6]);
+        return {type:'num', prompt:`With drift speed v = ${v} cm/h, how far down has the center of a bump moved after ${t} h?`, answer:v * t, tol:0.01, rel:true, unit:'cm', step:'pr-10',
+          why:`The drift term slides the shape down at speed v: ${v} × ${t} = ${qn(v * t, 2)} cm. Diffusion spreads it at the same time but does not move its center.`}; },
+      () => { const m = QR.pick([['sand', 20], ['loam', 6], ['clay', 1.5]]), L = QR.pick([5, 10, 20]), ans = L * L / m[1];
+        return {type:'num', prompt:`Rough time for ${m[0]} (D = ${m[1]} cm²/h) to even out over ${L} cm?`, answer:ans, tol:0.03, rel:true, unit:'h', step:'pr-10a',
+          why:`t ≈ L²/D = ${L * L}/${m[1]} ≈ ${qn(ans, 1)} h.`}; },
+      () => { const a = QR.pick([10, 20, 30]), b = QR.pick([1, 1.5, 2, 3]), ans = 2 / (1 / a + 1 / b);
+        return {type:'num', prompt:`A boundary pipe joins half a layer with D = ${a} to half a layer with D = ${b} cm²/h. What is the pipe's D?`, answer:ans, tol:0.02, rel:true, unit:'cm²/h', step:'pr-10b',
+          why:`Two half-pipes in series: 2 / (1/${a} + 1/${b}) ≈ ${qn(ans, 2)}. It sits close to the slower material.`}; },
+      () => { const D1 = QR.pick([5, 10, 20]), D2 = QR.pick([1, 2]), s1 = QR.pick([0.01, 0.02, 0.005]), ans = -s1 * D1 / D2;
+        return {type:'num', prompt:`Just above a boundary D = ${D1} and the slope is −${s1} per cm. Just below, D = ${D2}. What is the slope just below?`, answer:ans, tol:0.02, rel:true, unit:'per cm', step:'pr-10c',
+          why:`The flux can't jump: ${D1} × ${s1} = ${D2} × |slope|, so the slope below is ${qn(ans, 4)} per cm, ${D1 / D2}× steeper.`}; },
+      () => { const L1 = QR.pick([5, 10]), L2 = QR.pick([5, 10]), D1 = QR.pick([10, 20]), D2 = QR.pick([1, 2]), d = QR.real(0.3, 0.8, 1), R = L1 / D1 + L2 / D2, ans = d / R;
+        return {type:'num', prompt:`Steady flow through a ${L1} cm layer with D = ${D1} on top of a ${L2} cm layer with D = ${D2} cm²/h. The total drop in θ is ${d}. What is the flux?`, answer:ans, tol:0.02, rel:true, unit:'cm/h', step:'pr-10d',
+          why:`Resistances: ${L1}/${D1} = ${qn(L1 / D1, 2)} and ${L2}/${D2} = ${qn(L2 / D2, 2)}, total ${qn(R, 2)}. q = ${d} / ${qn(R, 2)} ≈ ${qn(ans, 4)} cm/h.`}; },
+      () => ({type:'mc', prompt:'Which form of the equation keeps the total water fixed in a sealed pot with two different materials?', step:'pr-10e',
+        options:[{t:'∂θ/∂t = ∂/∂z [ D·∂θ/∂z ]', ok:true}, {t:'∂θ/∂t = D·∂²θ/∂z²'}, {t:'Both do'}, {t:'Neither: layers always leak'}],
+        why:'Only the flux-first form balances what crosses each boundary. With D outside, the slope is matched across the boundary instead of the flux, and water appears or disappears there.'})
+    ]},
+    q6:{title:'Quiz 6: nonlinear D and gravity fronts', steps:'Steps 10f–11', qs:[
+      () => { const m = QR.pick([2, 3]), f = QR.pick([2, 10]), ans = Math.pow(f, m);
+        return {type:'num', prompt:`D = c·θ^${m}. If θ drops to 1/${f} of its value, by what factor does D drop?`, answer:ans, tol:0.01, rel:true, unit:'×', step:'pr-10f',
+          why:`(1/${f})^${m} = 1/${ans}, so D is ${ans} times smaller.`}; },
+      () => ({type:'mc', prompt:'On axes where both θ and D use log scales, what does D = 3·θ² look like?', step:'pr-10f',
+        options:[{t:'A straight line with slope 2', ok:true}, {t:'A parabola'}, {t:'A straight line with slope 3'}, {t:'A flat line'}],
+        why:'log D = log 3 + 2·log θ: a straight line in log–log coordinates, and its slope is the exponent, 2.'}),
+      () => ({type:'mc', prompt:'Why does a wetting front stay sharp when D grows steeply with θ?', step:'pr-10h',
+        options:[{t:'The dry soil ahead barely conducts, so water cannot run ahead of the wet zone', ok:true}, {t:'Gravity pushes the water down faster'}, {t:'The wet soil holds onto its water'}, {t:'The total water decreases'}],
+        why:'Ahead of the front D is tiny, so no thin tail can leak forward. Each layer must get wet before it can pass water on, which is the bucket chain of 10g.'}),
+      () => { const Ks = QR.pick([5, 8, 10]), p = QR.pick([2, 3, 4]), th = QR.pick([0.5, 0.6, 0.8]), ans = p * Ks * Math.pow(th, p - 1);
+        return {type:'num', prompt:`K = ${Ks}·θ^${p} cm/h. At θ = ${th}, how fast does that water content travel down (dK/dθ)?`, answer:ans, tol:0.02, rel:true, unit:'cm/h', step:'pr-11',
+          why:`dK/dθ = ${p}·${Ks}·θ^${p - 1} = ${p} × ${Ks} × ${qn(Math.pow(th, p - 1), 3)} ≈ ${qn(ans, 2)} cm/h.`}; },
+      () => { const Ks = QR.pick([5, 8, 10]), p = 3, tw = QR.pick([0.6, 0.8]), td = QR.pick([0.05, 0.1]), Kw = Ks * tw ** p, Kd = Ks * td ** p, ans = (Kw - Kd) / (tw - td);
+        return {type:'num', prompt:`K = ${Ks}·θ³ cm/h. A sharp front has θ = ${tw} behind it and ${td} ahead. How fast does the front move?`, answer:ans, tol:0.03, rel:true, unit:'cm/h', step:'pr-11',
+          why:`Jump speed = (K_wet − K_dry)/(θ_wet − θ_dry) = (${qn(Kw, 3)} − ${qn(Kd, 4)}) / (${tw} − ${td}) ≈ ${qn(ans, 2)} cm/h.`}; },
+      () => ({type:'mc', prompt:'With K = Ks·θ (p = 1), what happens to a pulse of water as gravity pulls it down?', step:'pr-11',
+        options:[{t:'It slides down at speed Ks, keeping its shape apart from diffusion', ok:true}, {t:'Its front sharpens into a cliff'}, {t:'It stops halfway'}, {t:'Its back catches up with its front'}],
+        why:'dK/dθ = Ks for every θ, so every level moves at the same speed: step 10\u2019s conveyor belt. Sharpening needs wetter levels to move faster, which needs p > 1.'})
+    ]},
+    q7:{title:'Quiz 7: real soil water', steps:'Steps 12–14', qs:[
+      () => ({type:'mc', prompt:'Which instrument measures the pressure head h?', step:'pr-12',
+        options:[{t:'A tensiometer', ok:true}, {t:'A capacitance moisture probe'}, {t:'A scale weighing the pot'}, {t:'A rain gauge'}],
+        why:'A tensiometer reads how hard the soil pulls on water: suction, h. Probes and scales measure how much water there is: θ.'}),
+      () => { const same = QR.pick(['θ', 'h']);
+        return {type:'mc', prompt:`Sandy soil and loam are in contact, at the same ${same}. Which way does water flow?`, step:'pr-12',
+          options:same === 'θ' ? [{t:'Into the loam', ok:true}, {t:'Into the sand'}, {t:'Nowhere'}] : [{t:'Nowhere', ok:true}, {t:'Into the loam'}, {t:'Into the sand'}],
+          why:same === 'θ' ? 'At the same θ the loam holds its water much more tightly (more negative h), so it pulls water out of the sand.' : 'Water flows from high h to low h. Equal h means no push either way, even though the loam then holds much more water than the sand.'}; },
+      () => { const L = QR.pick([15, 20, 25, 30, 40]);
+        return {type:'num', prompt:`A ${L} cm pot stands in a saucer of water (h = 0 at the bottom) until nothing moves. What is h at the top surface?`, answer:-L, tol:0.01, rel:true, unit:'cm', step:'pr-13',
+          why:`At rest H = h − z is the same everywhere. h rises 1 cm per cm down and is 0 at the bottom, so at the top h = −${L} cm.`}; },
+      () => { const z = QR.pick([5, 10, 15]), h = -QR.pick([10, 20, 40, 60]);
+        return {type:'num', prompt:`At depth z = ${z} cm the pressure head is h = ${h} cm. What is the total head H?`, answer:h - z, tol:0.01, rel:true, unit:'cm', step:'pr-13',
+          why:`H = h − z = ${h} − ${z} = ${h - z} cm. (z counts down, so height is −z.)`}; },
+      () => ({type:'mc', prompt:'In ∂θ/∂t = ∂/∂z [ K(h)·(∂h/∂z − 1) ] − S, which piece is gravity?', step:'pr-13',
+        options:[{t:'The −1 inside the brackets', ok:true}, {t:'K(h)'}, {t:'S'}, {t:'∂θ/∂t'}],
+        why:'The −1 is the gradient of height: with z down, gravity adds a downward flux K. K is how easily water moves, S is roots, ∂θ/∂t is storage changing.'}),
+      () => ({type:'mc', prompt:'Uptake falls short of demand in sandy soil while the bottom of the pot is still wet. Why?', step:'pr-14',
+        options:[{t:'The top has dried until α(h) → 0, and dry sand can barely move water up', ok:true}, {t:'The roots stop growing'}, {t:'Gravity holds the water at the bottom'}, {t:'The pot is sealed'}],
+        why:'Roots are mostly in the top. Once it is too dry, α shuts uptake off there, and dry sand\u2019s tiny K stops water from below from reaching them fast enough.'})
+    ]}
+  };
+  const QZ_KEY = 'richardsLab.quiz.v1';
+  const qzLoad = () => { try { return JSON.parse(localStorage.getItem(QZ_KEY)) || {}; } catch (e){ return {}; } };
+  const qzSave = d => { try { localStorage.setItem(QZ_KEY, JSON.stringify(d)); } catch (e){} };
+  function qzProgress(){
+    const d = qzLoad(), ids = Object.keys(QUIZ), done = ids.filter(id => d[id] && d[id].best != null);
+    document.querySelectorAll('[data-qs]').forEach(el => { const r = d[el.dataset.qs]; el.textContent = r && r.best != null ? `${r.best}/${QUIZ[el.dataset.qs].qs.length}` : ''; });
+    const pr = $('#qzProgress'); if (pr) pr.innerHTML = `<b>Quizzes:</b> ${done.length} of ${ids.length} taken.` + (done.length ? ' Best scores: ' + done.map(id => `Q${id.slice(1)} ${d[id].best}/${QUIZ[id].qs.length}`).join(', ') + '.' : ' Each one sits right after the steps it covers.');
+  }
+  function qzCheckNum(raw, q){
+    let v; const src = String(raw).trim().replace(/,/g, '.');
+    if (!src) return null;
+    try { const c = plCompile(src, []); if (c.params.length) return NaN; v = c.raw([], [], PL_F); } catch (e){ return NaN; }
+    if (!isFinite(v)) return NaN;
+    const err = Math.abs(v - q.answer), tol = q.rel ? q.tol * Math.abs(q.answer) : q.tol;
+    return {v, ok:err <= Math.max(tol, 1e-12)};
+  }
+  function qzRender(host){
+    const id = host.dataset.quiz, Q = QUIZ[id], qs = Q.qs.map(g => { const q = g(); if (q.options) q.options = QR.shuffle(q.options); return q; });
+    const state = qs.map(() => null);
+    host.innerHTML = qs.map((q, i) => `<div class="qz-q" data-i="${i}"><p class="qz-p"><span class="qz-n">${i + 1}</span>${q.prompt}</p>${q.chart ? '<div class="mplot short-plot"><svg role="img"></svg></div>' : ''}` +
+      (q.type === 'mc' ? `<div class="qz-opts">${q.options.map((o, k) => `<button type="button" class="qz-opt" data-k="${k}">${o.t}</button>`).join('')}</div>`
+        : `<div class="qz-numrow"><input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="your answer"><span class="qz-unit">${q.unit || ''}</span><button type="button" class="btn">Check</button></div><p class="hint">You can type arithmetic, like 30*0.135 or 5 - 80/10.</p>`) +
+      `<div class="qz-fb" hidden></div></div>`).join('') +
+      `<div class="qz-foot"><p class="qz-score"></p><div class="btnrow"><button type="button" class="btn" data-qznew>New questions</button></div></div>`;
+    qs.forEach((q, i) => { if (q.chart) q.chart(host.querySelector(`.qz-q[data-i="${i}"] svg`)); });
+    const fb = (i, ok, extra) => {
+      const box = host.querySelector(`.qz-q[data-i="${i}"]`), f = box.querySelector('.qz-fb');
+      box.classList.add(ok ? 'right' : 'wrong'); f.hidden = false;
+      f.innerHTML = `<b>${ok ? 'Correct.' : 'Not quite.'}</b> ${extra || ''}${qs[i].why}` + (ok ? '' : ` <button type="button" class="linkbtn" data-goto="${qs[i].step}">Review step ${qs[i].step.replace('pr-', '')}</button>`);
+      state[i] = ok; finish();
+    };
+    const finish = () => {
+      const n = state.filter(x => x !== null).length, right = state.filter(x => x).length, sc = host.querySelector('.qz-score');
+      if (n < qs.length){ sc.textContent = `${right} of ${n} answered correctly so far, ${qs.length - n} to go.`; return; }
+      const d = qzLoad(), r = d[id] || {}; r.last = right; r.best = Math.max(r.best || 0, right); r.attempts = (r.attempts || 0) + 1; d[id] = r; qzSave(d);
+      const missed = [...new Set(qs.filter((q, i) => !state[i]).map(q => q.step))];
+      sc.innerHTML = `<b>Score: ${right} of ${qs.length}.</b> Best so far: ${r.best}/${qs.length}. ` + (right === qs.length ? 'Every one right. Press New questions to try fresh numbers.' : `Worth another look: ${missed.map(s => `<button type="button" class="linkbtn" data-goto="${s}">step ${s.replace('pr-', '')}</button>`).join(' ')}. Then press New questions.`);
+      qzProgress();
+    };
+    host.onclick = e => {
+      if (e.target.closest('[data-qznew]')){ qzRender(host); return; }
+      const opt = e.target.closest('.qz-opt');
+      if (opt){ const box = opt.closest('.qz-q'), i = +box.dataset.i; if (state[i] !== null) return; const q = qs[i], k = +opt.dataset.k, ok = !!q.options[k].ok;
+        box.querySelectorAll('.qz-opt').forEach((b, j) => { b.disabled = true; if (q.options[j].ok) b.classList.add('ok'); else if (j === k) b.classList.add('no'); });
+        fb(i, ok); return; }
+      const btn = e.target.closest('.qz-numrow .btn');
+      if (btn){ const box = btn.closest('.qz-q'), i = +box.dataset.i; if (state[i] !== null) return; const inp = box.querySelector('input'), r = qzCheckNum(inp.value, qs[i]);
+        if (r === null){ inp.focus(); return; }
+        if (Number.isNaN(r)){ box.querySelector('.hint').textContent = 'I couldn\u2019t read that as a number. Try something like 0.25 or 30*0.135.'; return; }
+        inp.disabled = true; btn.disabled = true;
+        fb(i, r.ok, r.ok ? '' : `You gave ${qn(r.v, 4)}; the answer is ${qn(qs[i].answer, 4)}${qs[i].unit && qs[i].unit !== '×' ? ' ' + qs[i].unit : ''}. `); }
+    };
+    host.querySelectorAll('.qz-numrow input').forEach(inp => inp.addEventListener('keydown', e => { if (e.key === 'Enter') inp.closest('.qz-numrow').querySelector('.btn').click(); }));
+    finish();
+  }
+  let qzReady = false;
+  function drawQuizzes(){ if (qzReady) return; qzReady = true; document.querySelectorAll('[data-quiz]').forEach(qzRender); qzProgress(); }
   function drawPrimer(){
     if (UI.mode !== 'primer') return;
     drawP1(); drawP2(); drawP3(); drawP4(); drawP5(); drawP6(); drawP7(); drawP7a(); drawP7b(); drawP7c(); drawP8(); drawP8a(); drawP9(); drawP9a(); drawP9b(); drawP10(); drawLA(); drawLB(); drawLC(); drawLD(); drawLE(); drawP10N(); drawP10C(); drawP10a(); drawG11(); drawG12(); drawG13(); drawG14();

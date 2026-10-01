@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Richards lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f1f3f1; --surface:#ffffff; --ink:#18221d; --muted:#5b6861; --line:rgba(24,34,29,.12); --grid:rgba(24,34,29,.08);
+  --accent:#1f6fb2; --on-accent:#ffffff; --soft:#e8eff6;
+  --s-in:#c7851a; --s-out:#138a86; --s-up:#4b8a2c; --s-dem:#7a857f; --s-ref:#7a857f; --s-wp:#c05a2a; --s-grav:#7a857f; --s-pres:#c7851a;
+  --pot:#b4633b; --water:#3b82c4; --root:#8a6a45;
+  --t1:#1f6fb2; --t2:#138a86; --t3:#c7851a; --t4:#7a5bb0; --t5:#4b8a2c;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1412; --surface:#171e1b; --ink:#e3ebe6; --muted:#95a39b; --line:rgba(227,235,230,.12); --grid:rgba(227,235,230,.07);
+    --accent:#6fb0ee; --on-accent:#0b1826; --soft:#1a2833;
+    --s-in:#e3a843; --s-out:#3cc2bd; --s-up:#86c160; --s-dem:#95a39b; --s-ref:#95a39b; --s-wp:#ef8a5a; --s-grav:#95a39b; --s-pres:#e3a843;
+    --pot:#d0805a; --water:#6fb0ee; --root:#c09a6c;
+    --t1:#6fb0ee; --t2:#3cc2bd; --t3:#e3a843; --t4:#b49ae6; --t5:#86c160;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1412; --surface:#171e1b; --ink:#e3ebe6; --muted:#95a39b; --line:rgba(227,235,230,.12); --grid:rgba(227,235,230,.07);
+  --accent:#6fb0ee; --on-accent:#0b1826; --soft:#1a2833;
+  --s-in:#e3a843; --s-out:#3cc2bd; --s-up:#86c160; --s-dem:#95a39b; --s-ref:#95a39b; --s-wp:#ef8a5a; --s-grav:#95a39b; --s-pres:#e3a843;
+  --pot:#d0805a; --water:#6fb0ee; --root:#c09a6c;
+  --t1:#6fb0ee; --t2:#3cc2bd; --t3:#e3a843; --t4:#b49ae6; --t5:#86c160;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;overflow:hidden}
+.app{height:100%;display:flex;flex-direction:column}
+.hd{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--surface)}
+.hd h1{margin:0;font-size:18px;letter-spacing:-.01em;white-space:nowrap}
+.hd .seg{margin-left:auto}
+.status{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;color:var(--muted);white-space:nowrap}
+@media (max-width:520px){ .hd .status{display:none} }
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page[hidden]{display:none}
+
+/* lab layout */
+.lab{max-width:1240px;margin:0 auto;padding:0 10px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.lab > *{min-width:0}
+.viewer{position:sticky;top:0;z-index:5;background:var(--bg);padding-top:8px}
+@media (min-width:960px){
+  .scroll.labmode{overflow:hidden}
+  .lab{grid-template-columns:minmax(0,1fr) 400px;height:100%;padding-bottom:0}
+  .lab .colA,.lab .colB{overflow-y:auto;height:100%;padding-bottom:24px}
+  .viewer{position:static}
+  .plot{height:clamp(280px,48vh,540px)!important}
+}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.card + .card,.viewer + .card{margin-top:10px}
+.card h2{font-size:15px;margin:0;font-weight:600}
+.card h3{font-size:14px;margin:12px 0 4px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tabsrow{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin:-2px -4px 6px;padding:2px 4px}
+.tabsrow::-webkit-scrollbar{display:none}
+.tabsrow button{flex:none;font:inherit;font-size:13px;color:var(--muted);background:transparent;border:1px solid transparent;border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+.tabsrow button[aria-pressed="true"]{color:var(--ink);background:var(--bg);border-color:var(--line);font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:2px;gap:2px;background:var(--bg)}
+.seg button{font:inherit;font-size:13px;color:var(--ink);background:transparent;border:0;border-radius:8px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.seg.full{display:flex}
+.seg.full button{flex:1}
+button:focus-visible,summary:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.plot{position:relative;width:100%;height:clamp(200px,32vh,320px)}
+.plot canvas,.plot svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.plot canvas{touch-action:pan-y;cursor:crosshair}
+.scalebar{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:11px;color:var(--muted);font-family:"IBM Plex Mono",ui-monospace,monospace}
+.scalebar .ramp{flex:1;height:8px;border-radius:4px}
+.timebar{display:flex;align-items:center;gap:10px;margin-top:4px}
+.timebar input{flex:1}
+.timebar .t{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;min-width:96px;text-align:right}
+.icon{font:inherit;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;display:grid;place-items:center;flex:none}
+.icon svg{width:13px;height:13px;fill:currentColor}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.readout div{background:var(--bg);border-radius:8px;padding:4px 8px}
+.readout .k{font-size:11px;color:var(--muted)}
+.readout .v{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;font-weight:500}
+.legend{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12px;color:var(--muted);margin-top:4px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.legend i.dash{background:repeating-linear-gradient(90deg,currentColor 0 4px,transparent 4px 7px)!important}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:var(--line)}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;margin-top:-7px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--surface);border:2px solid var(--accent)}
+
+.about h2{display:flex;align-items:baseline;gap:8px}
+.about p{margin:6px 0 0}
+.insights{list-style:none;margin:8px 0 0;padding:0}
+.insights li{position:relative;padding:6px 0 6px 18px;border-top:1px solid var(--line);font-size:14px}
+.insights li:first-child{border-top:0}
+.insights li::before{content:"";position:absolute;left:2px;top:13px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.insights .muted{color:var(--muted)}
+.kicker{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:12px}
+
+details.group > summary{font-weight:600;font-size:15px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.group > summary::-webkit-details-marker{display:none}
+details.group > summary::after{content:"+";font-weight:400;color:var(--muted);font-size:18px}
+details.group[open] > summary::after{content:"−"}
+details.group[open] > summary{margin-bottom:6px}
+.groupnote{font-size:13px;color:var(--muted);margin:0 0 6px}
+.param{padding:4px 0}
+.param + .param{border-top:1px solid var(--grid)}
+.param-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.param-head .lbl{display:flex;align-items:center;gap:6px;font-size:14px}
+.param-head output{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--muted);text-align:right}
+.q{font:600 11px/1 "IBM Plex Sans",sans-serif;width:20px;height:20px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--muted);cursor:pointer;flex:none;padding:0}
+.q[aria-expanded="true"]{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.info{font-size:13px;color:var(--ink);background:var(--soft);border-radius:8px;padding:8px 10px;margin:4px 0 2px}
+.info[hidden]{display:none}
+.sub{font-size:13px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.btn{font:inherit;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.btn.block{width:100%;margin-top:10px}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px;margin-top:8px}
+.kv div{background:var(--bg);border-radius:8px;padding:6px 8px}
+.kv .k{font-size:11px;color:var(--muted)}
+.kv .v{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px}
+.eq{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;overflow-x:auto;white-space:nowrap;margin:8px 0}
+.warn{color:var(--s-wp)}
+
+/* equation anatomy */
+.anatomy .eqbig{font-family:"IBM Plex Serif",Georgia,serif;font-style:italic;font-size:clamp(17px,4.6vw,24px);text-align:center;padding:14px 6px;background:var(--bg);border-radius:12px;line-height:1.6;overflow-x:auto;white-space:nowrap}
+.anatomy .eqbig span{border-bottom:3px solid;padding:0 1px}
+.c1{color:var(--t1);border-color:var(--t1)!important}.c2{color:var(--t2);border-color:var(--t2)!important}.c3{color:var(--t3);border-color:var(--t3)!important}.c4{color:var(--t4);border-color:var(--t4)!important}.c5{color:var(--t5);border-color:var(--t5)!important}
+.anatomy ul{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px}
+.anatomy li{display:flex;gap:10px;align-items:baseline;font-size:14px}
+.anatomy li b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:13px;min-width:86px}
+
+/* lessons */
+.reading{max-width:760px;margin:0 auto;padding:12px 12px 32px}
+.reading > h2{font-size:24px;margin:8px 0 4px;letter-spacing:-.01em}
+.reading .lead{color:var(--muted);margin:0 0 12px}
+details.lesson{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 14px;margin-top:10px}
+details.lesson > summary{list-style:none;cursor:pointer;padding:12px 0;font-weight:600;font-size:16px;display:flex;justify-content:space-between;gap:10px}
+details.lesson > summary::-webkit-details-marker{display:none}
+details.lesson > summary::after{content:"+";color:var(--muted);font-weight:400}
+details.lesson[open] > summary::after{content:"−"}
+details.lesson .body{padding-bottom:14px}
+details.lesson p{margin:8px 0}
+.tryit{background:var(--soft);border-radius:10px;padding:10px 12px;margin-top:10px}
+.tryit .kicker{margin:0 0 4px;color:var(--accent)}
+.tryit .btn{margin-top:8px}
+dl.gloss{margin:0}
+dl.gloss dt{font-weight:600;margin-top:10px}
+dl.gloss dd{margin:2px 0 0;color:var(--muted)}
+.refs ul{margin:6px 0 0;padding-left:18px}
+.refs li{margin:6px 0;font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hd">
+    <h1>Richards lab</h1>
+    <span class="status" id="status" aria-live="polite"></span>
+    <div class="seg" role="group" aria-label="Section" id="modeSeg">
+      <button type="button" data-mode="lab">Lab</button>
+      <button type="button" data-mode="learn">Lessons</button>
+      <button type="button" data-mode="ref">Reference</button>
+    </div>
+  </header>
+  <div class="scroll labmode" id="scroll">
+
+    <!-- ================= LAB ================= -->
+    <div class="page lab" id="page-lab">
+      <div class="colA">
+        <div class="viewer">
+          <section class="card">
+            <div class="tabsrow" role="group" aria-label="Chart" id="chartTabs">
+              <button type="button" data-chart="pot">Pot view</button>
+              <button type="button" data-chart="heat">Depth × time</button>
+              <button type="button" data-chart="profile">Profile</button>
+              <button type="button" data-chart="flux">Flux</button>
+              <button type="button" data-chart="budget">Layer budget</button>
+              <button type="button" data-chart="level">Water level</button>
+              <button type="button" data-chart="totals">Totals</button>
+              <button type="button" data-chart="curves">Soil curves</button>
+            </div>
+            <div class="row" id="varRow" style="margin-bottom:4px">
+              <div class="seg" role="group" aria-label="Variable" id="varSeg">
+                <button type="button" data-v="theta">θ</button>
+                <button type="button" data-v="Se">S<sub>e</sub></button>
+                <button type="button" data-v="h">h</button>
+                <button type="button" data-v="K" id="varK">K</button>
+              </div>
+              <div id="probeWrap" style="flex:1;display:flex;align-items:center;gap:8px;min-width:200px">
+                <label for="probe" class="sub" style="white-space:nowrap">Cell at</label>
+                <input type="range" id="probe" min="0" max="39" step="1" value="5">
+                <span class="sub" id="probeLbl" style="font-family:'IBM Plex Mono',monospace;min-width:60px;text-align:right;white-space:nowrap"></span>
+              </div>
+            </div>
+            <div class="plot" id="plot"><canvas id="heat" aria-label="Water over depth and time"></canvas><svg id="svgPlot" role="img"></svg></div>
+            <div class="scalebar" id="scalebar"><span id="scaleLo"></span><span class="ramp" id="ramp"></span><span id="scaleHi"></span></div>
+            <div class="legend" id="legend"></div>
+            <div class="timebar">
+              <button class="icon" id="play" type="button" aria-label="Play"><svg viewBox="0 0 10 10" id="playIco"><path d="M2 1l7 4-7 4z"/></svg></button>
+              <input type="range" id="tIdx" min="0" max="120" step="1" value="0" aria-label="Time">
+              <span class="t" id="tLbl"></span>
+            </div>
+            <div class="readout" id="readout"></div>
+          </section>
+        </div>
+        <div class="card" id="expBanner" hidden>
+          <div class="kicker" style="margin-top:0;color:var(--accent)">Experiment loaded</div>
+          <div id="expText" style="font-size:14px;margin-top:4px"></div>
+          <button class="btn block" id="backToLesson" type="button">Back to the lesson</button>
+        </div>
+        <section class="card about" id="about">
+          <h2 id="aboutTitle"></h2>
+          <div class="kicker">How to read it</div>
+          <p id="aboutRead"></p>
+          <div class="kicker">What's happening now</div>
+          <ul class="insights" id="insights"></ul>
+        </section>
+      </div>
+
+      <div class="colB">
+        <details class="card group" open style="margin-top:8px" id="g-soil">
+          <summary>Soil constants</summary>
+          <p class="groupnote">Five numbers define how this soil holds and conducts water. Tap ? on any of them.</p>
+          <div class="seg full" role="group" aria-label="Soil preset" id="presetSeg">
+            <button type="button" data-preset="potting">Potting</button>
+            <button type="button" data-preset="coir">Coco coir</button>
+            <button type="button" data-preset="loam">Loam</button>
+            <button type="button" data-preset="sandy">Sandy</button>
+          </div>
+          <div id="gSoil" style="margin-top:6px"></div>
+        </details>
+        <details class="card group" open id="g-pot">
+          <summary>Container and boundaries</summary>
+          <p class="groupnote">The domain the equation is solved on, and what happens at its edges.</p>
+          <div id="gPot"></div>
+          <div class="param">
+            <div class="param-head"><span class="lbl">Bottom boundary <button class="q" type="button" data-info="bottom" aria-expanded="false" aria-label="Explain the bottom boundary">?</button></span></div>
+            <div class="info" id="info-bottom" hidden></div>
+            <div class="seg full" role="group" aria-label="Bottom boundary" id="bottomSeg" style="margin-top:4px">
+              <button type="button" data-bottom="seepage">Drain hole</button>
+              <button type="button" data-bottom="free">Free drainage</button>
+              <button type="button" data-bottom="sealed">Sealed</button>
+            </div>
+            <p class="note" id="bottomNote"></p>
+          </div>
+        </details>
+        <details class="card group" open id="g-water">
+          <summary>Water in and out</summary>
+          <p class="groupnote">The forcing: what drives water into and out of the column over time.</p>
+          <div id="gWater"></div>
+          <div class="param">
+            <div class="param-head"><span class="lbl">ET timing <button class="q" type="button" data-info="diurnal" aria-expanded="false" aria-label="Explain ET timing">?</button></span></div>
+            <div class="info" id="info-diurnal" hidden></div>
+            <div class="seg full" role="group" aria-label="Evapotranspiration timing" id="diurnalSeg" style="margin-top:4px">
+              <button type="button" data-diurnal="sun">Follows the sun</button>
+              <button type="button" data-diurnal="flat">Constant</button>
+            </div>
+          </div>
+          <div id="gWater2"></div>
+        </details>
+        <details class="card group" id="g-roots">
+          <summary>Roots (sink term S)</summary>
+          <p class="groupnote">How roots remove water, and when they start to struggle.</p>
+          <div id="gRoots"></div>
+        </details>
+        <details class="card group" id="g-solver">
+          <summary>Solver</summary>
+          <p class="groupnote">How the PDE is turned into numbers. Change these and watch accuracy and cost.</p>
+          <div id="gSolver"></div>
+          <div class="kv" id="stats"></div>
+        </details>
+        <button class="btn block" id="reset" type="button">Reset to defaults</button>
+      </div>
+    </div>
+
+    <!-- ================= LESSONS ================= -->
+    <div class="page reading" id="page-learn" hidden>
+      <h2>Learn the Richards equation</h2>
+      <p class="lead">Ten short lessons, each with an experiment that loads into the lab. Read one, run it, then change things.</p>
+      <div class="card anatomy" id="anatomy"></div>
+      <div id="lessons"></div>
+    </div>
+
+    <!-- ================= REFERENCE ================= -->
+    <div class="page reading" id="page-ref" hidden>
+      <h2>Reference</h2>
+      <p class="lead">The equations as implemented, the symbols, and where to read more.</p>
+      <div class="card">
+        <h2>Equations in this app</h2>
+        <div class="eq">A(z) ∂θ/∂t = ∂/∂z [ A(z) K(h) (∂h/∂z − 1) ] − A(z) S(z,t)</div>
+        <div class="eq">θ(h) = θr + (θs − θr) [1 + (α|h|)^n]^(−m),  m = 1 − 1/n</div>
+        <div class="eq">Se = (θ − θr) / (θs − θr)</div>
+        <div class="eq">K(h) = Ks · Se^½ · [1 − (1 − Se^(1/m))^m]²</div>
+        <div class="eq">S = ET · a(h) · w(z) / ∫ w A dz,   a(h) = 1 above h₃, linear to 0 at h₄</div>
+        <div class="eq">Full after draining: h(z) = −(L − z)</div>
+        <p class="note">z is depth below the soil surface (down is positive), so gravity appears as the −1 inside the flux. Units are cm and days internally; water depths are shown in mm.</p>
+      </div>
+      <div class="card">
+        <h2>Glossary</h2>
+        <dl class="gloss" id="gloss"></dl>
+      </div>
+      <div class="card refs" id="refs">
+        <h2>Further reading</h2>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+/*
+ * Richards lab solver: 1D vertical soil column with a variable cross-section A(z).
+ * Mixed-form finite volume, implicit Euler, Picard iteration (Celia et al. 1990).
+ * z points down from the soil surface. Units: cm, days. Fluxes are per unit top area.
+ *
+ *   A(z) dθ/dt = d/dz [ A(z) K(h) (dh/dz - 1) ] - A(z) S(z, t)
+ */
+function vanGenuchten(p){
+  const m = 1 - 1 / p.n, Ss = 1e-5;
+  const Se = h => h >= 0 ? 1 : Math.pow(1 + Math.pow(-p.a * h, p.n), -m);
+  const theta = h => p.thr + (p.ths - p.thr) * Se(h) + (h > 0 ? Ss * h : 0);
+  const K = h => { const s = Se(h); if (s >= 1) return p.Ks; return p.Ks * Math.sqrt(s) * Math.pow(1 - Math.pow(1 - Math.pow(s, 1 / m), m), 2); };
+  const C = h => {
+    if (h >= 0) return Ss;
+    const x = Math.pow(-p.a * h, p.n);
+    return (p.ths - p.thr) * p.a * m * p.n * Math.pow(-p.a * h, p.n - 1) * Math.pow(1 + x, -m - 1) + Ss;
+  };
+  return {Se, theta, K, C, m};
+}
+
+function solveLab(P){
+  const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  const soil = {thr:P.thr, ths:P.ths, a:P.a, n:P.n, Ks:P.Ks}, f = vanGenuchten(soil);
+  const L = P.L, N = Math.round(P.N), dz = L / N;
+  const zc = i => (i + 0.5) * dz;
+  const area = z => Math.pow(1 - P.taper * Math.pow(z / L, 2), 2);
+  const A = new Float64Array(N), Af = new Float64Array(N + 1), V = new Float64Array(N);
+  for (let i = 0; i < N; i++){ A[i] = area(zc(i)); V[i] = A[i] * dz; }
+  for (let k = 0; k <= N; k++) Af[k] = area(k * dz);
+  const HWP = -15000;
+  const hEq = i => -(L - zc(i));
+  const storage = h => { let s = 0; for (let i = 0; i < N; i++) s += f.theta(h[i]) * V[i]; return s; };
+  let Wfull = 0, Wwp = 0, Wsat = 0;
+  for (let i = 0; i < N; i++){ Wfull += f.theta(hEq(i)) * V[i]; Wwp += f.theta(HWP) * V[i]; Wsat += soil.ths * V[i]; }
+  const TAW = Math.max(1e-9, Wfull - Wwp);
+  const pctOf = h => (storage(h) - Wwp) / TAW * 100;
+  function shiftTo(base, pct){
+    let lo = -2 * L, hi = 1e5;
+    for (let k = 0; k < 70; k++){
+      const mid = (lo + hi) / 2, h = base.map(x => Math.min(x - mid, 0.5 * L));
+      if (pctOf(h) > pct) lo = mid; else hi = mid;
+    }
+    const s = (lo + hi) / 2; return base.map(x => Math.min(x - s, 0.5 * L));
+  }
+
+  // roots: denser near the top, down to rootFrac of the depth
+  const wr = new Float64Array(N); let wden = 0;
+  for (let i = 0; i < N; i++){ const z = zc(i) / L; wr[i] = z < P.rootFrac ? 1 - 0.7 * z / P.rootFrac : 0; wden += wr[i] * V[i]; }
+  if (wden <= 0){ wr[0] = 1; wden = V[0]; }
+  const h3 = P.h3, h4 = Math.min(P.h4, h3 - 1);
+  const feddes = h => h >= h3 ? 1 : h <= h4 ? 0 : (h - h4) / (h3 - h4);
+
+  let h = shiftTo(Array.from({length:N}, (_, i) => hEq(i)), P.startPct);
+  const a = new Float64Array(N), b = new Float64Array(N), c = new Float64Array(N), r = new Float64Array(N);
+  const Kc = new Float64Array(N), Cc = new Float64Array(N), Th = new Float64Array(N), Sk = new Float64Array(N), Kh = new Float64Array(N + 1);
+  const stats = {steps:0, iters:0, failures:0, minDtMin:Infinity};
+  let pond = 0, dtCur = P.maxDtH / 24;
+  const dtMax = P.maxDtH / 24;
+
+  function solve(hn, thn, dt, supply, et, topHs, seep){
+    let hm = hn.slice();
+    for (let it = 1; it <= 50; it++){
+      for (let i = 0; i < N; i++){ Kc[i] = f.K(hm[i]); Cc[i] = f.C(hm[i]); Th[i] = f.theta(hm[i]); Sk[i] = et * wr[i] * feddes(hm[i]) / wden; }
+      for (let k = 1; k < N; k++) Kh[k] = 0.5 * (Kc[k - 1] + Kc[k]);
+      for (let i = 0; i < N; i++){
+        const wm = i > 0 ? Af[i] / A[i] : 0, wp = i < N - 1 ? Af[i + 1] / A[i] : 0;
+        const Km = i > 0 ? Kh[i] : 0, Kp = i < N - 1 ? Kh[i + 1] : 0;
+        a[i] = -wm * Km / (dz * dz); c[i] = -wp * Kp / (dz * dz);
+        b[i] = Cc[i] / dt + (wm * Km + wp * Kp) / (dz * dz);
+        r[i] = Cc[i] / dt * hm[i] - (Th[i] - thn[i]) / dt + (wm * Km - wp * Kp) / dz - Sk[i];
+      }
+      const wt = Af[0] / A[0], wb = Af[N] / A[N - 1];
+      if (topHs !== null){ const Kt = 0.5 * (soil.Ks + Kc[0]); b[0] += wt * 2 * Kt / (dz * dz); r[0] += wt * (Kt / dz + 2 * Kt * topHs / (dz * dz)); }
+      else r[0] += wt * supply / dz;
+      if (P.bottom === 'seepage' && seep){ const Kb = 0.5 * (soil.Ks + Kc[N - 1]); b[N - 1] += wb * 2 * Kb / (dz * dz); r[N - 1] -= wb * Kb / dz; }
+      else if (P.bottom === 'free') r[N - 1] -= wb * Kc[N - 1] / dz;
+      for (let i = 1; i < N; i++){ const w = a[i] / b[i - 1]; b[i] -= w * c[i - 1]; r[i] -= w * r[i - 1]; }
+      const hx = new Array(N);
+      hx[N - 1] = r[N - 1] / b[N - 1];
+      for (let i = N - 2; i >= 0; i--) hx[i] = (r[i] - c[i] * hx[i + 1]) / b[i];
+      let diff = 0;
+      for (let i = 0; i < N; i++){
+        if (!isFinite(hx[i])) return null;
+        const dh = Math.abs(hx[i] - hm[i]);
+        if (dh > P.tol && Math.abs(f.theta(hx[i]) - f.theta(hm[i])) > 1e-5) diff = Math.max(diff, dh);
+      }
+      hm = hx;
+      if (diff === 0){
+        stats.iters += it;
+        let up = 0; for (let i = 0; i < N; i++) up += et * wr[i] * feddes(hm[i]) / wden * V[i];
+        const K0 = f.K(hm[0]), Kn = f.K(hm[N - 1]);
+        const qin = topHs !== null ? 0.5 * (soil.Ks + K0) * (1 + 2 * (topHs - hm[0]) / dz) * Af[0] : supply * Af[0];
+        let qout = 0;
+        if (P.bottom === 'seepage' && seep) qout = 0.5 * (soil.Ks + Kn) * (2 * hm[N - 1] / dz + 1) * Af[N];
+        else if (P.bottom === 'free') qout = Kc[N - 1] * Af[N];
+        return {h:hm, qin, qout, up};
+      }
+    }
+    return null;
+  }
+
+  const acc = {in:0, out:0, up:0, demand:0};
+  function stepOnce(dt, rain, et){
+    const hn = h, thn = hn.map(f.theta);
+    let topHs = pond > 1e-4 ? pond : null, supply = rain, seep = hn[N - 1] >= 0, res = null;
+    for (let pass = 0; pass < 5; pass++){
+      res = solve(hn, thn, dt, supply, et, topHs, seep);
+      if (!res) return false;
+      if (topHs === null && supply > 0 && res.h[0] > 0){ topHs = 0; continue; }
+      if (topHs !== null && res.qin * dt > pond + rain * dt){ topHs = null; supply = rain + pond / dt; continue; }
+      if (P.bottom === 'seepage' && !seep && res.h[N - 1] > 0){ seep = true; continue; }
+      if (P.bottom === 'seepage' && seep && res.qout < 0){ seep = false; continue; }
+      break;
+    }
+    h = res.h;
+    pond = Math.max(0, pond + (rain - res.qin) * dt);
+    acc.in += res.qin * dt; acc.out += res.qout * dt; acc.up += res.up * dt; acc.demand += et * dt;
+    stats.steps++; stats.minDtMin = Math.min(stats.minDtMin, dt * 1440);
+    return true;
+  }
+
+  let SUN = 0; for (let k = 0; k < 12; k++) SUN += Math.sin(Math.PI * (k + 0.5) / 12);
+  const hours = Math.round(P.days * 24);
+  const rec = {h:[], avail:[], pond:[], cin:[], cout:[], cup:[], cdem:[], et:[], rain:[], events:[]};
+  const snap = (et, rain) => {
+    rec.et.push(et); rec.rain.push(rain);
+    rec.h.push(Float32Array.from(h)); rec.avail.push(pctOf(h)); rec.pond.push(pond * 10);
+    rec.cin.push(acc.in * 10); rec.cout.push(acc.out * 10); rec.cup.push(acc.up * 10); rec.cdem.push(acc.demand * 10);
+  };
+  const W0 = storage(h);
+  snap(0, 0);
+  for (let H = 0; H < hours; H++){
+    const day = Math.floor(H / 24), hr = H % 24, dayNo = day + 1;
+    if (P.waterMm > 0 && hr === P.waterHour && dayNo >= P.waterDay &&
+        (P.waterEvery > 0 ? (dayNo - P.waterDay) % P.waterEvery === 0 : dayNo === P.waterDay)){
+      pond += P.waterMm / 10; rec.events.push({H, kind:'water', mm:P.waterMm});
+    }
+    const rainOn = P.rainMm > 0 && dayNo === P.rainDay && hr >= 6 && hr < 6 + P.rainHours;
+    if (rainOn && hr === 6) rec.events.push({H, kind:'rain', mm:P.rainMm});
+    const rain = rainOn ? (P.rainMm / 10) / (P.rainHours / 24) : 0;
+    const etc = P.etMm / 10;
+    const et = P.diurnal ? ((hr >= 7 && hr < 19) ? etc * 24 * Math.sin(Math.PI * (hr + 0.5 - 7) / 12) / SUN : 0) : etc;
+    let t = 0; const Hd = 1 / 24;
+    while (t < Hd - 1e-12){
+      const dt = Math.min(dtCur, Hd - t);
+      if (stepOnce(dt, rain, et)){ t += dt; dtCur = Math.min(dtMax, dtCur * 1.3); }
+      else { stats.failures++; dtCur = dt / 2; if (dtCur < 1e-8){ t = Hd; stats.gaveUp = true; } }
+    }
+    snap(et, rain);
+  }
+  // mass balance: change in stored soil water vs. net flow across the boundaries
+  const soilErr = (storage(h) - W0) - (acc.in - acc.out - acc.up);
+  stats.massErrPct = Math.abs(soilErr) / Math.max(1e-6, acc.in + acc.out + acc.up) * 100;
+  stats.avgIters = stats.steps ? stats.iters / stats.steps : 0;
+  stats.ms = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - t0;
+  return {P, f, N, dz, L, A, Af, V, wr, wden, feddes, zc:Array.from({length:N}, (_, i) => zc(i)), hEq:Array.from({length:N}, (_, i) => hEq(i)),
+    TAWmm:TAW * 10, WfullMm:Wfull * 10, thetaWp:f.theta(HWP), hours, rec, stats, h3, h4};
+}
+
+</script>
+<script>
+/* ===== Learning content ===== */
+const PARAM_INFO = {
+  thr:'Residual water content. Water held so tightly in the finest pores and on particle surfaces that it never moves, even at extreme suction. The retention curve flattens toward θr as soil dries. Typical values are 0 to 0.1. Raising it shrinks the usable range θs − θr.',
+  ths:'Saturated water content: the water present when every pore is full, close to the porosity. Potting mixes and coir are very porous (0.6 to 0.9); mineral soils sit around 0.35 to 0.5. It sets the top of the retention curve.',
+  a:'Sets the suction at which the largest pores begin to empty. 1/α is roughly the air-entry suction in cm. A larger α (coarse, open media) means pores drain at small suction, so the soil gives up water easily. Sands are near 0.1 /cm, clays near 0.01 /cm.',
+  n:'Controls how spread out the pore sizes are. A large n (sands, above 2) means similar-sized pores, so the soil drains over a narrow suction range and the curve is steep. A small n (1.1 to 1.5, clays and peat) gives a gradual curve. It also sets the exponent m = 1 − 1/n used in K(h).',
+  Ks:'Saturated hydraulic conductivity: how fast water flows through fully wet soil under a unit head gradient. It is the ceiling on infiltration rate. It spans orders of magnitude: clay about 1 cm/day, loam about 25, sand and coarse mixes hundreds to thousands. K(h) falls far below Ks as soil dries.',
+  L:'Height of the soil column. When the pot drains to equilibrium, the top sits at a suction equal to the height above the base, so deeper pots end up drier at the top and shallow pots stay wetter overall. Total water held still rises with depth.',
+  taper:'Changes the cross-sectional area A(z) with depth, from straight sides to a bowl like a hanging basket. Less area near the base means less soil there, and flow through the narrowing section concentrates. The equation gains A(z) inside the derivative.',
+  bottom:'What happens where the soil meets the bottom of the container. This is a boundary condition: the equation needs one at each end of the column to have a unique solution.',
+  days:'How long to simulate. Results are saved every hour so you can scrub through them.',
+  startPct:'Initial water as a share of available water. The starting profile is the drained-equilibrium shape shifted drier by the same suction everywhere. That keeps total head uniform, so nothing flows at t = 0 until rain, watering, or roots disturb it.',
+  etMm:'Water the plants and soil lose per day, removed here as root uptake. A sunny Seattle pot in midsummer might lose 4 to 6 mm/day; in autumn, 1 to 2.',
+  diurnal:'Real evapotranspiration follows the sun: zero at night and peaking at midday. Constant spreads it evenly, which gives a smoother solution and makes other effects easier to see.',
+  waterMm:'Depth of water poured, measured over the pot\u2019s top area. 10 mm over a 30 cm wide pot is about 0.7 liters. It all arrives at the start of the chosen hour; anything the soil can\u2019t absorb right away ponds on the surface.',
+  waterDay:'Day of the first watering. Set it after the run ends to turn watering off.',
+  waterEvery:'Repeat the watering every so many days, or once.',
+  waterHour:'Hour of the day the water is poured.',
+  rainMm:'Total rain on the chosen day, at a steady rate from 06:00. The same total over fewer hours means a higher intensity, which can exceed what the soil absorbs and cause ponding.',
+  rainDay:'Day the rain falls.',
+  rainHours:'How long the rain lasts. Shorter means more intense.',
+  rootFrac:'How deep roots reach, as a share of soil depth. Uptake is spread over this zone, densest near the top. Shallow roots dry the surface quickly and leave deeper water untouched.',
+  h3:'Pressure head where roots start to struggle. Wetter than this, uptake meets demand; drier, uptake falls linearly toward zero. This is the Feddes reduction function.',
+  h4:'Pressure head where roots can no longer extract water. −15,000 cm (−1.5 MPa) is the classic permanent wilting point; many garden plants stop much earlier.',
+  N:'Number of finite-volume cells. Each cell is Δz = L/N thick and holds one value of h. More cells resolve sharp wetting fronts; too few smear them out. Cost grows roughly in proportion.',
+  maxDtH:'Upper limit on the time step. The solver shrinks the step on its own when water arrives fast and stretches it back in quiet periods. A smaller cap is more accurate in between, but slower.',
+  tol:'Picard iteration repeats until no cell\u2019s head changes more than this between passes (or the change no longer moves water content). Looser is faster but less accurate; watch the mass balance.',
+  preset:'Starting values for the five van Genuchten constants. The potting mix and coir numbers are illustrative estimates; real mixes vary widely, and measuring your own is the only way to be sure.'
+};
+
+const CHART_INFO = {
+  pot:{title:'Pot view', read:'A cross-section of the pot at the selected time. Each band is one cell of the numerical grid, colored by effective saturation: how full its pores are between bone dry (θr) and saturated (θs). Arrows show Darcy flux across cell boundaries: down means water moving deeper; up means it is being pulled toward drier soil above. Arrow length is on a log scale, so a long arrow can be a hundred times a short one.'},
+  heat:{title:'Depth × time', read:'Time runs left to right, depth top to bottom; each vertical slice is the whole profile at one hour. After watering or rain, a dark band slants down and to the right: that is a wetting front, and its slope is its speed. A pale band creeping down from the surface is drying. Switch to h to see suction, which shows dry regions more clearly.'},
+  profile:{title:'Profile', read:'One variable against depth at the selected time. The dotted line is the “full after draining” profile: hydrostatic equilibrium over a water table at the base, where h = −(height above the bottom). Left of the dotted line, the pot has room; right of it, extra water that will drain. In K, notice how a small drop in water content collapses conductivity.'},
+  flux:{title:'Flux', read:'Darcy flux at each cell boundary, q = −K(∂h/∂z − 1), split into its two drivers. Gravity (K) always pulls down. The pressure term (−K ∂h/∂z) pulls toward more negative h: toward drier soil, up or down. Their sum is the actual flow. Where they cancel, total head is uniform and nothing moves: equilibrium. The axis is logarithmic in both directions.'},
+  budget:{title:'Layer budget', read:'The Richards equation applied to a single cell. Water arriving through the top face, minus water leaving through the bottom face, minus root uptake, equals the rate the cell\u2019s water content changes. Every cell obeys this balance at every moment; the PDE is just this statement shrunk to an infinitely thin layer.'},
+  level:{title:'Water level', read:'Total plant-available water in the pot. 100% is the drained “full” state and 0% means every layer is at the wilting point. Above 100% means free water that hasn\u2019t drained yet. Steps up are watering or rain; the slow slopes down are root uptake.'},
+  totals:{title:'Totals', read:'Running totals since the start. Soaked in − drained − taken up = change in storage; that is the mass balance the solver checks. When “taken up” falls below the ET demand line, the roots are water-stressed.'},
+  curves:{title:'Soil curves', read:'The two functions that make the equation nonlinear. The retention curve says how much water the soil holds at each suction; the conductivity curve says how easily it moves. Both are drawn from your five constants. Dots are the grid cells right now, so you can watch them slide along the curves as the pot wets and dries.'}
+};
+
+const LESSONS = [
+  {id:'idea', title:'1. The big idea', body:`
+<p>The Richards equation is two simple laws combined. The first is <b>conservation of mass</b>: in any thin layer, water content changes only because water flows in or out, or roots take it up.</p>
+<div class="eq">∂θ/∂t = −∂q/∂z − S</div>
+<p>The second is <b>Darcy\u2019s law</b> for unsaturated soil (often called Darcy-Buckingham): water flows down the gradient of total head H, at a rate set by the conductivity K.</p>
+<div class="eq">q = −K(h) ∂H/∂z,   H = h − z</div>
+<p>Here z points down, so elevation is −z, which is where gravity enters. Substituting q into the mass balance gives the Richards equation (L.A. Richards, 1931):</p>
+<div class="eq">∂θ/∂t = ∂/∂z [ K(h) (∂h/∂z − 1) ] − S</div>
+<p>Everything else in this app is detail: how θ and K depend on h, what happens at the boundaries, and how to solve it on a computer.</p>`,
+   tryit:'Load the default run and press play on the Pot view. Watch the arrows during watering on day 3: water rushes down, then the arrows shrink as the profile settles.',
+   exp:{}, chart:'pot', t:58},
+  {id:'head', title:'2. Pressure head, total head, and equilibrium', body:`
+<p><b>Pressure head h</b> is the water\u2019s pressure expressed as a height of water column, in cm. In saturated soil, h ≥ 0. In unsaturated soil, capillary forces hold water under tension, so h is negative; we call −h the <b>suction</b>. Drier soil has more suction.</p>
+<p><b>Total head</b> adds gravity: H = h − z with depth z measured down. Water moves only when H differs from place to place. If H is the same everywhere, there is no flow even though h varies with depth.</p>
+<p>That is exactly the “full after draining” state of a pot. With a water table at the base (h = 0 there), equilibrium requires h = −(height above the base). The top of a 33 cm pot sits at −33 cm. Horticulturists call this <b>container capacity</b>; it is why pots hold a wet layer at the bottom.</p>`,
+   tryit:'This experiment starts at equilibrium with no rain, watering, or roots. Open the Flux chart: gravity and pressure arrows are equal and opposite, so the total is zero. Now raise evapotranspiration and watch flow begin.',
+   exp:{etMm:0, waterMm:0, rainMm:0, startPct:100, days:2}, chart:'flux', t:24},
+  {id:'retention', title:'3. The retention curve: θr, θs, α, n', body:`
+<p>The <b>retention curve</b> θ(h) says how much water soil holds at each suction. Large pores empty at low suction; small pores need high suction. The van Genuchten (1980) form fits most soils with four constants:</p>
+<div class="eq">θ(h) = θr + (θs − θr) [1 + (α|h|)^n]^(−m),  m = 1 − 1/n</div>
+<p><b>θs</b> is the top (all pores full); <b>θr</b> the floor. <b>α</b> slides the curve left or right: 1/α is roughly the suction where air first enters. <b>n</b> sets steepness: a uniform sand drains over a narrow suction range, a peat or clay over a wide one.</p>
+<p>It is often easier to think in <b>effective saturation</b> Se = (θ − θr)/(θs − θr), which runs from 0 to 1 regardless of soil.</p>`,
+   tryit:'Open Soil curves and switch between the Sandy and Loam presets. Sand holds lots of water near zero suction, then drops off a cliff; loam releases water gradually. Then drag n and α yourself.',
+   exp:{preset:'sandy', thr:0.057, ths:0.41, a:0.124, n:2.28, Ks:350}, chart:'curves', t:0},
+  {id:'conductivity', title:'4. Conductivity, and why dry soil seals itself', body:`
+<p>Water can only flow through pores that are full. As soil dries, the largest pores empty first and the remaining paths get thin and tortuous, so <b>K(h) drops by orders of magnitude</b>. The Mualem (1976) model, combined with van Genuchten\u2019s curve, gives:</p>
+<div class="eq">K(h) = Ks · Se^½ · [1 − (1 − Se^(1/m))^m]²</div>
+<p>This is the reason the top inch of a pot can be dry while the soil below stays wet. Once the surface dries, its conductivity collapses and it can\u2019t pass water up from below fast enough to keep itself moist. It becomes a self-made mulch.</p>
+<p>It is also what makes the equation hard to solve: the coefficient K can change a billion-fold across the range of h a pot sees.</p>`,
+   tryit:'This run has shallow roots pulling hard with no watering. Look at the Profile in h, then K: the top layers reach large suction and their conductivity is orders of magnitude below the layers beneath.',
+   exp:{startPct:45, etMm:6, waterMm:0, rainMm:0, days:6, rootFrac:0.35}, chart:'profile', v:'K', t:144},
+  {id:'infiltration', title:'5. Infiltration and wetting fronts', body:`
+<p>When water hits dry soil, it doesn\u2019t spread evenly. A wet zone forms on top with a sharp boundary below it, the <b>wetting front</b>, that moves down over time. Ahead of the front the soil is dry and K is tiny, so water piles up behind it until the front advances.</p>
+<p>Early on, steep suction gradients pull water in fast. Later, gravity takes over, the infiltration rate settles toward the conductivity of the wetted soil, and the front advances more steadily.</p>
+<p>If water arrives faster than the soil can take it in, the surface saturates and water <b>ponds</b>. The boundary then switches from a flux condition to a fixed head equal to the pond depth.</p>`,
+   tryit:'A large watering on dry soil, with a fine grid. In Depth × time, the front is the slanting edge of the dark band. Scrub to 09:00 and 10:00 on day 1 and compare the Profile. Then try the Loam preset: slower, and it ponds.',
+   exp:{startPct:20, waterMm:40, waterDay:1, waterHour:8, rainMm:0, etMm:2, days:2, N:80, maxDtH:0.25}, chart:'heat', v:'theta', t:10},
+  {id:'drainage', title:'6. Drainage and the perched water table', body:`
+<p>A pot with a drain hole is not open to the ground. Water can only leave once the soil at the hole is saturated, because unsaturated water is held by suction and won\u2019t drip into air. Modelers call this a <b>seepage face</b>: no flow while h &lt; 0 at the base, and h = 0 once it saturates.</p>
+<p>So after a heavy watering, a saturated layer builds at the bottom, drains away, and leaves the equilibrium profile behind. Moderate waterings may never drain at all; they just redistribute.</p>
+<p>Compare <b>free drainage</b>, where the base drains at a rate equal to its conductivity (unit gradient), like soil sitting on deep ground. It drains continuously and never perches water.</p>`,
+   tryit:'A heavy 80 mm watering. In the Pot view, watch the saturated band form at the bottom and the drip begin. Then switch the bottom boundary to Free drainage and compare Totals.',
+   exp:{startPct:60, waterMm:80, waterDay:1, waterHour:8, rainMm:0, etMm:2, days:2, N:60}, chart:'pot', t:10},
+  {id:'container', title:'7. Depth and shape of the container', body:`
+<p>Because the drained profile is h = −(height above the base), a pot\u2019s depth decides how wet it stays after draining. In a shallow pot every layer is close to the water table, so much of the soil stays near saturation: lots of water, but little air for roots and less of it available to plants between waterings.</p>
+<p>Deeper pots drain their upper layers further, giving more air space and more water that roots can actually draw down. A bowl shape removes soil from the bottom, which is where the wettest layer sits.</p>
+<p>With a variable cross-section, the area A(z) enters the equation inside the derivative, because what is conserved is volume, not depth.</p>`,
+   tryit:'This run uses a shallow 12 cm pot. Watch Water level, then drag Soil depth up to 40 cm and compare how long the water lasts and how the Profile changes.',
+   exp:{L:12, startPct:100, etMm:4, waterMm:0, rainMm:0, days:5}, chart:'level', t:72},
+  {id:'roots', title:'8. Roots, demand, and water stress', body:`
+<p>Roots appear in the equation as a <b>sink term S</b>, water removed per unit volume per unit time. Here the day\u2019s evapotranspiration demand is spread over the root zone, weighted toward the top where roots are densest.</p>
+<p>Plants can\u2019t pull water from very dry soil, so each layer\u2019s uptake is scaled by a <b>reduction function</b> a(h) (Feddes et al., 1978): 1 when wetter than h₃, falling to 0 at h₄. When upper layers dry, uptake shifts down to wetter ones until the whole root zone is short.</p>
+<div class="eq">S(z,t) = ET · a(h) · w(z) / ∫ w A dz</div>`,
+   tryit:'Ten days of high demand with no water. On Totals, watch “taken up” peel away from the ET demand line: that gap is stress. The Profile in h shows the root zone drying from the top.',
+   exp:{startPct:90, etMm:6, waterMm:0, rainMm:0, days:10}, chart:'totals', t:240},
+  {id:'numerics', title:'9. Inside the solver', body:`
+<p>There is no closed-form solution, so the column is cut into N <b>finite-volume cells</b>. Each holds one h, and the fluxes between neighbors follow Darcy\u2019s law with K averaged at the shared face.</p>
+<p>Time steps are <b>implicit</b> (backward Euler): fluxes are evaluated at the end of the step, which keeps the method stable even with large steps. But K and θ depend on the unknown h, so each step is solved iteratively with <b>Picard iteration</b>: guess h, compute K and θ, solve a tridiagonal linear system, repeat until it settles.</p>
+<p>Celia, Bouloutas and Zarba (1990) showed that writing the storage term in <b>mixed form</b>, using θ itself rather than C(h)·∂h/∂t, makes the scheme conserve mass. That\u2019s why the mass balance stays near zero here.</p>
+<p>When water arrives fast, iterations may fail to converge; the solver halves the step and retries, then lets it grow again.</p>`,
+   tryit:'A wetting front on a coarse grid with loose settings. Note how blurry the front is and the solver stats. Then raise Soil layers to 80 and tighten the tolerance: sharper front, more time steps.',
+   exp:{N:10, tol:1, maxDtH:3, startPct:20, waterMm:40, waterDay:1, waterHour:8, rainMm:0, etMm:2, days:2}, chart:'heat', v:'theta', t:10, open:'solver'},
+  {id:'budget', title:'10. Reading the equation one layer at a time', body:`
+<p>The cleanest way to see what the equation means is to apply it to a single cell of thickness Δz:</p>
+<div class="eq">Δz · ∂θ/∂t = q(top face) − q(bottom face) − S · Δz</div>
+<p>Water in through the top, minus water out through the bottom, minus what the roots take, equals the change in storage. Shrink Δz to zero and divide by it, and this becomes the partial differential equation.</p>
+<p>The <b>Layer budget</b> chart shows these terms live for any cell you pick.</p>`,
+   tryit:'During this watering, open Layer budget and move the probe from the surface down. Near the wetting front the inflow is much larger than the outflow, so θ is rising fast; above it, the two nearly balance.',
+   exp:{startPct:20, waterMm:40, waterDay:1, waterHour:8, rainMm:0, etMm:2, days:2, N:60, maxDtH:0.25}, chart:'budget', t:9, probe:6}
+];
+
+const GLOSSARY = [
+  ['Air-entry suction', 'The suction at which the largest pores start to drain and air enters the soil; roughly 1/α in the van Genuchten model.'],
+  ['Available water', 'Water between the drained “full” state and the wilting point; what plants can actually use.'],
+  ['Boundary condition', 'What the solution must satisfy at the edges of the domain. A flux condition (Neumann) fixes the flow; a head condition (Dirichlet) fixes h.'],
+  ['Capillary rise', 'Upward movement of water toward drier soil, driven by suction gradients that outweigh gravity.'],
+  ['Container capacity', 'The water a pot holds after free drainage stops. The container version of field capacity, set by hydrostatic equilibrium above the perched water table.'],
+  ['Darcy-Buckingham law', 'q = −K(h) ∂H/∂z. Flow is proportional to the total-head gradient, with a conductivity that depends on wetness.'],
+  ['Effective saturation, Se', '(θ − θr)/(θs − θr). Wetness scaled from 0 to 1.'],
+  ['Evapotranspiration, ET', 'Water lost from soil evaporation plus plant transpiration, in mm/day.'],
+  ['Finite volume', 'A discretization that tracks the water in each cell and the fluxes across its faces, so mass is conserved by construction.'],
+  ['Hydraulic conductivity, K', 'How easily water flows through soil. Equal to Ks when saturated, and orders of magnitude lower when dry.'],
+  ['Hydrostatic equilibrium', 'Uniform total head, so no flow. In a pot over a water table, h = −(height above the base).'],
+  ['Infiltration', 'Water entering the soil surface. Limited by how fast the soil can conduct it away.'],
+  ['Mixed form', 'Writing the storage term with θ directly instead of C(h)·∂h/∂t. Conserves mass in numerical solutions.'],
+  ['Perched water table', 'A saturated zone held above a barrier, such as the bottom of a pot, because water can\u2019t drip out until the soil there saturates.'],
+  ['Picard iteration', 'Repeatedly solving a linearized system, updating the nonlinear coefficients each time, until the answer stops changing.'],
+  ['Ponding', 'Water collecting on the surface when it arrives faster than the soil can absorb it.'],
+  ['Pressure head, h', 'Water pressure as an equivalent height of water, in cm. Negative in unsaturated soil.'],
+  ['Retention curve', 'θ(h): how much water soil holds at each suction. Also called the water characteristic curve.'],
+  ['Seepage face', 'A boundary that lets water out only when saturated: no flow while h < 0, and h = 0 once it saturates.'],
+  ['Specific moisture capacity, C(h)', 'dθ/dh, the slope of the retention curve. How much water content changes per unit change in head.'],
+  ['Suction', '−h. The tension holding water in unsaturated soil; larger means drier.'],
+  ['Total head, H', 'Pressure head plus elevation head. With depth z pointing down, H = h − z. Water flows from high H to low H.'],
+  ['Van Genuchten-Mualem', 'The standard pair of closed-form functions for θ(h) and K(h), using θr, θs, α, n, and Ks.'],
+  ['Wetting front', 'The sharp boundary between wetted soil and the drier soil below it during infiltration.'],
+  ['Wilting point', 'Suction beyond which plants can\u2019t extract water, classically −15,000 cm (−1.5 MPa).']
+];
+
+const REFS = [
+  ['Original papers', [
+    'Richards, L. A. (1931). Capillary conduction of liquids through porous mediums. Physics, 1, 318–333. The equation itself.',
+    'van Genuchten, M. Th. (1980). A closed-form equation for predicting the hydraulic conductivity of unsaturated soils. Soil Science Society of America Journal, 44, 892–898. The retention and conductivity curves used here.',
+    'Mualem, Y. (1976). A new model for predicting the hydraulic conductivity of unsaturated porous media. Water Resources Research, 12(3), 513–522.',
+    'Celia, M. A., Bouloutas, E. T., & Zarba, R. L. (1990). A general mass-conservative numerical solution for the unsaturated flow equation. Water Resources Research, 26(7), 1483–1496. The mixed-form Picard scheme this solver uses.',
+    'Feddes, R. A., Kowalik, P. J., & Zaradny, H. (1978). Simulation of Field Water Use and Crop Yield. Pudoc, Wageningen. The root uptake reduction function.',
+    'Carsel, R. F., & Parrish, R. S. (1988). Developing joint probability distributions of soil water retention characteristics. Water Resources Research, 24(5), 755–769. Source of typical loam and sand parameters.'
+  ]],
+  ['Textbooks', [
+    'Hillel, D. Introduction to Environmental Soil Physics. Academic Press. A readable introduction to soil water, retention, and flow.',
+    'Jury, W. A., & Horton, R. Soil Physics. Wiley. More mathematical, with good derivations.',
+    'Radcliffe, D. E., & Šimůnek, J. Soil Physics with HYDRUS. CRC Press. Pairs theory with hands-on numerical exercises.'
+  ]],
+  ['Going further', [
+    'Farthing, M. W., & Ogden, F. L. (2017). Numerical solution of Richards\u2019 equation: A review of advances and challenges. Soil Science Society of America Journal, 81(6), 1257–1269.',
+    'HYDRUS-1D, free software from PC-Progress and the University of California, Riverside. The standard tool for checking 1D unsaturated-flow results like these.'
+  ]]
+];
+
+</script>
+<script>
+(function(){
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const mono = '"IBM Plex Mono", ui-monospace, monospace';
+  const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;'}[c]));
+
+  const PRESETS = {
+    potting:{thr:0.08,  ths:0.70, a:0.08,  n:1.45, Ks:500},
+    coir:   {thr:0.10,  ths:0.90, a:0.15,  n:1.55, Ks:2000},
+    loam:   {thr:0.078, ths:0.43, a:0.036, n:1.56, Ks:25},
+    sandy:  {thr:0.057, ths:0.41, a:0.124, n:2.28, Ks:350}
+  };
+  const DEFAULTS = Object.assign({preset:'potting'}, PRESETS.potting, {
+    L:33, N:40, taper:0, bottom:'seepage',
+    days:5, startPct:55, etMm:4, diurnal:true, waterMm:25, waterDay:3, waterEvery:0, waterHour:8,
+    rainMm:10, rainDay:2, rainHours:6, rootFrac:0.85, h3:-400, h4:-8000, maxDtH:1, tol:0.1
+  });
+  const KEY = 'richards-lab-v2';
+  let P = Object.assign({}, DEFAULTS);
+  const UI = {mode:'lab', chart:'pot', vr:'theta', probeZ:6, t:0, lesson:null};
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (s && s.P) P = Object.assign({}, DEFAULTS, s.P);
+    if (s && s.UI) Object.assign(UI, {chart:s.UI.chart || 'pot', vr:s.UI.vr || 'theta'});
+  } catch (e) {}
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify({P, UI:{chart:UI.chart, vr:UI.vr}})); } catch (e) {} };
+
+  // ---------- info buttons ----------
+  function wireInfo(btn){
+    const key = btn.dataset.info, box = document.getElementById('info-' + key);
+    if (!box) return;
+    box.innerHTML = PARAM_INFO[key] || '';
+    btn.addEventListener('click', () => { const open = box.hidden; box.hidden = !open; btn.setAttribute('aria-expanded', String(open)); });
+  }
+
+  // ---------- controls ----------
+  const syncers = [];
+  let pid = 0;
+  function slider(host, o){
+    const id = 'c' + (++pid), el = document.createElement('div');
+    el.className = 'param';
+    el.innerHTML = `<div class="param-head"><span class="lbl"><label for="${id}">${o.label}</label>` +
+      `<button class="q" type="button" data-info="${o.key}" aria-expanded="false" aria-label="Explain ${esc(o.plain || o.key)}">?</button></span><output for="${id}"></output></div>` +
+      `<div class="info" id="info-${o.key}" hidden></div>` +
+      `<input type="range" id="${id}" min="${o.min}" max="${o.max}" step="${o.step}">`;
+    host.appendChild(el);
+    wireInfo(el.querySelector('.q'));
+    const inp = el.querySelector('input'), out = el.querySelector('output');
+    const toUI = v => o.log ? Math.log10(Math.abs(v)) : v;
+    const fromUI = u => o.log ? (o.neg ? -1 : 1) * Math.pow(10, u) : u;
+    const sync = () => { inp.value = toUI(P[o.key]); out.textContent = o.fmt(P[o.key]); };
+    inp.addEventListener('input', () => {
+      let v = fromUI(parseFloat(inp.value));
+      if (o.round) v = Math.round(v);
+      P[o.key] = v;
+      if (o.after) o.after();
+      if (o.soil) P.preset = 'custom';
+      syncAll(); schedule();
+    });
+    syncers.push(sync); sync();
+  }
+  function segment(host, attr, get, set){
+    const btns = [...host.querySelectorAll(`[data-${attr}]`)];
+    const sync = () => btns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset[attr] === get())));
+    btns.forEach(b => b.addEventListener('click', () => { set(b.dataset[attr]); syncAll(); schedule(); }));
+    syncers.push(sync); sync();
+  }
+  function syncAll(){ syncers.forEach(f => f()); updateNotes(); }
+
+  const f2 = v => v.toFixed(2), f3 = v => v.toFixed(3);
+  const gs = $('#gSoil');
+  slider(gs, {key:'thr', plain:'residual water content', label:'θr, residual water', min:0, max:0.3, step:0.005, fmt:f3, soil:true, after:() => { P.thr = Math.min(P.thr, P.ths - 0.05); }});
+  slider(gs, {key:'ths', plain:'saturated water content', label:'θs, saturated water', min:0.3, max:0.95, step:0.01, fmt:f2, soil:true, after:() => { P.ths = Math.max(P.ths, P.thr + 0.05); }});
+  slider(gs, {key:'a', plain:'alpha', label:'α, air-entry scale', min:0.005, max:0.3, step:0.001, fmt:v => `${v.toFixed(3)} /cm`, soil:true});
+  slider(gs, {key:'n', plain:'n', label:'n, pore-size spread', min:1.05, max:3, step:0.01, fmt:f2, soil:true});
+  slider(gs, {key:'Ks', plain:'saturated conductivity', label:'Ks, saturated conductivity', min:0, max:3.7, step:0.01, log:true, fmt:v => `${v < 10 ? v.toFixed(1) : Math.round(v)} cm/day`, soil:true});
+  segment($('#presetSeg'), 'preset', () => P.preset, v => { Object.assign(P, PRESETS[v]); P.preset = v; });
+
+  const gp = $('#gPot');
+  slider(gp, {key:'L', plain:'soil depth', label:'Soil depth L', min:5, max:60, step:1, fmt:v => `${v} cm`});
+  slider(gp, {key:'taper', plain:'shape', label:'Shape, A(z)', min:0, max:0.8, step:0.05, fmt:v => v === 0 ? 'straight' : `bowl, base ${Math.round((1 - v) * 100)}% wide`});
+  segment($('#bottomSeg'), 'bottom', () => P.bottom, v => { P.bottom = v; });
+
+  const gw = $('#gWater');
+  const dayFmt = v => v > P.days ? `day ${v} (after run)` : `day ${v}`;
+  slider(gw, {key:'days', plain:'length of run', label:'Length of run', min:1, max:14, step:1, fmt:v => `${v} day${v > 1 ? 's' : ''}`});
+  slider(gw, {key:'startPct', plain:'starting water', label:'Starting water', min:0, max:100, step:1, fmt:v => `${v}% of available`});
+  slider(gw, {key:'etMm', plain:'evapotranspiration', label:'Evapotranspiration, ET', min:0, max:10, step:0.1, fmt:v => `${v.toFixed(1)} mm/day`});
+  segment($('#diurnalSeg'), 'diurnal', () => P.diurnal ? 'sun' : 'flat', v => { P.diurnal = v === 'sun'; });
+  const gw2 = $('#gWater2');
+  slider(gw2, {key:'waterMm', plain:'watering', label:'Watering', min:0, max:80, step:1, fmt:v => v ? `${v} mm` : 'none'});
+  slider(gw2, {key:'waterDay', plain:'first watering', label:'First watering', min:1, max:14, step:1, fmt:dayFmt});
+  slider(gw2, {key:'waterEvery', plain:'repeat', label:'Repeat', min:0, max:7, step:1, fmt:v => v ? `every ${v} d` : 'once'});
+  slider(gw2, {key:'waterHour', plain:'watering time', label:'Watering time', min:0, max:23, step:1, fmt:v => `${String(v).padStart(2, '0')}:00`});
+  slider(gw2, {key:'rainMm', plain:'rain', label:'Rain', min:0, max:60, step:1, fmt:v => v ? `${v} mm` : 'none'});
+  slider(gw2, {key:'rainDay', plain:'rain day', label:'Rain on', min:1, max:14, step:1, fmt:dayFmt});
+  slider(gw2, {key:'rainHours', plain:'rain duration', label:'Rain lasts', min:1, max:18, step:1, fmt:v => `${v} h from 06:00`});
+
+  const gr = $('#gRoots');
+  slider(gr, {key:'rootFrac', plain:'root depth', label:'Root depth', min:0.2, max:1, step:0.05, fmt:v => `${Math.round(v * 100)}% of soil`});
+  slider(gr, {key:'h3', plain:'stress onset', label:'h₃, stress starts', min:Math.log10(20), max:Math.log10(3000), step:0.01, log:true, neg:true, fmt:v => `${Math.round(v)} cm`,
+    after:() => { P.h3 = Math.round(P.h3); if (P.h4 >= P.h3) P.h4 = P.h3 - 100; }});
+  slider(gr, {key:'h4', plain:'uptake limit', label:'h₄, uptake stops', min:Math.log10(1000), max:Math.log10(20000), step:0.01, log:true, neg:true, fmt:v => `${Math.round(v)} cm`,
+    after:() => { P.h4 = Math.round(P.h4); if (P.h4 >= P.h3) P.h3 = P.h4 + 100; }});
+
+  const gsv = $('#gSolver');
+  slider(gsv, {key:'N', plain:'number of cells', label:'Cells N', min:10, max:100, step:5, fmt:v => `${v} (Δz ${(P.L / v).toFixed(2)} cm)`});
+  slider(gsv, {key:'maxDtH', plain:'largest time step', label:'Largest time step', min:0.05, max:3, step:0.05, fmt:v => `${v.toFixed(2)} h`});
+  slider(gsv, {key:'tol', plain:'Picard tolerance', label:'Picard tolerance', min:0.01, max:1, step:0.01, fmt:v => `${v.toFixed(2)} cm`});
+  document.querySelectorAll('.q[data-info="bottom"], .q[data-info="diurnal"]').forEach(wireInfo);
+
+  function updateNotes(){
+    const t = {seepage:'Seepage face: no flow while the base is unsaturated (h < 0), and h = 0 once it saturates. Water perches at the bottom, as in a pot with a drain hole.',
+      free:'Unit gradient (∂h/∂z = 0): the base drains at q = K(h), driven by gravity alone. Like soil sitting on deep ground.',
+      sealed:'Zero flux: nothing leaves through the bottom, like a pot with no drain hole.'};
+    $('#bottomNote').textContent = t[P.bottom];
+  }
+  $('#reset').addEventListener('click', () => { P = Object.assign({}, DEFAULTS); UI.t = 0; hideExp(); syncAll(); schedule(); });
+
+  // ---------- solve ----------
+  let R = null, timer = null;
+  function schedule(){ persist(); $('#status').textContent = 'solving…'; clearTimeout(timer); timer = setTimeout(run, 120); }
+  function run(){
+    try { R = solveLab(P); } catch (e) { $('#status').textContent = 'solver error'; return; }
+    const s = R.stats;
+    $('#status').innerHTML = s.gaveUp ? '<span class="warn">did not converge</span>' : `solved in ${Math.round(s.ms)} ms`;
+    $('#tIdx').max = R.hours;
+    UI.t = Math.min(UI.t, R.hours);
+    $('#tIdx').value = UI.t;
+    $('#probe').max = R.N - 1;
+    const kv = (k, v) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`;
+    $('#stats').innerHTML = kv('Time steps', s.steps) + kv('Iterations/step', s.avgIters.toFixed(1)) +
+      kv('Smallest step', s.minDtMin < 1 ? `${(s.minDtMin * 60).toFixed(1)} s` : `${s.minDtMin.toFixed(1)} min`) +
+      kv('Retried steps', s.failures) + kv('Mass balance', `${s.massErrPct.toFixed(3)}%`) + kv('Solve time', `${Math.round(s.ms)} ms`);
+    draw();
+  }
+
+  // ---------- physics helpers on results ----------
+  const logH = h => Math.log10(Math.max(1, -h));
+  const HMAX = 4.3;
+  const tLabel = i => `day ${Math.floor(i / 24) + 1}, ${String(i % 24).padStart(2, '0')}:00`;
+  const sl = v => Math.sign(v) * Math.log10(1 + Math.abs(v));
+  const fmtRate = mmDay => { const a = Math.abs(mmDay); return a >= 100 ? `${Math.round(mmDay)}` : a >= 1 ? mmDay.toFixed(1) : a >= 0.01 ? mmDay.toFixed(2) : '≈0'; };
+  const fmtSci = v => { if (v === 0) return '0'; const e = Math.floor(Math.log10(Math.abs(v))); const m = v / Math.pow(10, e); return Math.abs(e) <= 2 ? v.toPrecision(2) : `${m.toFixed(1)}e${e}`; };
+  function fluxes(t){
+    const hh = R.rec.h[t], f = R.f, N = R.N, dz = R.dz;
+    const q = new Array(N + 1).fill(0), g = new Array(N + 1).fill(null), p = new Array(N + 1).fill(null);
+    for (let k = 1; k < N; k++){
+      const Kk = 0.5 * (f.K(hh[k - 1]) + f.K(hh[k]));
+      p[k] = -Kk * (hh[k] - hh[k - 1]) / dz; g[k] = Kk; q[k] = p[k] + g[k];
+    }
+    if (t > 0){
+      q[0] = (R.rec.cin[t] - R.rec.cin[t - 1]) / 10 * 24 / R.Af[0];
+      q[N] = (R.rec.cout[t] - R.rec.cout[t - 1]) / 10 * 24 / R.Af[N];
+    }
+    return {q, g, p};
+  }
+  function uptake(t){
+    const hh = R.rec.h[t], et = R.rec.et[t];
+    return Array.from(hh, (h, i) => et * R.wr[i] * R.feddes(h) / R.wden);
+  }
+  function eventAt(t){ return R.rec.events.filter(e => e.H === t - 1); }
+  function recentWater(t, hrs){ return R.rec.events.some(e => e.H < t && t - e.H <= hrs); }
+
+  function analyze(t){
+    const f = R.f, hh = R.rec.h[t], N = R.N, dz = R.dz;
+    const Se = Array.from(hh, h => f.Se(h));
+    const out = {Se, front:null, perched:0, dryTo:null, notes:[]};
+    let gmax = 0, gi = -1;
+    for (let i = 0; i < N - 1; i++){ const g = (Se[i] - Se[i + 1]) / dz; if (g > gmax){ gmax = g; gi = i; } }
+    if (gmax > 0.03 && recentWater(t, 48)) out.front = (gi + 1) * dz;
+    // nearly saturated cells at the base: the perched water table plus its capillary fringe
+    let k = N - 1; while (k >= 0 && Se[k] >= 0.95) k--;
+    out.perched = (N - 1 - k) * dz;
+    // a dry surface layer: drier than the soil below, and drier than equilibrium would leave it
+    const sorted = Se.slice().sort((a, b) => a - b), med = sorted[Math.floor(N / 2)];
+    const SeEq0 = f.Se(R.hEq[0]);
+    if (Se[0] < med - 0.12 && Se[0] < SeEq0 - 0.1){ let j = 0; while (j < N && Se[j] < med - 0.05) j++; out.dryTo = j * dz; }
+    return out;
+  }
+
+  function insights(t){
+    const a = analyze(t), f = R.f, hh = R.rec.h[t], out = [];
+    const ev = eventAt(t);
+    ev.forEach(e => out.push(e.kind === 'water' ? `Watering just poured ${e.mm} mm onto the surface. The top boundary now has more water than the soil can take in at once.` : `Rain has started: ${e.mm} mm over ${P.rainHours} h.`));
+    if (R.rec.rain[t] > 0 && !ev.length) out.push(`Rain is falling at ${(R.rec.rain[t] / 24 * 10).toFixed(1)} mm/h. ${R.rec.rain[t] < P.Ks ? 'That is below Ks, so the soil can usually absorb it.' : 'That is above Ks, so the surface may saturate and pond.'}`);
+    if (R.rec.pond[t] > 0.05) out.push(`${R.rec.pond[t].toFixed(1)} mm is ponded on the surface. The top boundary has switched from a flux to a fixed head equal to the pond depth.`);
+    if (a.front != null) out.push(`A wetting front sits near ${a.front.toFixed(1)} cm: wet soil above, drier soil below where K is small, so water piles up behind it.`);
+    if (a.perched > 0){
+      const dr = t > 0 ? R.rec.cout[t] - R.rec.cout[t - 1] : 0;
+      out.push(`The bottom ${a.perched.toFixed(1)} cm is nearly saturated: the perched water table and the capillary fringe above it, where suction is too small to empty the pores.${P.bottom === 'seepage' && dr > 0.01 ? ` Water is dripping out of the drain hole at ${dr.toFixed(1)} mm/h.` : P.bottom === 'sealed' ? ' With a sealed base it can only leave upward.' : ''}`);
+    }
+    if (a.dryTo != null){
+      const mid = Math.floor(R.N / 2), ratio = f.K(hh[mid]) / Math.max(1e-30, f.K(hh[0]));
+      out.push(`The surface is drier than the soil below, down to about ${a.dryTo.toFixed(1)} cm. Its conductivity is ${ratio > 1e3 ? `about 10^${Math.round(Math.log10(ratio))}` : `${ratio.toFixed(0)}×`} lower than mid-pot, so it passes little water up: the self-mulching effect.`);
+    }
+    const fl = fluxes(t), N = R.N;
+    let maxAbs = 0, upCells = 0;
+    for (let k = 1; k < N; k++){ const v = fl.q[k] * 10; maxAbs = Math.max(maxAbs, Math.abs(v)); if (v < -0.05) upCells++; }
+    if (maxAbs < 0.05 && !ev.length && R.rec.pond[t] <= 0.05) out.push('Almost nothing is flowing inside the soil. Total head is nearly uniform, so gravity and the pressure gradient cancel: equilibrium.');
+    else if (upCells > 0) out.push(`Water is moving upward across ${upCells} cell face${upCells > 1 ? 's' : ''}, pulled toward drier soil above (capillary rise).`);
+    const et = R.rec.et[t];
+    if (et > 0){
+      const S = uptake(t); let act = 0; S.forEach((s, i) => act += s * R.V[i]);
+      const r = act / et;
+      if (r < 0.98) out.push(`Roots are getting ${Math.round(r * 100)}% of the water the plants demand. Layers drier than h₃ = ${Math.round(R.h3)} cm are cutting uptake.`);
+    } else if (P.diurnal && P.etMm > 0) out.push('It is night, so evapotranspiration is zero and roots are idle.');
+    out.push(`The pot holds ${R.rec.avail[t].toFixed(0)}% of its available water (${(R.rec.avail[t] / 100 * R.TAWmm).toFixed(0)} of ${R.TAWmm.toFixed(0)} mm).`);
+    return out;
+  }
+
+  // ---------- color ----------
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const RAMP = [[233,216,166],[168,212,176],[64,168,160],[14,110,140],[18,52,96]];
+  function ramp(t){
+    t = clamp(t, 0, 1) * (RAMP.length - 1);
+    const i = Math.min(RAMP.length - 2, Math.floor(t)), u = t - i, a = RAMP[i], b = RAMP[i + 1];
+    return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
+  }
+  const rgb = c => `rgb(${c.map(Math.round).join(',')})`;
+  $('#ramp').style.background = `linear-gradient(90deg, ${RAMP.map(c => rgb(c)).join(',')})`;
+
+  // ---------- generic SVG chart ----------
+  const svg = $('#svgPlot');
+  function frame(){ const W = svg.clientWidth || 320, H = svg.clientHeight || 220; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('font-family', mono); svg.setAttribute('font-size', '11'); svg.setAttribute('fill', 'var(--muted)'); return {W, H}; }
+  function lineChart(o){
+    const {W, H} = frame();
+    const Lp = o.Lp || 46, Rp = 12, T = o.T || 16, B = o.xLabel ? 34 : 22, pw = W - Lp - Rp, ph = H - T - B;
+    const x = v => Lp + (v - o.x0) / (o.x1 - o.x0) * pw;
+    const y = v => T + (o.yInvert ? (v - o.y0) / (o.y1 - o.y0) : 1 - (v - o.y0) / (o.y1 - o.y0)) * ph;
+    let s = '';
+    (o.bands || []).forEach(b => { const a = x(Math.max(o.x0, b.x0)), c = x(Math.min(o.x1, b.x1)); if (c > a) s += `<rect x="${a}" y="${T}" width="${c - a}" height="${ph}" fill="${b.c}" opacity=".12"/><text x="${(a + c) / 2}" y="${T + ph - 6}" text-anchor="middle" fill="${b.c}">${b.label || ''}</text>`; });
+    o.yTicks.forEach(t => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(t.v)}" y2="${y(t.v)}" stroke="var(--grid)"/><text x="${Lp - 6}" y="${y(t.v) + 4}" text-anchor="end">${t.l}</text>`; });
+    o.xTicks.forEach(t => { s += `<line x1="${x(t.v)}" x2="${x(t.v)}" y1="${T}" y2="${T + ph}" stroke="var(--grid)"/><text x="${x(t.v)}" y="${T + ph + 14}" text-anchor="middle">${t.l}</text>`; });
+    if (o.xLabel) s += `<text x="${Lp + pw / 2}" y="${H - 3}" text-anchor="middle">${o.xLabel}</text>`;
+    if (o.yLabel) s += `<text x="10" y="${T + ph / 2}" text-anchor="middle" transform="rotate(-90 10 ${T + ph / 2})">${o.yLabel}</text>`;
+    (o.hlines || []).forEach(v => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(v.v)}" y2="${y(v.v)}" stroke="${v.c}" stroke-width="1.3" ${v.dash ? `stroke-dasharray="${v.dash}"` : ''}/>` + (v.label ? `<text x="${W - Rp - 2}" y="${y(v.v) - 4}" text-anchor="end" fill="${v.c}">${v.label}</text>` : ''); });
+    (o.vlines || []).forEach((v, i) => { if (v.v < o.x0 || v.v > o.x1) return; s += `<line x1="${x(v.v)}" x2="${x(v.v)}" y1="${T}" y2="${T + ph}" stroke="${v.c}" stroke-width="1.4" ${v.dash ? `stroke-dasharray="${v.dash}"` : ''}/>` + (v.label ? (x(v.v) > W - Rp - 28 ? `<text x="${x(v.v) - 3}" y="${T + 10 + 12 * (i % 3)}" text-anchor="end" fill="${v.c}">${v.label}</text>` : `<text x="${x(v.v) + 3}" y="${T + 10 + 12 * (i % 3)}" fill="${v.c}">${v.label}</text>`) : ''); });
+    (o.series || []).forEach(se => {
+      const pts = se.pts.filter(p => isFinite(p[0]) && isFinite(p[1])).map(p => `${x(clamp(p[0], Math.min(o.x0, o.x1), Math.max(o.x0, o.x1))).toFixed(1)},${y(clamp(p[1], Math.min(o.y0, o.y1), Math.max(o.y0, o.y1))).toFixed(1)}`).join(' ');
+      s += `<polyline points="${pts}" fill="none" stroke="${se.c}" stroke-width="${se.w || 2}" ${se.dash ? `stroke-dasharray="${se.dash}"` : ''} stroke-linejoin="round"/>`;
+    });
+    (o.dots || []).forEach(d => d.pts.forEach(p => { if (isFinite(p[0]) && isFinite(p[1])) s += `<circle cx="${x(clamp(p[0], o.x0, o.x1))}" cy="${y(clamp(p[1], Math.min(o.y0, o.y1), Math.max(o.y0, o.y1)))}" r="${d.r || 3}" fill="${d.c}" stroke="var(--surface)" stroke-width="1"/>`; }));
+    (o.events || []).forEach(e => { const ex = x(e.x); s += `<path d="M${ex - 5} ${T - 10}h10l-5 8z" fill="${e.c}"/>`; });
+    (o.marks || []).forEach(m => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(m.y)}" y2="${y(m.y)}" stroke="var(--ink)" stroke-dasharray="2 3" opacity=".6"/><text x="${W - Rp - 2}" y="${y(m.y) - 4}" text-anchor="end" fill="var(--ink)">${m.label}</text>`; });
+    if (o.cursor != null){ const cx = x(o.cursor); s += `<line x1="${cx}" x2="${cx}" y1="${T}" y2="${T + ph}" stroke="var(--ink)" stroke-width="1.5"/>`; }
+    svg.setAttribute('aria-label', o.aria || 'Chart');
+    svg.innerHTML = s;
+  }
+  const leg = (c, l, dash) => `<span><i class="${dash ? 'dash' : ''}" style="background:${c};color:${c}"></i>${l}</span>`;
+  const dayTicks = () => { const d = Math.round(R.hours / 24), st = d > 8 ? 2 : 1, a = []; for (let k = 0; k <= d; k += st) a.push({v:k * 24, l:k === 0 ? '0' : `d${k}`}); return a; };
+  const evMarks = () => R.rec.events.map(e => ({x:e.H, c:e.kind === 'water' ? 'var(--accent)' : 'var(--muted)'}));
+  const niceStep = x => { const p = Math.pow(10, Math.floor(Math.log10(Math.max(x, 1e-9)))), m = x / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; };
+  const niceTicks = max => { const st = max > 0.6 ? 0.2 : 0.1, a = []; for (let v = 0; v <= max + 1e-9; v += st) a.push({v, l:v.toFixed(1)}); return a; };
+  const depthTicks = () => [0, 0.25, 0.5, 0.75, 1].map(k => ({v:k * R.L, l:`${Math.round(k * R.L)} cm`}));
+
+  // ---------- Pot view ----------
+  function drawPot(){
+    const {W, H} = frame();
+    const t = UI.t, f = R.f, hh = R.rec.h[t], N = R.N, L = R.L, an = analyze(t), fl = fluxes(t);
+    const T = 44, B = 30, ph = H - T - B, Lp = 48;
+    const potW = Math.min((W - Lp) * 0.48, ph * 1.1), cx = Lp + 8 + potW / 2;
+    const y = z => T + z / L * ph, half = z => potW / 2 * (1 - P.taper * Math.pow(z / L, 2));
+    let s = '';
+    // cells
+    for (let i = 0; i < N; i++){
+      const z0 = i * R.dz, z1 = (i + 1) * R.dz;
+      s += `<path d="M${cx - half(z0)} ${y(z0)}L${cx + half(z0)} ${y(z0)}L${cx + half(z1)} ${y(z1) + 0.6}L${cx - half(z1)} ${y(z1) + 0.6}Z" fill="${rgb(ramp(f.Se(hh[i])))}"/>`;
+    }
+    // grid ticks on the left wall
+    if (N <= 60) for (let k = 0; k <= N; k++){ const z = k * R.dz, xl = cx - half(z); s += `<line x1="${xl - 6}" x2="${xl - 1}" y1="${y(z)}" y2="${y(z)}" stroke="var(--muted)" stroke-width=".8" opacity=".6"/>`; }
+    // roots
+    const rz = P.rootFrac * L;
+    for (let r = 0; r < 5; r++){
+      const x0 = cx + (r - 2) * potW * 0.12, w = potW * 0.05;
+      let d = `M${x0} ${y(0)}`;
+      for (let k = 1; k <= 6; k++){ const z = rz * k / 6; d += ` Q${x0 + (k % 2 ? w : -w)} ${y(z - rz / 12)} ${x0 + (r - 2) * 2 * k / 6} ${y(z)}`; }
+      s += `<path d="${d}" fill="none" stroke="var(--root)" stroke-width="1.3" opacity=".55"/>`;
+    }
+    // pond
+    const pond = R.rec.pond[t];
+    if (pond > 0.05){ const pH = clamp(pond * 1.2, 3, 22); s += `<rect x="${cx - half(0)}" y="${y(0) - pH}" width="${2 * half(0)}" height="${pH}" fill="var(--water)" opacity=".55"/><text x="${cx}" y="${y(0) - pH - 4}" text-anchor="middle" fill="var(--water)">ponded ${pond.toFixed(1)} mm</text>`; }
+    // walls
+    const wallPts = side => { let d = ''; for (let k = 0; k <= 20; k++){ const z = L * k / 20; d += `${k ? 'L' : 'M'}${cx + side * (half(z) + 2)} ${y(z)}`; } return d; };
+    s += `<path d="M${cx - half(0) - 2} ${y(0) - 10}L${cx - half(0) - 2} ${y(0)}${wallPts(-1).replace('M', 'L')}" fill="none" stroke="var(--pot)" stroke-width="4" stroke-linejoin="round"/>`;
+    s += `<path d="M${cx + half(0) + 2} ${y(0) - 10}L${cx + half(0) + 2} ${y(0)}${wallPts(1).replace('M', 'L')}" fill="none" stroke="var(--pot)" stroke-width="4" stroke-linejoin="round"/>`;
+    const bl = cx - half(L) - 2, br = cx + half(L) + 2, by = y(L) + 2;
+    if (P.bottom === 'sealed') s += `<line x1="${bl}" x2="${br}" y1="${by}" y2="${by}" stroke="var(--pot)" stroke-width="4"/>`;
+    else if (P.bottom === 'seepage') s += `<line x1="${bl}" x2="${cx - 7}" y1="${by}" y2="${by}" stroke="var(--pot)" stroke-width="4"/><line x1="${cx + 7}" x2="${br}" y1="${by}" y2="${by}" stroke="var(--pot)" stroke-width="4"/><text x="${cx}" y="${by + 22}" text-anchor="middle" id="drainLbl">drain hole</text>`;
+    else s += `<line x1="${bl}" x2="${br}" y1="${by}" y2="${by}" stroke="var(--pot)" stroke-width="2" stroke-dasharray="4 4"/><text x="${cx}" y="${by + 22}" text-anchor="middle">open to ground below</text>`;
+    // drip
+    const dr = t > 0 ? R.rec.cout[t] - R.rec.cout[t - 1] : 0;
+    if (dr > 0.01){
+      for (let k = 0; k < 3; k++) s += `<path d="M${cx + (k - 1) * 6} ${by + 3 + k * 2}q-2.5 4 0 6.5q2.5-2.5 0-6.5z" fill="var(--water)"/>`;
+      s = s.replace('id="drainLbl">drain hole', `id="drainLbl" fill="var(--water)">draining ${dr.toFixed(1)} mm/h`).replace('>open to ground below<', `>draining ${dr.toFixed(1)} mm/h<`);
+    }
+    // rain
+    if (R.rec.rain[t] > 0){ for (let k = 0; k < 10; k++){ const rx = cx - half(0) + (k + 0.5) * 2 * half(0) / 10, ry = 6 + (k % 3) * 8; s += `<line x1="${rx}" x2="${rx - 3}" y1="${ry}" y2="${ry + 9}" stroke="var(--water)" stroke-width="1.5"/>`; } s += `<text x="${cx - half(0)}" y="${T - 16}" fill="var(--water)">rain ${(R.rec.rain[t] / 24 * 10).toFixed(1)} mm/h</text>`; }
+    eventAt(t).filter(e => e.kind === 'water').forEach(e => { s += `<text x="${cx - half(0)}" y="${T - 16}" fill="var(--accent)">watering ${e.mm} mm</text>`; });
+    // sun / ET
+    const et = R.rec.et[t], sx = W - 26, sy = 18;
+    if (et > 0){ s += `<circle cx="${sx}" cy="${sy}" r="6" fill="var(--s-in)"/>`; for (let k = 0; k < 8; k++){ const a = k * Math.PI / 4; s += `<line x1="${sx + Math.cos(a) * 9}" y1="${sy + Math.sin(a) * 9}" x2="${sx + Math.cos(a) * 12}" y2="${sy + Math.sin(a) * 12}" stroke="var(--s-in)" stroke-width="1.5"/>`; } s += `<text x="${sx - 16}" y="${sy + 4}" text-anchor="end">ET ${(et / 24 * 10).toFixed(2)} mm/h</text>`; }
+    else if (P.diurnal && P.etMm > 0) s += `<text x="${W - 8}" y="${sy + 4}" text-anchor="end">night, ET = 0</text>`;
+    // flux arrows (log length) at a subset of faces
+    const faces = [0]; const nf = Math.min(9, N - 1); for (let j = 1; j <= nf; j++) faces.push(Math.round(j * N / (nf + 1))); faces.push(N);
+    const ax = cx + potW * 0.24;
+    faces.forEach(k => {
+      const q = fl.q[k] * 10; if (Math.abs(q) < 0.05) return;
+      const len = clamp(5 + 7 * Math.log10(1 + Math.abs(q)), 5, 34), z = y(k * R.dz), dir = q > 0 ? 1 : -1;
+      const y0 = z - dir * len / 2, y1 = z + dir * len / 2;
+      s += `<line x1="${ax}" x2="${ax}" y1="${y0}" y2="${y1}" stroke="var(--surface)" stroke-width="5" opacity=".8"/><line x1="${ax}" x2="${ax}" y1="${y0}" y2="${y1 - dir * 4}" stroke="var(--ink)" stroke-width="2"/><path d="M${ax - 4} ${y1 - dir * 6}L${ax + 4} ${y1 - dir * 6}L${ax} ${y1}Z" fill="var(--ink)"/>`;
+    });
+    // depth axis
+    [0, 0.5, 1].forEach(k => { s += `<text x="${Lp - 4}" y="${y(k * L) + 4}" text-anchor="end">${Math.round(k * L)} cm</text>`; });
+    // callouts on the right
+    const callX = cx + potW / 2 + 16, calls = [];
+    if (an.front != null) calls.push({z:an.front, l:'wetting front'});
+    if (an.perched > 0) calls.push({z:L - an.perched / 2, l:'saturated layer'});
+    if (an.dryTo != null) calls.push({z:an.dryTo / 2, l:'dry surface layer'});
+    if (P.rootFrac < 0.98) calls.push({z:P.rootFrac * L, l:'root zone ends'});
+    calls.sort((a, b) => a.z - b.z);
+    let lastY = -99;
+    calls.forEach(c => {
+      const zy = y(c.z), ty = Math.max(zy, lastY + 14); lastY = ty;
+      s += `<line x1="${cx + half(c.z) + 4}" x2="${callX - 2}" y1="${zy}" y2="${ty}" stroke="var(--ink)" stroke-width="1" opacity=".6"/><text x="${callX}" y="${ty + 4}" fill="var(--ink)">${c.l}</text>`;
+    });
+    svg.setAttribute('aria-label', 'Cross-section of the pot showing water in each cell and flow arrows');
+    svg.innerHTML = s;
+    $('#legend').innerHTML = '<span>Bands: grid cells colored by effective saturation. Arrows: flux across cell faces (log length).</span>';
+  }
+
+  // ---------- Depth x time ----------
+  function drawHeat(){
+    const cv = $('#heat'), dpr = Math.min(2, window.devicePixelRatio || 1), W = cv.clientWidth, H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const Lp = 48, Rp = 8, T = 26, B = 30, pw = W - Lp - Rp, ph = H - T - B, cols = R.rec.h.length, N = R.N, f = R.f;
+    const off = document.createElement('canvas'); off.width = cols; off.height = N;
+    const og = off.getContext('2d'), img = og.createImageData(cols, N);
+    const val = UI.vr === 'h' ? (h => 1 - logH(h) / HMAX) : (h => f.Se(h));
+    for (let t = 0; t < cols; t++){ const hh = R.rec.h[t]; for (let i = 0; i < N; i++){ const c = ramp(val(hh[i])), o = (i * cols + t) * 4; img.data[o] = c[0]; img.data[o + 1] = c[1]; img.data[o + 2] = c[2]; img.data[o + 3] = 255; } }
+    og.putImageData(img, 0, 0);
+    g.imageSmoothingEnabled = true; g.drawImage(off, Lp, T, pw, ph);
+    g.font = `11px ${mono}`; g.fillStyle = css('--muted');
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    [0, 0.5, 1].forEach(fz => g.fillText(`${Math.round(fz * R.L)} cm`, Lp - 6, T + fz * ph));
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    dayTicks().forEach(tk => g.fillText(tk.l, Lp + tk.v / R.hours * pw, T + ph + 4));
+    g.fillText('time →', Lp + pw / 2, T + ph + 17);
+    R.rec.events.forEach(e => {
+      const x = Lp + e.H / R.hours * pw; g.fillStyle = e.kind === 'water' ? css('--accent') : css('--muted');
+      g.beginPath(); g.moveTo(x - 5, T - 12); g.lineTo(x + 5, T - 12); g.lineTo(x, T - 3); g.closePath(); g.fill();
+      g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillText(`${e.kind === 'water' ? 'water' : 'rain'} ${e.mm}`, Math.min(x + 6, W - 64), T - 5);
+    });
+    const x = Lp + UI.t / R.hours * pw;
+    g.strokeStyle = css('--ink'); g.lineWidth = 1.5; g.beginPath(); g.moveTo(x, T); g.lineTo(x, T + ph); g.stroke();
+    cv._geom = {Lp, pw};
+    $('#scaleLo').textContent = UI.vr === 'h' ? 'dry, −h ≥ 2e4 cm' : 'dry (Se 0)';
+    $('#scaleHi').textContent = UI.vr === 'h' ? 'wet, h ≥ −1 cm' : 'saturated (Se 1)';
+    $('#legend').innerHTML = '<span>▼ events (watering blue, rain grey). Tap or drag to pick a time.</span>';
+  }
+  function pickTime(e){
+    const cv = $('#heat'), r = cv.getBoundingClientRect(), gm = cv._geom; if (!gm || !R) return;
+    UI.t = clamp(Math.round((e.clientX - r.left - gm.Lp) / gm.pw * R.hours), 0, R.hours); $('#tIdx').value = UI.t; draw();
+  }
+  $('#heat').addEventListener('pointerdown', pickTime);
+  $('#heat').addEventListener('pointermove', e => { if (e.buttons) pickTime(e); });
+
+  // ---------- Profile ----------
+  function drawProfile(){
+    const f = R.f, hh = R.rec.h[UI.t], zc = R.zc, an = analyze(UI.t), vr = UI.vr;
+    const marks = an.front != null ? [{y:an.front, label:'wetting front'}] : [];
+    let o;
+    if (vr === 'theta' || vr === 'Se'){
+      const val = vr === 'theta' ? (h => f.theta(h)) : (h => f.Se(h)), xmax = vr === 'theta' ? Math.ceil(P.ths * 10) / 10 : 1;
+      o = {x0:0, x1:xmax, y0:0, y1:R.L, yInvert:true, xLabel:vr === 'theta' ? 'water content θ (volume fraction)' : 'effective saturation Se', xTicks:niceTicks(xmax), yTicks:depthTicks(),
+        vlines:vr === 'theta' ? [{v:R.thetaWp, c:'var(--s-wp)', dash:'4 4', label:'wilting'}, {v:P.ths, c:'var(--muted)', dash:'2 3', label:'θs'}] : [],
+        series:[{pts:R.hEq.map((h, i) => [val(h), zc[i]]), c:'var(--s-ref)', dash:'2 4', w:1.5}, {pts:Array.from(hh, (h, i) => [val(h), zc[i]]), c:'var(--accent)', w:2.5}], marks};
+      $('#legend').innerHTML = leg('var(--accent)', tLabel(UI.t)) + leg('var(--s-ref)', 'full after draining', true);
+    } else if (vr === 'h'){
+      o = {x0:0, x1:HMAX, y0:0, y1:R.L, yInvert:true, xLabel:'suction −h (cm, log)  ← wetter · drier →', xTicks:[0, 1, 2, 3, 4].map(k => ({v:k, l:k === 0 ? '≤1' : `1e${k}`})), yTicks:depthTicks(),
+        vlines:[{v:logH(R.h3), c:'var(--s-in)', dash:'4 4', label:'h₃'}, {v:logH(R.h4), c:'var(--s-wp)', dash:'4 4', label:'h₄'}],
+        series:[{pts:R.hEq.map((h, i) => [logH(h), zc[i]]), c:'var(--s-ref)', dash:'2 4', w:1.5}, {pts:Array.from(hh, (h, i) => [logH(h), zc[i]]), c:'var(--accent)', w:2.5}], marks};
+      $('#legend').innerHTML = leg('var(--accent)', tLabel(UI.t)) + leg('var(--s-ref)', 'full after draining', true) + leg('var(--s-in)', 'h₃ stress starts', true) + leg('var(--s-wp)', 'h₄ uptake stops', true);
+    } else {
+      const k1 = Math.ceil(Math.log10(P.Ks)), k0 = k1 - 10;
+      o = {x0:k0, x1:k1, y0:0, y1:R.L, yInvert:true, xLabel:'conductivity K (cm/day, log)', xTicks:[k0, k0 + 2, k0 + 4, k0 + 6, k0 + 8, k1].map(v => ({v, l:`1e${v}`})), yTicks:depthTicks(),
+        vlines:[{v:Math.log10(P.Ks), c:'var(--muted)', dash:'2 3', label:'Ks'}],
+        series:[{pts:Array.from(hh, (h, i) => [Math.log10(Math.max(1e-14, f.K(h))), zc[i]]), c:'var(--accent)', w:2.5}], marks};
+      $('#legend').innerHTML = leg('var(--accent)', `K at ${tLabel(UI.t)}`) + '<span>Each step left is 10× slower flow.</span>';
+    }
+    o.Lp = 52; o.aria = 'Profile over depth'; lineChart(o);
+  }
+
+  // ---------- Flux ----------
+  function drawFlux(){
+    const fl = fluxes(UI.t), N = R.N, dz = R.dz;
+    const pts = k => k * dz, tot = [], gr = [], pr = [];
+    for (let k = 1; k < N; k++){ tot.push([sl(fl.q[k] * 10), pts(k)]); gr.push([sl(fl.g[k] * 10), pts(k)]); pr.push([sl(fl.p[k] * 10), pts(k)]); }
+    let m = 1; tot.concat(gr, pr).forEach(p => m = Math.max(m, Math.abs(p[0]))); m = Math.ceil(m);
+    const ticks = []; for (let e = -m; e <= m; e++) ticks.push({v:e, l:e === 0 ? '0' : `${e < 0 ? '−' : ''}${Math.pow(10, Math.abs(e)) >= 1000 ? `1e${Math.abs(e)}` : Math.pow(10, Math.abs(e))}`});
+    const dots = [];
+    if (UI.t > 0){ dots.push({pts:[[sl(fl.q[0] * 10), 0]], c:'var(--s-in)', r:4.5}); dots.push({pts:[[sl(fl.q[N] * 10), R.L]], c:'var(--s-out)', r:4.5}); }
+    lineChart({x0:-m, x1:m, y0:0, y1:R.L, yInvert:true, Lp:52, xLabel:'← up   flux (mm/day, log)   down →', xTicks:ticks.filter((_, i) => m <= 4 || i % 2 === 0), yTicks:depthTicks(),
+      vlines:[{v:0, c:'var(--ink)'}],
+      series:[{pts:gr, c:'var(--s-grav)', dash:'5 4', w:1.6}, {pts:pr, c:'var(--s-pres)', w:1.8}, {pts:tot, c:'var(--accent)', w:2.6}], dots, aria:'Darcy flux by depth'});
+    $('#legend').innerHTML = leg('var(--accent)', 'total q') + leg('var(--s-grav)', 'gravity, +K', true) + leg('var(--s-pres)', 'pressure, −K ∂h/∂z') +
+      (UI.t > 0 ? '<span>● surface in / base out (past hour)</span>' : '');
+  }
+
+  // ---------- Layer budget ----------
+  function drawBudget(){
+    const {W, H} = frame();
+    const t = UI.t, f = R.f, N = R.N, dz = R.dz, i = clamp(Math.round(UI.probeZ / dz - 0.5), 0, N - 1);
+    const hh = R.rec.h[t], fl = fluxes(t), S = uptake(t);
+    const qin = fl.q[i] * R.Af[i] * 10, qout = fl.q[i + 1] * R.Af[i + 1] * 10, up = S[i] * R.V[i] * 10, net = qin - qout - up;
+    const dthdt = net / 10 / R.V[i];
+    let s = '';
+    // mini column
+    const colX = 14, colW = 16, cT = 14, cH = H - 28;
+    for (let k = 0; k < N; k++) s += `<rect x="${colX}" y="${cT + k * cH / N}" width="${colW}" height="${cH / N + 0.6}" fill="${rgb(ramp(f.Se(hh[k])))}"/>`;
+    s += `<rect x="${colX - 2}" y="${cT + i * cH / N - 1}" width="${colW + 4}" height="${Math.max(3, cH / N) + 2}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+    s += `<text x="${colX + colW / 2}" y="${H - 4}" text-anchor="middle">pot</text>`;
+    // main box
+    const bx = 52, bw = Math.min(150, W * 0.34), by = H * 0.3, bh = H * 0.24;
+    s += `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6" fill="${rgb(ramp(f.Se(hh[i])))}" stroke="var(--ink)" stroke-width="1.5"/>`;
+    s += `<text x="${bx + bw / 2}" y="${by + bh / 2 - 3}" text-anchor="middle" fill="#fff" stroke="rgba(0,0,0,.45)" stroke-width="3" paint-order="stroke" font-size="12">θ = ${f.theta(hh[i]).toFixed(3)}</text>`;
+    s += `<text x="${bx + bw / 2}" y="${by + bh / 2 + 13}" text-anchor="middle" fill="#fff" stroke="rgba(0,0,0,.45)" stroke-width="3" paint-order="stroke">h = ${hh[i] > -10 ? hh[i].toFixed(1) : Math.round(hh[i])} cm</text>`;
+    s += `<text x="${bx + bw + 8}" y="${by + 12}" font-size="10.5">cell ${i + 1} of ${N}</text><text x="${bx + bw + 8}" y="${by + 25}" font-size="10.5">${(i * dz).toFixed(1)}–${((i + 1) * dz).toFixed(1)} cm</text>`;
+    const arrow = (x, y0, y1, c) => { const d = y1 > y0 ? 1 : -1; return `<line x1="${x}" x2="${x}" y1="${y0}" y2="${y1 - d * 6}" stroke="${c}" stroke-width="3"/><path d="M${x - 6} ${y1 - d * 8}L${x + 6} ${y1 - d * 8}L${x} ${y1}Z" fill="${c}"/>`; };
+    const ax = bx + 22;
+    if (Math.abs(qin) > 0.005) s += qin > 0 ? arrow(ax, by - 44, by - 2, 'var(--s-in)') : arrow(ax, by - 2, by - 44, 'var(--s-in)');
+    s += `<text x="${ax + 12}" y="${by - 26}" fill="var(--s-in)">top face ${fmtRate(qin)} mm/day ${qin > 0.005 ? 'in' : qin < -0.005 ? 'out, upward' : ''}</text>`;
+    if (Math.abs(qout) > 0.005) s += qout > 0 ? arrow(ax, by + bh + 2, by + bh + 44, 'var(--s-out)') : arrow(ax, by + bh + 44, by + bh + 2, 'var(--s-out)');
+    s += `<text x="${ax + 12}" y="${by + bh + 28}" fill="var(--s-out)">bottom face ${fmtRate(qout)} mm/day ${qout > 0.005 ? 'out' : qout < -0.005 ? 'in, from below' : ''}</text>`;
+    if (up > 0.005){ const ry = by + bh - 10; s += `<line x1="${bx + bw + 2}" x2="${bx + bw + 30}" y1="${ry}" y2="${ry}" stroke="var(--s-up)" stroke-width="3"/><path d="M${bx + bw + 28} ${ry - 6}L${bx + bw + 36} ${ry}L${bx + bw + 28} ${ry + 6}Z" fill="var(--s-up)"/>`; }
+    s += `<text x="${bx + bw + 40}" y="${by + bh - 6}" fill="var(--s-up)">roots ${fmtRate(up)}</text>`;
+    // ledger
+    const ly = H - 8;
+    s += `<text x="${bx}" y="${ly - 32}" font-size="11">in − out − roots = net</text><text x="${bx}" y="${ly - 16}" fill="var(--ink)" font-size="12">${fmtRate(qin)} − ${fmtRate(qout)} − ${fmtRate(up)} = ${fmtRate(net)} mm/day</text>`;
+    s += `<text x="${bx}" y="${ly}" fill="var(--ink)" font-size="12">∂θ/∂t = ${fmtSci(dthdt)} per day → θ ${Math.abs(net) < 0.005 ? 'steady' : net > 0 ? 'rising' : 'falling'}</text>`;
+    svg.setAttribute('aria-label', 'Water budget of one cell'); svg.innerHTML = s;
+    $('#probeLbl').textContent = `${((i + 0.5) * dz).toFixed(1)} cm`;
+    $('#legend').innerHTML = '<span>Fluxes in mm/day per unit of pot area. Surface and base faces are averaged over the past hour.</span>';
+  }
+
+  // ---------- Water level ----------
+  function drawLevel(){
+    const ymax = Math.max(100, Math.ceil(Math.max(...R.rec.avail) / 20) * 20);
+    lineChart({x0:0, x1:R.hours, y0:0, y1:ymax, xTicks:dayTicks(), yTicks:[0, 25, 50, 75, 100].concat(ymax > 100 ? [ymax] : []).map(v => ({v, l:`${v}%`})),
+      hlines:[{v:100, c:'var(--s-ref)', dash:'4 4', label:'full after draining'}, {v:0.0001, c:'var(--s-wp)', dash:'4 4', label:'wilting point'}],
+      series:[{pts:R.rec.avail.map((v, i) => [i, v]), c:'var(--accent)', w:2.5}], events:evMarks(), cursor:UI.t, T:18, aria:'Available water over time'});
+    $('#legend').innerHTML = leg('var(--accent)', `available water (100% = ${R.TAWmm.toFixed(0)} mm)`) + '<span>▼ watering blue, rain grey</span>';
+  }
+  // ---------- Totals ----------
+  function drawTotals(){
+    const r = R.rec, store = r.cin.map((v, i) => v - r.cout[i] - r.cup[i]);
+    const top = Math.max(10, ...r.cin, ...r.cout, ...r.cup, ...r.cdem), lo = Math.min(0, ...store);
+    const step = niceStep((top - lo) / 4), ymin = Math.floor(lo / step) * step, ymax = Math.ceil(top / step) * step;
+    const ticks = []; for (let v = ymin; v <= ymax + 1e-9; v += step) ticks.push({v, l:`${Math.round(v)} mm`});
+    lineChart({x0:0, x1:R.hours, y0:ymin, y1:ymax, xTicks:dayTicks(), yTicks:ticks, T:18,
+      series:[{pts:r.cdem.map((v, i) => [i, v]), c:'var(--s-dem)', dash:'5 4', w:1.5}, {pts:store.map((v, i) => [i, v]), c:'var(--ink)', dash:'1 3', w:1.6},
+              {pts:r.cin.map((v, i) => [i, v]), c:'var(--s-in)'}, {pts:r.cout.map((v, i) => [i, v]), c:'var(--s-out)'}, {pts:r.cup.map((v, i) => [i, v]), c:'var(--s-up)'}],
+      events:evMarks(), cursor:UI.t, aria:'Cumulative water over time'});
+    $('#legend').innerHTML = leg('var(--s-in)', 'soaked in') + leg('var(--s-out)', 'drained') + leg('var(--s-up)', 'taken up') + leg('var(--s-dem)', 'ET demand', true) + leg('var(--ink)', 'storage change = in − out − up', true);
+  }
+  // ---------- Soil curves ----------
+  function drawCurves(){
+    const f = R.f, hh = R.rec.h[UI.t], pts = [];
+    for (let k = 0; k <= 120; k++){ const lh = k / 120 * 5; pts.push([lh, -Math.pow(10, lh)]); }
+    const vl = [{v:Math.log10(1 / P.a), c:'var(--accent)', dash:'2 3', label:'1/α'}, {v:logH(R.h3), c:'var(--s-in)', dash:'4 4', label:'h₃'}, {v:logH(R.h4), c:'var(--s-wp)', dash:'4 4', label:'h₄'}];
+    const band = [{x0:0, x1:Math.log10(R.L), c:'var(--water)', label:'pot range'}];
+    const cells = Array.from(hh, h => h);
+    if (UI.vr === 'K'){
+      const k1 = Math.ceil(Math.log10(P.Ks)), k0 = k1 - 12;
+      lineChart({x0:0, x1:5, y0:k0, y1:k1, Lp:50, xLabel:'suction −h (cm, log)', xTicks:[0, 1, 2, 3, 4, 5].map(v => ({v, l:v === 0 ? '1' : `1e${v}`})), yTicks:[k0, k0 + 3, k0 + 6, k0 + 9, k1].map(v => ({v, l:`1e${v}`})),
+        vlines:vl, bands:band, series:[{pts:pts.map(p => [p[0], Math.log10(Math.max(1e-16, f.K(p[1])))]), c:'var(--ink)', w:2}],
+        dots:[{pts:cells.map(h => [logH(h), Math.log10(Math.max(1e-16, f.K(h)))]), c:'var(--accent)'}], aria:'Conductivity curve'});
+      $('#legend').innerHTML = leg('var(--ink)', 'K(h), cm/day') + '<span>● cells now</span>' + leg('var(--accent)', '1/α air entry', true) + '<span>shaded: suctions a drained pot spans (0 to L)</span>';
+    } else {
+      const se = UI.vr === 'Se', yv = se ? (h => f.Se(h)) : (h => f.theta(h)), ymax = se ? 1 : Math.ceil(P.ths * 10) / 10;
+      lineChart({x0:0, x1:5, y0:0, y1:ymax, Lp:46, xLabel:'suction −h (cm, log)', xTicks:[0, 1, 2, 3, 4, 5].map(v => ({v, l:v === 0 ? '1' : `1e${v}`})), yTicks:niceTicks(ymax),
+        vlines:vl, bands:band, series:[{pts:pts.map(p => [p[0], yv(p[1])]), c:'var(--ink)', w:2}],
+        dots:[{pts:cells.map(h => [logH(h), yv(h)]), c:'var(--accent)'}], aria:'Retention curve'});
+      $('#legend').innerHTML = leg('var(--ink)', se ? 'Se(h)' : 'θ(h), retention') + '<span>● cells now</span>' + leg('var(--accent)', '1/α air entry', true) + '<span>shaded: suctions a drained pot spans (0 to L)</span>';
+    }
+  }
+
+  // ---------- dispatcher ----------
+  const VAR_CHARTS = {heat:['theta', 'h'], profile:['theta', 'Se', 'h', 'K'], curves:['theta', 'Se', 'K']};
+  function draw(){
+    if (!R) return;
+    const c = UI.chart, vars = VAR_CHARTS[c];
+    if (vars && !vars.includes(UI.vr)) UI.vr = vars[0];
+    document.querySelectorAll('#varSeg [data-v]').forEach(b => { b.hidden = !vars || !vars.includes(b.dataset.v); b.setAttribute('aria-pressed', String(b.dataset.v === UI.vr)); });
+    $('#varSeg').style.display = vars ? 'inline-flex' : 'none';
+    $('#probeWrap').style.display = c === 'budget' ? 'flex' : 'none';
+    $('#varRow').style.display = vars || c === 'budget' ? 'flex' : 'none';
+    document.querySelectorAll('#chartTabs [data-chart]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.chart === c)));
+    $('#heat').style.display = c === 'heat' ? 'block' : 'none';
+    svg.style.display = c === 'heat' ? 'none' : 'block';
+    $('#scalebar').style.display = (c === 'heat' || c === 'pot') ? 'flex' : 'none';
+    if (c === 'pot'){ $('#scaleLo').textContent = 'dry (Se 0)'; $('#scaleHi').textContent = 'saturated (Se 1)'; }
+    ({pot:drawPot, heat:drawHeat, profile:drawProfile, flux:drawFlux, budget:drawBudget, level:drawLevel, totals:drawTotals, curves:drawCurves})[c]();
+    $('#tLbl').textContent = tLabel(UI.t);
+    const hh = R.rec.h[UI.t], ro = (k, v) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`;
+    $('#readout').innerHTML = ro('Available', `${R.rec.avail[UI.t].toFixed(0)}%`) + ro('Top cell θ', R.f.theta(hh[0]).toFixed(3)) +
+      (R.rec.pond[UI.t] > 0.05 ? ro('Ponded', `${R.rec.pond[UI.t].toFixed(1)} mm`) : ro('Drained so far', `${R.rec.cout[UI.t].toFixed(1)} mm`));
+    const info = CHART_INFO[c];
+    $('#aboutTitle').textContent = info.title;
+    $('#aboutRead').textContent = info.read;
+    $('#insights').innerHTML = insights(UI.t).map(x => `<li>${esc(x)}</li>`).join('');
+  }
+  document.querySelectorAll('#chartTabs [data-chart]').forEach(b => b.addEventListener('click', () => { UI.chart = b.dataset.chart; persist(); draw(); }));
+  document.querySelectorAll('#varSeg [data-v]').forEach(b => b.addEventListener('click', () => { UI.vr = b.dataset.v; persist(); draw(); }));
+  $('#tIdx').addEventListener('input', e => { UI.t = parseInt(e.target.value, 10); draw(); });
+  $('#probe').addEventListener('input', e => { UI.probeZ = (parseInt(e.target.value, 10) + 0.5) * R.dz; draw(); });
+
+  let playing = null;
+  function setPlay(on){
+    if (on){ if (UI.t >= R.hours) UI.t = 0; playing = setInterval(() => { UI.t++; if (UI.t >= R.hours){ UI.t = R.hours; setPlay(false); } $('#tIdx').value = UI.t; draw(); }, 80); }
+    else { clearInterval(playing); playing = null; }
+    $('#play').setAttribute('aria-label', on ? 'Pause' : 'Play');
+    $('#playIco').innerHTML = on ? '<path d="M2 1h2v8H2zM6 1h2v8H6z"/>' : '<path d="M2 1l7 4-7 4z"/>';
+  }
+  $('#play').addEventListener('click', () => setPlay(!playing));
+  if (window.ResizeObserver) new ResizeObserver(() => draw()).observe($('#plot'));
+  window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => draw());
+
+  // ---------- modes ----------
+  function setMode(m){
+    UI.mode = m;
+    document.querySelectorAll('#modeSeg [data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
+    $('#page-lab').hidden = m !== 'lab'; $('#page-learn').hidden = m !== 'learn'; $('#page-ref').hidden = m !== 'ref';
+    $('#scroll').classList.toggle('labmode', m === 'lab');
+    $('#scroll').scrollTop = 0;
+    if (m === 'lab') setTimeout(draw, 0);
+  }
+  document.querySelectorAll('#modeSeg [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+  // ---------- lessons ----------
+  $('#anatomy').innerHTML = `
+    <h2>Anatomy of the equation</h2>
+    <div class="eqbig" style="margin-top:10px"><span class="c1">∂θ/∂t</span> = <span class="c2">∂/∂z</span> [ <span class="c3">K(h)</span> ( <span class="c4">∂h/∂z</span> <span class="c5">− 1</span> ) ] − <span style="color:var(--s-wp);border-color:var(--s-wp)">S</span></div>
+    <ul>
+      <li><b class="c1">∂θ/∂t</b><span>How fast water content changes at a point. Positive means wetting.</span></li>
+      <li><b class="c2">∂/∂z [ … ]</b><span>The change in flux with depth. More flow in than out of a thin layer means it gains water.</span></li>
+      <li><b class="c3">K(h)</b><span>Hydraulic conductivity. Depends on how wet the soil is, which makes the equation nonlinear.</span></li>
+      <li><b class="c4">∂h/∂z</b><span>Pressure-head gradient. Pulls water toward drier soil (more negative h), up or down.</span></li>
+      <li><b class="c5">− 1</b><span>Gravity. With depth z pointing down, gravity adds a steady downward pull of strength K.</span></li>
+      <li><b style="color:var(--s-wp)">S</b><span>The sink: water taken up by roots.</span></li>
+    </ul>`;
+  $('#lessons').innerHTML = LESSONS.map(l => `
+    <details class="lesson" id="lesson-${l.id}">
+      <summary>${l.title}</summary>
+      <div class="body">${l.body}
+        <div class="tryit"><div class="kicker">Try it</div><div>${l.tryit}</div>
+          <button class="btn primary" type="button" data-load="${l.id}">Load this experiment</button></div>
+      </div>
+    </details>`).join('');
+  function loadLesson(id){
+    const l = LESSONS.find(x => x.id === id); if (!l) return;
+    P = Object.assign({}, DEFAULTS, l.exp);
+    UI.chart = l.chart; if (l.v) UI.vr = l.v; UI.t = l.t || 0; if (l.probe) UI.probeZ = l.probe; UI.lesson = id;
+    $('#expBanner').hidden = false;
+    $('#expText').innerHTML = `<b>${esc(l.title)}</b><br>${l.tryit}`;
+    if (l.open) document.getElementById('g-' + l.open).open = true;
+    syncAll(); setMode('lab'); clearTimeout(timer); run(); persist();
+  }
+  function hideExp(){ $('#expBanner').hidden = true; UI.lesson = null; }
+  document.querySelectorAll('[data-load]').forEach(b => b.addEventListener('click', () => loadLesson(b.dataset.load)));
+  $('#backToLesson').addEventListener('click', () => {
+    const id = UI.lesson; setMode('learn');
+    const el = document.getElementById('lesson-' + id); if (el){ el.open = true; setTimeout(() => el.scrollIntoView({block:'start'}), 0); }
+  });
+
+  // ---------- reference ----------
+  $('#gloss').innerHTML = GLOSSARY.map(([t, d]) => `<dt>${esc(t)}</dt><dd>${esc(d)}</dd>`).join('');
+  $('#refs').innerHTML += REFS.map(([h, items]) => `<h3>${esc(h)}</h3><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
+
+  // ---------- start ----------
+  syncAll();
+  setMode('lab');
+  run();
+})();
+
+</script>
+</body>
+</html>

@@ -159,6 +159,47 @@ dl.gloss dt{font-weight:600;margin-top:10px}
 dl.gloss dd{margin:2px 0 0;color:var(--muted)}
 .refs ul{margin:6px 0 0;padding-left:18px}
 .refs li{margin:6px 0;font-size:14px}
+
+/* basics */
+.short{display:none}
+@media (max-width:440px){
+  .hd{gap:6px;padding:8px 8px}
+  .hd h1{font-size:16px}
+  .hd .seg button{padding:5px 7px}
+  .long{display:none} .short{display:inline}
+}
+.reading .card{margin-top:10px}
+.reading .card > h2{font-size:17px}
+.reading .card p{margin:8px 0}
+.toc{display:flex;flex-wrap:wrap;gap:6px}
+.toc button{font:inherit;font-size:13px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 11px;cursor:pointer}
+.toc button b{color:var(--accent);font-weight:600;margin-right:4px}
+.tablewrap{overflow-x:auto;margin:8px 0;border:1px solid var(--line);border-radius:10px}
+table.xlate{border-collapse:collapse;font-size:13px;min-width:520px;width:100%}
+table.xlate th,table.xlate td{text-align:left;padding:6px 8px;border-top:1px solid var(--line);vertical-align:top}
+table.xlate thead th{border-top:0;background:var(--bg);font-weight:600}
+table.xlate tbody th{font-weight:500;color:var(--muted)}
+table.xlate td:nth-child(2){font-weight:500}
+.mplot{position:relative;width:100%;height:230px;margin-top:6px}
+.mplot.short-plot{height:150px}
+.mplot svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ctls{margin-top:6px}
+.ctls .seg{margin:4px 0}
+.notice{font-size:14px;margin-top:10px}
+.notice b{font-weight:600}
+.maps{margin-top:10px;background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.maps h3{margin:0 0 4px;font-size:13.5px;color:var(--accent)}
+.maps p{margin:6px 0 0}
+.maps .btn{margin-top:10px}
+.iters{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:var(--muted);margin-top:6px;overflow-x:auto;white-space:nowrap}
+.matwrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.matwrap svg{width:min(220px,60vw);height:auto;flex:none}
+.matwrap p{flex:1;min-width:180px;margin:0;font-size:13.5px}
+.warm{font-size:13.5px;color:var(--muted);margin:2px 0 6px}
+.linkbtn{font:inherit;font-size:13.5px;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.linkbtn + .linkbtn{margin-left:10px}
+.goodbad{font-weight:600}
+.goodbad.ok{color:var(--s-up)} .goodbad.bad{color:var(--s-wp)}
 </style>
 </head>
 <body>
@@ -168,8 +209,9 @@ dl.gloss dd{margin:2px 0 0;color:var(--muted)}
     <span class="status" id="status" aria-live="polite"></span>
     <div class="seg" role="group" aria-label="Section" id="modeSeg">
       <button type="button" data-mode="lab">Lab</button>
+      <button type="button" data-mode="basics">Basics</button>
       <button type="button" data-mode="learn">Lessons</button>
-      <button type="button" data-mode="ref">Reference</button>
+      <button type="button" data-mode="ref"><span class="long">Reference</span><span class="short">Ref</span></button>
     </div>
   </header>
   <div class="scroll labmode" id="scroll">
@@ -283,10 +325,178 @@ dl.gloss dd{margin:2px 0 0;color:var(--muted)}
       </div>
     </div>
 
+    <!-- ================= BASICS ================= -->
+    <div class="page reading" id="page-basics" hidden>
+      <h2>Basics</h2>
+      <p class="lead">The Richards equation taken apart into six small models. Each one isolates a single idea from the lab, with everything else stripped away. Most are ODEs or circuits you have already seen.</p>
+
+      <section class="card" id="toy-xlate">
+        <h2>The same equation in three forms</h2>
+        <p>Soil water, heat conduction, and an RC ladder share one structure: something is stored, a potential difference drives it to flow, and a conductance sets how easily it flows.</p>
+        <div class="tablewrap"><table class="xlate">
+          <thead><tr><th></th><th>Soil water</th><th>Heat</th><th>RC circuit</th></tr></thead>
+          <tbody>
+            <tr><th>Stored</th><td>water content θ</td><td>heat, ρc·T</td><td>charge</td></tr>
+            <tr><th>Drives flow</th><td>total head H = h − z</td><td>temperature T</td><td>voltage V</td></tr>
+            <tr><th>Flow</th><td>flux q</td><td>heat flux</td><td>current i</td></tr>
+            <tr><th>Flow law</th><td>Darcy: q = −K ∂H/∂z</td><td>Fourier: q = −k ∂T/∂z</td><td>Ohm: i = ΔV / R</td></tr>
+            <tr><th>Conductance</th><td>K(h), depends on h</td><td>k, constant</td><td>1/R, constant</td></tr>
+            <tr><th>Capacity</th><td>C(h) = dθ/dh, depends on h</td><td>ρc, constant</td><td>capacitance, constant</td></tr>
+            <tr><th>Balance</th><td>∂θ/∂t = −∂q/∂z − S</td><td>energy balance</td><td>KCL at each node</td></tr>
+            <tr><th>Sink</th><td>root uptake S</td><td>heat sink</td><td>current to ground</td></tr>
+          </tbody>
+        </table></div>
+        <p>Two things make Richards harder than the heat equation. Its conductance and capacity both depend on h, so the equation is <b>nonlinear</b>: the circuit's resistors and capacitors change value as the voltages change. And gravity adds the −1, which acts like a small battery in series with every resistor, pushing water down even where h is the same everywhere.</p>
+        <h3>Reading the notation</h3>
+        <dl class="gloss">
+          <dt>∂θ/∂t</dt><dd>How fast water content changes at one fixed depth. It is a partial derivative because θ depends on both depth z and time t.</dd>
+          <dt>∂q/∂z</dt><dd>How fast the flux changes with depth. If it is positive, more water leaves a thin layer through its bottom than enters through its top, so the layer dries. That is why it enters the balance with a minus sign.</dd>
+          <dt>∂/∂z [ K ∂h/∂z ]</dt><dd>Flux written in terms of h, then differentiated again: a second derivative in space. With constant K it becomes K ∂²h/∂z², the curvature of the profile, exactly as in the heat equation.</dd>
+          <dt>Parabolic PDE</dt><dd>The family the heat equation and Richards belong to. Disturbances spread and smooth out over time. You need one starting profile and a boundary condition at each end.</dd>
+        </dl>
+      </section>
+
+      <nav class="card toc" aria-label="Models on this page">
+        <button type="button" data-goto="toy-bucket"><b>1</b>One bucket</button>
+        <button type="button" data-goto="toy-steps"><b>2</b>Time steps</button>
+        <button type="button" data-goto="toy-tubes"><b>3</b>Capillary tubes</button>
+        <button type="button" data-goto="toy-chain"><b>4</b>Chain of buckets</button>
+        <button type="button" data-goto="toy-front"><b>5</b>Wetting fronts</button>
+        <button type="button" data-goto="toy-picard"><b>6</b>Picard iteration</button>
+      </nav>
+
+      <!-- 1 bucket -->
+      <section class="card" id="toy-bucket">
+        <h2>1. One bucket: a first-order ODE</h2>
+        <p>Before any depth, treat the whole pot as one bucket that drains. Storage W changes only by outflow Q, and Q depends on how full the bucket is.</p>
+        <div class="eq">dW/dt = −Q(W)<br>linear:    Q = W/τ<br>nonlinear: Q = (W₀/τ)·(W/W₀)^p</div>
+        <p>With p = 1 this is the first-order lag you know from controls, or an RC discharge: W = W₀e^(−t/τ). With p &gt; 1 the outflow rate falls faster than the storage does, so draining starts at the same speed and then slows down.</p>
+        <div class="ctls" id="bucketCtl"></div>
+        <div class="mplot"><svg id="bucketSvg" role="img"></svg></div>
+        <div class="legend" id="bucketLeg"></div>
+        <div class="kv" id="bucketKv"></div>
+        <p class="notice"><b>Notice:</b> both buckets lose water at the same rate at t = 0. The nonlinear one is still holding water long after the linear one is empty, and on the log scale the linear bucket is a straight line while the nonlinear one bends.</p>
+        <div class="maps">
+          <h3>In the Richards equation</h3>
+          <p>A pot draining after a heavy watering behaves like the nonlinear bucket. At the base, flow is driven mainly by gravity, so the drainage rate is about K(θ), and K rises as a steep power of wetness. <span id="pEffText"></span></p>
+          <p>The linear bucket is also the simplest model you could drive a watering controller with: one state, one time constant. Everything the lab adds is what that model leaves out.</p>
+          <button class="btn" type="button" data-lab="drainage">See drainage in the lab</button>
+        </div>
+      </section>
+
+      <!-- 2 steps -->
+      <section class="card" id="toy-steps">
+        <h2>2. Time steps: explicit vs implicit</h2>
+        <p>A computer can't integrate continuously, so it takes steps of size Δt. Take the linear bucket, dW/dt = −W/τ. Forward (explicit) Euler uses the outflow at the start of the step. Backward (implicit) Euler uses the outflow at the end, W[k+1] = W[k] − Δt·W[k+1]/τ, and solves for W[k+1]:</p>
+        <div class="eq">forward:  W[k+1] = (1 − Δt/τ)·W[k]<br>backward: W[k+1] = W[k] / (1 + Δt/τ)</div>
+        <p>Each step multiplies W by a growth factor G. If |G| &gt; 1 the numbers blow up, whatever the physics says. This is the same stability question as a discrete-time pole sitting outside the unit circle.</p>
+        <div class="ctls" id="stepsCtl"></div>
+        <div class="mplot"><svg id="stepsSvg" role="img"></svg></div>
+        <div class="legend" id="stepsLeg"></div>
+        <div class="kv" id="stepsKv"></div>
+        <p class="notice"><b>Notice:</b> past Δt = τ, forward Euler overshoots below zero; past Δt = 2τ it oscillates and grows without bound. Backward Euler is never unstable. It just gets less accurate as Δt grows.</p>
+        <div class="maps">
+          <h3>In the Richards equation</h3>
+          <p>Every cell in the lab is a bucket with its own time constant, and wet, thin cells have very short ones. <span id="stiffText"></span></p>
+          <p>A system whose time constants span many orders of magnitude is called <b>stiff</b>, and stiff systems are why the lab uses implicit time steps.</p>
+          <button class="btn" type="button" data-lab="numerics">See the solver in the lab</button>
+        </div>
+      </section>
+
+      <!-- 3 tubes -->
+      <section class="card" id="toy-tubes">
+        <h2>3. Capillary tubes: where θ(h) and K(h) come from</h2>
+        <p>Picture soil as a bundle of thin vertical tubes of different radii. A tube of radius r can hold water against a suction up to about 0.15/r (in cm, with r in cm). That is the height water rises in a capillary.</p>
+        <p>Apply a suction. Every tube wider than the critical radius empties; every narrower tube stays full. Water held is the volume of the full tubes. Flow through a full tube goes as r⁴ (Poiseuille), so for the same volume of pore space, wide tubes carry far more flow.</p>
+        <div class="ctls" id="tubesCtl"></div>
+        <div class="mplot short-plot"><svg id="tubesPic" role="img"></svg></div>
+        <div class="mplot"><svg id="tubesSvg" role="img"></svg></div>
+        <div class="legend" id="tubesLeg"></div>
+        <div class="kv" id="tubesKv"></div>
+        <p class="notice"><b>Notice:</b> raise the suction slowly. The widest tubes empty first. They hold only a modest share of the water but carry most of the flow, so conductivity falls much faster than water content. When half the water is gone, K is typically down by a factor of 10 to 100.</p>
+        <div class="maps">
+          <h3>In the Richards equation</h3>
+          <p>The van Genuchten curve is a smooth fit to this picture. The median pore size plays the role of α (1/α is roughly the suction where the big pores start to drain), and the spread of pore sizes plays the role of n (a narrow spread is a large n and a steep curve). Mualem's K(h) formula is built on the same tube argument.</p>
+          <button class="btn" type="button" data-lab="retention">Retention curve in the lab</button>
+          <button class="btn" type="button" data-lab="conductivity">Conductivity in the lab</button>
+        </div>
+      </section>
+
+      <!-- 4 chain -->
+      <section class="card" id="toy-chain">
+        <h2>4. Chain of buckets: how a PDE becomes ODEs</h2>
+        <p>Stack N buckets in a column, each joined to its neighbors by a pipe. The top bucket is joined to a reservoir held full (a ponded surface), and the bottom is sealed. Each bucket gets one ODE, and it only involves its neighbors:</p>
+        <div class="eq">C·du[i]/dt = G·(u[i−1] − 2u[i] + u[i+1])</div>
+        <p>That is an RC ladder. Make the buckets thinner (Δz = L/N) with C ∝ Δz and G ∝ 1/Δz, and the right side becomes D·∂²u/∂z²: the heat equation. The smooth line below is the same column cut into 200 buckets, close to the PDE's exact answer.</p>
+        <div class="ctls" id="chainCtl"></div>
+        <div class="mplot"><svg id="chainSvg" role="img"></svg></div>
+        <div class="timebar">
+          <button class="icon" id="chainPlay" type="button" aria-label="Play"><svg viewBox="0 0 10 10" id="chainPlayIco"><path d="M2 1l7 4-7 4z"/></svg></button>
+          <input type="range" id="chainT" min="0" max="60" step="1" value="0" aria-label="Time">
+          <span class="t" id="chainTLbl"></span>
+        </div>
+        <div class="legend" id="chainLeg"></div>
+        <div class="matwrap"><svg id="chainMat" role="img" aria-label="Coupling matrix"></svg><p id="chainMatText"></p></div>
+        <div class="kv" id="chainKv"></div>
+        <p class="notice"><b>Notice:</b> with 3 buckets the profile is a staircase that lags the smooth curve; with 12 it nearly matches. The PDE is the limit of infinitely many infinitely thin buckets.</p>
+        <div class="maps">
+          <h3>In the Richards equation</h3>
+          <p>The lab's cells are exactly these buckets, and each time step solves this tridiagonal system. Two things differ: the pipe conductance at each face is K(h) and the bucket capacity is C(h), both changing as the soil wets and dries; and gravity adds a constant push down every pipe.</p>
+          <button class="btn" type="button" data-lab="budget">One cell's budget in the lab</button>
+        </div>
+      </section>
+
+      <!-- 5 front -->
+      <section class="card" id="toy-front">
+        <h2>5. Wetting fronts: heat equation to Richards</h2>
+        <p>Water is held at the top of a dry column. With constant diffusivity this is the heat equation, and the profile is a smooth error function. Then add the two ingredients that make Richards different, one at a time.</p>
+        <div class="eq">∂θ/∂t = ∂/∂z [ D(θ) ∂θ/∂z ] − ∂K(θ)/∂z<br>D(θ) = Ds·e^(β(θ−1)),   K(θ) = G·θ⁴</div>
+        <div class="seg full" role="group" aria-label="Front preset" id="frontSeg">
+          <button type="button" data-fp="heat">Heat equation</button>
+          <button type="button" data-fp="nl">Nonlinear D</button>
+          <button type="button" data-fp="grav">+ gravity</button>
+        </div>
+        <div class="ctls" id="frontCtl"></div>
+        <div class="mplot"><svg id="frontSvg" role="img"></svg></div>
+        <div class="legend" id="frontLeg"></div>
+        <div class="mplot"><svg id="frontSvg2" role="img"></svg></div>
+        <div class="legend" id="frontLeg2"></div>
+        <div class="kv" id="frontKv"></div>
+        <p class="notice"><b>Notice:</b> with β = 0 the profiles are soft S-curves. As β grows, diffusivity is huge in wet soil and tiny in dry soil, so water floods through the wet zone and stalls at its edge: a sharp front. On the log-log chart, a slope of ½ means the front moves as √t (suction-driven, like heat), and a slope of 1 means steady speed (gravity-driven).</p>
+        <div class="maps">
+          <h3>In the Richards equation</h3>
+          <p>This is the θ-form of the equation, with diffusivity D = K/C. It is easy to read but breaks down at saturation, where C → 0 and D → ∞, and in layered soils, where θ jumps but h doesn't. That is why the lab solves for h instead, keeping θ in the storage term (the mixed form).</p>
+          <p>D is scaled here so every setting soaks in about the same amount early on, and only the shape changes.</p>
+          <button class="btn" type="button" data-lab="infiltration">See infiltration in the lab</button>
+        </div>
+      </section>
+
+      <!-- 6 picard -->
+      <section class="card" id="toy-picard">
+        <h2>6. Picard iteration: solving the implicit step</h2>
+        <p>Implicit Euler on the nonlinear bucket gives an equation with the unknown on both sides:</p>
+        <div class="eq">W = W_old − Δt·k·W^p</div>
+        <p>Picard iteration handles it the way the lab handles K(h): freeze the nonlinear coefficient at the latest guess, solve the now-linear equation, repeat.</p>
+        <div class="eq">W[m+1] = W_old / (1 + Δt·k·W[m]^(p−1))</div>
+        <p>The cobweb plot shows each pass. A step goes up to the curve (apply the update), then across to the diagonal (that answer becomes the next guess).</p>
+        <div class="ctls" id="picardCtl"></div>
+        <div class="mplot"><svg id="picardSvg" role="img"></svg></div>
+        <div class="legend" id="picardLeg"></div>
+        <div class="iters" id="picardIters"></div>
+        <div class="kv" id="picardKv"></div>
+        <p class="notice"><b>Notice:</b> the iteration settles only while |g′| &lt; 1 at the answer. For this model that works out to (p − 1) × (share of the water removed in one step) &lt; 1. Big steps through a strongly nonlinear region break it.</p>
+        <div class="maps">
+          <h3>In the Richards equation</h3>
+          <p>When Picard doesn't settle within 50 passes, the lab halves Δt and tries again, then lets the step grow back once things calm down. You can watch this as "Retried steps" in the solver stats. Newton's method converges faster near the answer but needs derivatives of K and θ; Picard with the mixed form is simpler and conserves mass.</p>
+          <button class="btn" type="button" data-lab="numerics">See the solver in the lab</button>
+        </div>
+      </section>
+    </div>
+
     <!-- ================= LESSONS ================= -->
     <div class="page reading" id="page-learn" hidden>
       <h2>Learn the Richards equation</h2>
-      <p class="lead">Ten short lessons, each with an experiment that loads into the lab. Read one, run it, then change things.</p>
+      <p class="lead">Ten short lessons, each with an experiment that loads into the lab. Read one, run it, then change things. If a lesson leans on math you want to brush up on, its warm-up link opens a simpler model in Basics.</p>
       <div class="card anatomy" id="anatomy"></div>
       <div id="lessons"></div>
     </div>
@@ -864,9 +1074,10 @@ const REFS = [
 
   // ---------- generic SVG chart ----------
   const svg = $('#svgPlot');
-  function frame(){ const W = svg.clientWidth || 320, H = svg.clientHeight || 220; svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('font-family', mono); svg.setAttribute('font-size', '11'); svg.setAttribute('fill', 'var(--muted)'); return {W, H}; }
+  function frame(el){ el = el || svg; const W = el.clientWidth || 320, H = el.clientHeight || 220; el.setAttribute('viewBox', `0 0 ${W} ${H}`); el.setAttribute('font-family', mono); el.setAttribute('font-size', '11'); el.setAttribute('fill', 'var(--muted)'); return {W, H}; }
   function lineChart(o){
-    const {W, H} = frame();
+    const el = o.el || svg;
+    const {W, H} = frame(el);
     const Lp = o.Lp || 46, Rp = 12, T = o.T || 16, B = o.xLabel ? 34 : 22, pw = W - Lp - Rp, ph = H - T - B;
     const x = v => Lp + (v - o.x0) / (o.x1 - o.x0) * pw;
     const y = v => T + (o.yInvert ? (v - o.y0) / (o.y1 - o.y0) : 1 - (v - o.y0) / (o.y1 - o.y0)) * ph;
@@ -878,6 +1089,7 @@ const REFS = [
     if (o.yLabel) s += `<text x="10" y="${T + ph / 2}" text-anchor="middle" transform="rotate(-90 10 ${T + ph / 2})">${o.yLabel}</text>`;
     (o.hlines || []).forEach(v => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(v.v)}" y2="${y(v.v)}" stroke="${v.c}" stroke-width="1.3" ${v.dash ? `stroke-dasharray="${v.dash}"` : ''}/>` + (v.label ? `<text x="${W - Rp - 2}" y="${y(v.v) - 4}" text-anchor="end" fill="${v.c}">${v.label}</text>` : ''); });
     (o.vlines || []).forEach((v, i) => { if (v.v < o.x0 || v.v > o.x1) return; s += `<line x1="${x(v.v)}" x2="${x(v.v)}" y1="${T}" y2="${T + ph}" stroke="${v.c}" stroke-width="1.4" ${v.dash ? `stroke-dasharray="${v.dash}"` : ''}/>` + (v.label ? (x(v.v) > W - Rp - 28 ? `<text x="${x(v.v) - 3}" y="${T + 10 + 12 * (i % 3)}" text-anchor="end" fill="${v.c}">${v.label}</text>` : `<text x="${x(v.v) + 3}" y="${T + 10 + 12 * (i % 3)}" fill="${v.c}">${v.label}</text>`) : ''); });
+    (o.rects || []).forEach(r => { const xa = x(r.x0), xb = x(r.x1), ya = y(clamp(r.y, o.y0, o.y1)), yb = y(o.y0); s += `<rect x="${Math.min(xa, xb) + 0.5}" y="${Math.min(ya, yb)}" width="${Math.max(0, Math.abs(xb - xa) - 1)}" height="${Math.abs(yb - ya)}" fill="${r.c}" opacity="${r.o || 1}"/>`; });
     (o.series || []).forEach(se => {
       const pts = se.pts.filter(p => isFinite(p[0]) && isFinite(p[1])).map(p => `${x(clamp(p[0], Math.min(o.x0, o.x1), Math.max(o.x0, o.x1))).toFixed(1)},${y(clamp(p[1], Math.min(o.y0, o.y1), Math.max(o.y0, o.y1))).toFixed(1)}`).join(' ');
       s += `<polyline points="${pts}" fill="none" stroke="${se.c}" stroke-width="${se.w || 2}" ${se.dash ? `stroke-dasharray="${se.dash}"` : ''} stroke-linejoin="round"/>`;
@@ -886,8 +1098,8 @@ const REFS = [
     (o.events || []).forEach(e => { const ex = x(e.x); s += `<path d="M${ex - 5} ${T - 10}h10l-5 8z" fill="${e.c}"/>`; });
     (o.marks || []).forEach(m => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(m.y)}" y2="${y(m.y)}" stroke="var(--ink)" stroke-dasharray="2 3" opacity=".6"/><text x="${W - Rp - 2}" y="${y(m.y) - 4}" text-anchor="end" fill="var(--ink)">${m.label}</text>`; });
     if (o.cursor != null){ const cx = x(o.cursor); s += `<line x1="${cx}" x2="${cx}" y1="${T}" y2="${T + ph}" stroke="var(--ink)" stroke-width="1.5"/>`; }
-    svg.setAttribute('aria-label', o.aria || 'Chart');
-    svg.innerHTML = s;
+    el.setAttribute('aria-label', o.aria || 'Chart');
+    el.innerHTML = s;
   }
   const leg = (c, l, dash) => `<span><i class="${dash ? 'dash' : ''}" style="background:${c};color:${c}"></i>${l}</span>`;
   const dayTicks = () => { const d = Math.round(R.hours / 24), st = d > 8 ? 2 : 1, a = []; for (let k = 0; k <= d; k += st) a.push({v:k * 24, l:k === 0 ? '0' : `d${k}`}); return a; };
@@ -1173,10 +1385,11 @@ const REFS = [
   function setMode(m){
     UI.mode = m;
     document.querySelectorAll('#modeSeg [data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
-    $('#page-lab').hidden = m !== 'lab'; $('#page-learn').hidden = m !== 'learn'; $('#page-ref').hidden = m !== 'ref';
+    $('#page-lab').hidden = m !== 'lab'; $('#page-learn').hidden = m !== 'learn'; $('#page-ref').hidden = m !== 'ref'; $('#page-basics').hidden = m !== 'basics';
     $('#scroll').classList.toggle('labmode', m === 'lab');
     $('#scroll').scrollTop = 0;
     if (m === 'lab') setTimeout(draw, 0);
+    if (m === 'basics') setTimeout(drawBasics, 0);
   }
   document.querySelectorAll('#modeSeg [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
@@ -1192,16 +1405,21 @@ const REFS = [
       <li><b class="c5">− 1</b><span>Gravity. With depth z pointing down, gravity adds a steady downward pull of strength K.</span></li>
       <li><b style="color:var(--s-wp)">S</b><span>The sink: water taken up by roots.</span></li>
     </ul>`;
+  const TOY_NAMES = {xlate:'Three forms of one equation', bucket:'One bucket', steps:'Time steps', tubes:'Capillary tubes', chain:'Chain of buckets', front:'Wetting fronts', picard:'Picard iteration'};
+  const WARM = {idea:['xlate', 'chain'], head:['xlate'], retention:['tubes'], conductivity:['tubes'], infiltration:['front'], drainage:['bucket'],
+    roots:['bucket'], numerics:['steps', 'chain', 'picard'], budget:['chain']};
   $('#lessons').innerHTML = LESSONS.map(l => `
     <details class="lesson" id="lesson-${l.id}">
       <summary>${l.title}</summary>
-      <div class="body">${l.body}
+      <div class="body">${WARM[l.id] ? `<p class="warm">Warm-up in Basics: ${WARM[l.id].map(k => `<button class="linkbtn" type="button" data-goto="toy-${k}">${TOY_NAMES[k]}</button>`).join('')}</p>` : ''}${l.body}
         <div class="tryit"><div class="kicker">Try it</div><div>${l.tryit}</div>
           <button class="btn primary" type="button" data-load="${l.id}">Load this experiment</button></div>
       </div>
     </details>`).join('');
-  function loadLesson(id){
+  function loadLesson(id, back){
     const l = LESSONS.find(x => x.id === id); if (!l) return;
+    UI.back = back || {mode:'learn', el:'lesson-' + id};
+    $('#backToLesson').textContent = UI.back.mode === 'basics' ? 'Back to Basics' : 'Back to the lesson';
     P = Object.assign({}, DEFAULTS, l.exp);
     UI.chart = l.chart; if (l.v) UI.vr = l.v; UI.t = l.t || 0; if (l.probe) UI.probeZ = l.probe; UI.lesson = id;
     $('#expBanner').hidden = false;
@@ -1211,14 +1429,292 @@ const REFS = [
   }
   function hideExp(){ $('#expBanner').hidden = true; UI.lesson = null; }
   document.querySelectorAll('[data-load]').forEach(b => b.addEventListener('click', () => loadLesson(b.dataset.load)));
-  $('#backToLesson').addEventListener('click', () => {
-    const id = UI.lesson; setMode('learn');
-    const el = document.getElementById('lesson-' + id); if (el){ el.open = true; setTimeout(() => el.scrollIntoView({block:'start'}), 0); }
+  function goTo(mode, elId){
+    setMode(mode);
+    const el = document.getElementById(elId);
+    if (el){ if (el.tagName === 'DETAILS') el.open = true; setTimeout(() => el.scrollIntoView({block:'start'}), 30); }
+  }
+  $('#backToLesson').addEventListener('click', () => { const b = UI.back || {mode:'learn', el:'lesson-' + UI.lesson}; goTo(b.mode, b.el); });
+  document.addEventListener('click', e => {
+    const g = e.target.closest('[data-goto]'); if (g){ goTo('basics', g.dataset.goto); return; }
+    const lb = e.target.closest('[data-lab]'); if (lb){ loadLesson(lb.dataset.lab, {mode:'basics', el:lb.closest('section').id}); }
   });
 
   // ---------- reference ----------
   $('#gloss').innerHTML = GLOSSARY.map(([t, d]) => `<dt>${esc(t)}</dt><dd>${esc(d)}</dd>`).join('');
   $('#refs').innerHTML += REFS.map(([h, items]) => `<h3>${esc(h)}</h3><ul>${items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`).join('');
+
+  // ---------- basics: small models ----------
+  const kvh = (k, v) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const fmtNum = v => v >= 100 ? Math.round(v).toLocaleString('en-US') : v >= 10 ? v.toFixed(0) : v.toFixed(1);
+  const fmtNum2 = x => x >= 10 ? x.toFixed(0) : x >= 1 ? x.toFixed(1) : x.toFixed(2);
+  const fmtE = v => { if (v < 1000) return String(Math.round(v)); const e = Math.floor(Math.log10(v)); return `${(v / Math.pow(10, e)).toFixed(1)}e${e}`; };
+  const fmtDur = d => { const s = d * 86400; return s < 1 ? `${Math.round(s * 1000)} ms` : s < 90 ? `${s.toFixed(1)} s` : s < 5400 ? `${(s / 60).toFixed(0)} min` : s < 172800 ? `${(s / 3600).toFixed(1)} h` : `${(s / 86400).toFixed(1)} days`; };
+  let tid = 0;
+  function tslider(host, st, o, on){
+    const id = 'ts' + (++tid), el = document.createElement('div');
+    el.className = 'param';
+    el.innerHTML = `<div class="param-head"><span class="lbl"><label for="${id}">${o.label}</label></span><output for="${id}"></output></div><input type="range" id="${id}" min="${o.min}" max="${o.max}" step="${o.step}">`;
+    host.appendChild(el);
+    const inp = el.querySelector('input'), out = el.querySelector('output');
+    const sync = () => { inp.value = st[o.key]; out.textContent = o.fmt(st[o.key]); };
+    inp.addEventListener('input', () => { st[o.key] = parseFloat(inp.value); sync(); on(); });
+    sync(); return sync;
+  }
+  function tseg(host, opts, get, set){
+    const g = document.createElement('div'); g.className = 'seg full'; g.setAttribute('role', 'group');
+    g.innerHTML = opts.map(([v, l]) => `<button type="button" data-tv="${v}">${l}</button>`).join('');
+    host.appendChild(g);
+    const sync = () => g.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tv === String(get()))));
+    g.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; set(b.dataset.tv); sync(); });
+    sync(); return sync;
+  }
+  function thomas(a, b, c, r){
+    const n = b.length, bb = Float64Array.from(b), rr = Float64Array.from(r), x = new Float64Array(n);
+    for (let i = 1; i < n; i++){ const w = a[i] / bb[i - 1]; bb[i] -= w * c[i - 1]; rr[i] -= w * rr[i - 1]; }
+    x[n - 1] = rr[n - 1] / bb[n - 1];
+    for (let i = n - 2; i >= 0; i--) x[i] = (rr[i] - c[i] * x[i + 1]) / bb[i];
+    return x;
+  }
+
+  // 1. one bucket
+  const BK = {tau:6, p:4, log:0};
+  tslider($('#bucketCtl'), BK, {key:'tau', label:'Time constant τ', min:1, max:24, step:0.5, fmt:v => `${v} h`}, drawBucket);
+  const bkSyncP = tslider($('#bucketCtl'), BK, {key:'p', label:'Nonlinearity p', min:1, max:10, step:0.1, fmt:v => v.toFixed(1)}, drawBucket);
+  tseg($('#bucketCtl'), [['0', 'Linear axis'], ['1', 'Log axis']], () => BK.log, v => { BK.log = +v; drawBucket(); });
+  const bucketW = (t, p) => p < 1.001 ? 100 * Math.exp(-t / BK.tau) : 100 * Math.pow(1 + (p - 1) * t / BK.tau, -1 / (p - 1));
+  const bucketT = (frac, p) => p < 1.001 ? -BK.tau * Math.log(frac) : BK.tau * (Math.pow(frac, 1 - p) - 1) / (p - 1);
+  function drawBucket(){
+    const T = 72, n = 240, lin = [], nl = [], Y = BK.log ? (v => Math.log10(Math.max(1e-3, v))) : (v => v);
+    for (let k = 0; k <= n; k++){ const t = k / n * T; lin.push([t, Y(bucketW(t, 1))]); nl.push([t, Y(bucketW(t, BK.p))]); }
+    const yT = BK.log ? [-1, 0, 1, 2].map(v => ({v, l:`${Math.pow(10, v)}%`})) : [0, 25, 50, 75, 100].map(v => ({v, l:`${v}%`}));
+    const h1 = bucketT(0.5, 1), h2 = bucketT(0.5, BK.p);
+    lineChart({el:$('#bucketSvg'), x0:0, x1:T, y0:BK.log ? -1 : 0, y1:BK.log ? 2 : 100, xLabel:'time (hours)', T:12,
+      xTicks:[0, 12, 24, 36, 48, 60, 72].map(v => ({v, l:`${v}`})), yTicks:yT,
+      series:[{pts:lin, c:'var(--muted)', dash:'5 4', w:1.8}, {pts:nl, c:'var(--accent)', w:2.5}],
+      dots:[{pts:[[h1, Y(50)]], c:'var(--muted)', r:4}, {pts:[[h2, Y(50)]], c:'var(--accent)', r:4}].filter(d => d.pts[0][0] <= T),
+      aria:'Storage over time for a linear and a nonlinear bucket'});
+    $('#bucketLeg').innerHTML = leg('var(--muted)', 'linear, p = 1', true) + leg('var(--accent)', `nonlinear, p = ${BK.p.toFixed(1)}`) + '<span>● half empty</span>';
+    const ft = h => h > 960 ? 'over 40 d' : h >= 48 ? `${(h / 24).toFixed(1)} d` : `${h.toFixed(1)} h`;
+    $('#bucketKv').innerHTML = kvh('Half empty, linear', ft(h1)) + kvh('Half empty, nonlinear', ft(h2)) + kvh('90% gone, linear', ft(bucketT(0.1, 1))) + kvh('90% gone, nonlinear', ft(bucketT(0.1, BK.p)));
+  }
+  function soilExponent(){
+    const m = 1 - 1 / P.n, Kse = s => Math.sqrt(s) * Math.pow(1 - Math.pow(1 - Math.pow(s, 1 / m), m), 2);
+    return Math.log(Kse(0.8) / Kse(0.6)) / Math.log(0.8 / 0.6);
+  }
+
+  // 2. time steps
+  const ST = {r:0.5};
+  tslider($('#stepsCtl'), ST, {key:'r', label:'Step size Δt / τ', min:0.1, max:3, step:0.05, fmt:v => v.toFixed(2)}, drawSteps);
+  function drawSteps(){
+    const r = ST.r, T = 10, ex = [], fe = [], be = [], gF = 1 - r, gB = 1 / (1 + r);
+    for (let k = 0; k <= 200; k++){ const t = k / 200 * T; ex.push([t, Math.exp(-t)]); }
+    for (let k = 0; k * r <= T + 1e-9; k++){ fe.push([k * r, Math.pow(gF, k)]); be.push([k * r, Math.pow(gB, k)]); }
+    const feShown = []; for (const p of fe){ feShown.push(p); if (Math.abs(p[1]) > 1.5) break; }
+    lineChart({el:$('#stepsSvg'), x0:0, x1:T, y0:-1.5, y1:1.5, xLabel:'time, in units of τ', T:12,
+      xTicks:[0, 2, 4, 6, 8, 10].map(v => ({v, l:v ? `${v}τ` : '0'})), yTicks:[-1.5, -1, -0.5, 0, 0.5, 1, 1.5].map(v => ({v, l:v.toFixed(1)})),
+      hlines:[{v:0, c:'var(--line)'}],
+      series:[{pts:ex, c:'var(--ink)', w:1.5, dash:'2 3'}, {pts:feShown, c:'var(--s-wp)', w:1.8}, {pts:be, c:'var(--accent)', w:1.8}],
+      dots:[{pts:feShown.filter(p => Math.abs(p[1]) <= 1.5), c:'var(--s-wp)', r:3.2}, {pts:be, c:'var(--accent)', r:3.2}],
+      aria:'Exact solution compared with forward and backward Euler'});
+    $('#stepsLeg').innerHTML = leg('var(--ink)', 'exact, e^(−t/τ)', true) + leg('var(--s-wp)', 'forward Euler') + leg('var(--accent)', 'backward Euler');
+    const verdict = Math.abs(gF) > 1 ? '<span class="goodbad bad">grows: unstable</span>' : gF < 0 ? '<span class="goodbad bad">flips sign</span>' : '<span class="goodbad ok">stable</span>';
+    $('#stepsKv').innerHTML = kvh('Forward G = 1 − Δt/τ', gF.toFixed(2)) + kvh('Forward Euler', verdict) + kvh('Backward G = 1/(1 + Δt/τ)', gB.toFixed(2)) + kvh('Backward Euler', '<span class="goodbad ok">stable</span>');
+  }
+  function stiffText(){
+    if (!R) return '';
+    const h = -10, C = R.f.C(h), K = R.f.K(h), D = K / C, dz = R.dz, L = R.L;
+    const tf = C * dz * dz / (4 * K), ts = 4 * L * L / (Math.PI * Math.PI * D);
+    return `For the soil loaded in the lab, at a fairly wet h = −10 cm and ${R.N} cells of ${dz.toFixed(2)} cm, the fastest time constant is about ${fmtDur(tf)} and the slowest, for the whole column, about ${fmtDur(ts)}. Forward Euler would need steps shorter than ${fmtDur(2 * tf)}; the lab's implicit solver takes steps of up to ${P.maxDtH} h. Both time constants shift by orders of magnitude as the soil dries, because K and C change with h.`;
+  }
+
+  // 3. capillary tubes
+  const TB = {ls:1.3, lr:1.8, sig:0.8};
+  tslider($('#tubesCtl'), TB, {key:'ls', label:'Suction −h', min:0, max:4.5, step:0.01, fmt:v => `${fmtNum(Math.pow(10, v))} cm`}, drawTubes);
+  tslider($('#tubesCtl'), TB, {key:'lr', label:'Median pore radius', min:0.7, max:2.7, step:0.01, fmt:v => `${fmtNum(Math.pow(10, v))} µm`}, drawTubes);
+  tslider($('#tubesCtl'), TB, {key:'sig', label:'Spread of pore sizes', min:0.2, max:1.6, step:0.01, fmt:v => `${v.toFixed(2)}${v < 0.5 ? ', uniform like sand' : v > 1.1 ? ', wide like loam' : ''}`}, drawTubes);
+  function zq(p){ const q = p < 0.5 ? p : 1 - p, t = Math.sqrt(-2 * Math.log(q)); const z = t - (2.515517 + 0.802853 * t + 0.010328 * t * t) / (1 + 1.432788 * t + 0.189269 * t * t + 0.001308 * t * t * t); return p < 0.5 ? -z : z; }
+  function tubeModel(){
+    const M = 400, mu = TB.lr * Math.LN10, sg = TB.sig, r = [], w = []; let W = 0, F = 0;
+    for (let i = 0; i < M; i++){ const x = mu + sg * (-4 + 8 * (i + 0.5) / M), ri = Math.exp(x), wi = Math.exp(-0.5 * Math.pow((x - mu) / sg, 2)); r.push(ri); w.push(wi); W += wi; F += wi * ri * ri; }
+    return s => { const rc = 1484 / s; let th = 0, k = 0; for (let i = 0; i < M; i++) if (r[i] <= rc){ th += w[i]; k += w[i] * r[i] * r[i]; } return {th:th / W, k:k / F}; };
+  }
+  const fracTxt = k => k >= 0.01 ? `${(k * 100).toFixed(k >= 0.1 ? 0 : 1)}%` : k > 0 ? `1/${fmtE(1 / k)}` : '0';
+  function drawTubes(){
+    const at = tubeModel(), s = Math.pow(10, TB.ls), rc = 1484 / s, now = at(s);
+    // tube picture
+    const pic = $('#tubesPic'), {W, H} = frame(pic), nT = 16, mu = TB.lr * Math.LN10;
+    const radii = Array.from({length:nT}, (_, j) => Math.exp(mu + TB.sig * zq((j + 0.5) / nT)));
+    const flow = radii.map(r => r * r), fmax = Math.max(...flow), rmax = radii[nT - 1];
+    const Lp = 8, slot = (W - Lp * 2) / nT, tubeTop = 16, tubeBot = H - 40, barBase = H - 8;
+    let g = `<text x="${Lp}" y="11">each tube holds 1/16 of the pore space</text>`;
+    radii.forEach((r, j) => {
+      const cx = Lp + (j + 0.5) * slot, w = Math.max(2, r / rmax * slot * 0.8), full = r <= rc;
+      g += `<rect x="${cx - w / 2}" y="${tubeTop}" width="${w}" height="${tubeBot - tubeTop}" rx="${Math.min(3, w / 2)}" fill="${full ? 'var(--water)' : 'var(--bg)'}" stroke="${full ? 'none' : 'var(--line)'}" opacity="${full ? 0.85 : 1}"/>`;
+      const bh = Math.max(1, flow[j] / fmax * 22);
+      g += `<rect x="${cx - slot * 0.3}" y="${barBase - bh}" width="${slot * 0.6}" height="${bh}" fill="${full ? 'var(--s-in)' : 'var(--line)'}"/>`;
+    });
+    g += `<text x="${W - Lp}" y="${tubeBot + 12}" text-anchor="end">bars: share of flow when full</text>`;
+    pic.setAttribute('aria-label', 'Capillary tubes, full or empty at the current suction'); pic.innerHTML = g;
+    // curves
+    const th = [], kk = [];
+    for (let i = 0; i <= 225; i++){ const ls = i / 225 * 4.5, v = at(Math.pow(10, ls)); th.push([ls, Math.log10(Math.max(1e-7, v.th))]); kk.push([ls, Math.log10(Math.max(1e-7, v.k))]); }
+    lineChart({el:$('#tubesSvg'), x0:0, x1:4.5, y0:-6, y1:0, Lp:46, xLabel:'suction −h (cm, log)', T:12,
+      xTicks:[0, 1, 2, 3, 4].map(v => ({v, l:v === 0 ? '1' : `1e${v}`})), yTicks:[-6, -4, -2, 0].map(v => ({v, l:v === 0 ? '1' : `1e${v}`})),
+      vlines:[{v:TB.ls, c:'var(--ink)'}], series:[{pts:th, c:'var(--water)', w:2.5}, {pts:kk, c:'var(--s-in)', w:2.5}],
+      dots:[{pts:[[TB.ls, Math.log10(Math.max(1e-7, now.th))]], c:'var(--water)', r:4.5}, {pts:[[TB.ls, Math.log10(Math.max(1e-7, now.k))]], c:'var(--s-in)', r:4.5}],
+      aria:'Water held and conductivity against suction'});
+    $('#tubesLeg').innerHTML = leg('var(--water)', 'water held, θ/θs') + leg('var(--s-in)', 'conductivity, K/Ks') + '<span>both as a fraction of the saturated value, log scale</span>';
+    let lo = -1, hi = 6; for (let k = 0; k < 50; k++){ const mid = (lo + hi) / 2; if (at(Math.pow(10, mid)).th > 0.5) lo = mid; else hi = mid; }
+    const half = at(Math.pow(10, (lo + hi) / 2));
+    $('#tubesKv').innerHTML = kvh('Widest full pore', `${fmtNum(rc)} µm`) + kvh('Water held', fracTxt(now.th)) + kvh('Conductivity', fracTxt(now.k)) + kvh('K at half water', fracTxt(half.k));
+  }
+
+  // 4. chain of buckets
+  const CH = {N:4, f:12, data:null};
+  tslider($('#chainCtl'), CH, {key:'N', label:'Number of buckets N', min:1, max:12, step:1, fmt:v => `${v}`}, () => { CH.data = null; drawChain(); });
+  function chainSim(N){
+    const dz = 1 / N, k = 1 / (dz * dz), dt = 0.0005, per = Math.round(0.01 / dt), frames = [];
+    const a = new Float64Array(N), b = new Float64Array(N), c = new Float64Array(N);
+    for (let i = 0; i < N; i++){ a[i] = i > 0 ? -k : 0; c[i] = i < N - 1 ? -k : 0; b[i] = 1 / dt + (i === 0 ? 2 * k : 0) + (i > 0 ? k : 0) + (i < N - 1 ? k : 0); }
+    let u = new Float64Array(N); frames.push(Float64Array.from(u));
+    for (let f = 1; f <= 60; f++){
+      for (let s = 0; s < per; s++){ const r = new Float64Array(N); for (let i = 0; i < N; i++) r[i] = u[i] / dt; r[0] += 2 * k; u = thomas(a, b, c, r); }
+      frames.push(Float64Array.from(u));
+    }
+    return frames;
+  }
+  let chainFine = null;
+  function drawChain(){
+    if (!chainFine) chainFine = chainSim(200);
+    if (!CH.data) CH.data = chainSim(CH.N);
+    const N = CH.N, u = CH.data[CH.f], uf = chainFine[CH.f], dz = 1 / N;
+    lineChart({el:$('#chainSvg'), x0:0, x1:1, y0:0, y1:1, xLabel:'position down the column', T:12,
+      xTicks:[{v:0, l:'top'}, {v:0.5, l:'middle'}, {v:1, l:'bottom'}], yTicks:[0, 0.25, 0.5, 0.75, 1].map(v => ({v, l:v.toFixed(2)})),
+      rects:Array.from(u, (v, i) => ({x0:i * dz, x1:(i + 1) * dz, y:v, c:'var(--water)', o:0.45})),
+      series:[{pts:[[0, 1]].concat(Array.from(uf, (v, i) => [(i + 0.5) / 200, v])), c:'var(--ink)', w:2}],
+      dots:[{pts:Array.from(u, (v, i) => [(i + 0.5) * dz, v]), c:'var(--accent)', r:3.5}], aria:'Bucket levels compared with the continuous limit'});
+    $('#chainLeg').innerHTML = leg('var(--accent)', `${N} bucket${N > 1 ? 's' : ''}`) + leg('var(--ink)', '200 buckets, close to the PDE') + '<span>reservoir at level 1 above the top bucket</span>';
+    $('#chainTLbl').textContent = `t = ${(CH.f * 0.01).toFixed(2)} L²/D`;
+    // matrix
+    const ms = 220, cell = ms / N, svgM = $('#chainMat'); svgM.setAttribute('viewBox', `0 0 ${ms} ${ms}`);
+    let m = '';
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++){
+      let v = 0;
+      if (i === j) v = -((i === 0 ? 2 : 0) + (i > 0 ? 1 : 0) + (i < N - 1 ? 1 : 0)); else if (Math.abs(i - j) === 1) v = 1;
+      m += `<rect x="${j * cell + 1}" y="${i * cell + 1}" width="${cell - 2}" height="${cell - 2}" rx="3" fill="${v === 0 ? 'var(--bg)' : i === j ? 'var(--accent)' : 'var(--t2)'}"/>`;
+      if (N <= 8 && v !== 0) m += `<text x="${(j + 0.5) * cell}" y="${(i + 0.5) * cell + 4}" text-anchor="middle" fill="var(--on-accent)" font-size="${Math.min(14, cell * 0.36).toFixed(1)}" font-family='${mono}'>${v > 0 ? v : '−' + (-v)}</text>`;
+    }
+    svgM.innerHTML = m;
+    $('#chainMatText').textContent = N === 1 ? 'With one bucket the matrix is a single number: one ODE, the first-order lag from model 1.' :
+      `The ${N}×${N} matrix A in C·du/dt = G·A·u + b. Each row is one bucket. Only the diagonal and its two neighbors are nonzero (tridiagonal), so a solve costs about N operations instead of N³. The −3 in the first row includes the link to the reservoir, half a bucket away; the last row has one neighbor because the bottom is sealed.`;
+    const tf = dz * dz / 4, ts = 4 / (Math.PI * Math.PI);
+    $('#chainKv').innerHTML = kvh('Bucket size Δz', `L/${N}`) + kvh('Fastest τ', `≈ ${tf.toPrecision(2)} L²/D`) + kvh('Slowest τ', `≈ ${ts.toFixed(2)} L²/D`) + kvh('Ratio (stiffness)', `≈ ${Math.round(ts / tf)}`);
+  }
+  let chainTimer = null;
+  function chainPlay(on){
+    if (on){ if (CH.f >= 60) CH.f = 0; chainTimer = setInterval(() => { CH.f++; if (CH.f >= 60){ CH.f = 60; chainPlay(false); } $('#chainT').value = CH.f; drawChain(); }, 70); }
+    else { clearInterval(chainTimer); chainTimer = null; }
+    $('#chainPlay').setAttribute('aria-label', on ? 'Pause' : 'Play');
+    $('#chainPlayIco').innerHTML = on ? '<path d="M2 1h2v8H2zM6 1h2v8H6z"/>' : '<path d="M2 1l7 4-7 4z"/>';
+  }
+  $('#chainPlay').addEventListener('click', () => chainPlay(!chainTimer));
+  $('#chainT').value = CH.f;
+  $('#chainT').addEventListener('input', e => { CH.f = +e.target.value; drawChain(); });
+
+  // 5. wetting fronts
+  const FR = {beta:0, G:0, res:null, tm:null}, FR_T = [0.002, 0.01, 0.05, 0.2];
+  const frSync = [
+    tslider($('#frontCtl'), FR, {key:'beta', label:'Nonlinearity β', min:0, max:12, step:0.5, fmt:v => v === 0 ? '0, constant D' : `${v}, D varies ${fmtE(Math.exp(v))}×`}, frontChanged),
+    tslider($('#frontCtl'), FR, {key:'G', label:'Gravity G', min:0, max:3, step:0.1, fmt:v => v === 0 ? 'off' : v.toFixed(1)}, frontChanged)
+  ];
+  const FP = {heat:[0, 0], nl:[8, 0], grav:[8, 2]};
+  function syncFrontSeg(){ document.querySelectorAll('#frontSeg [data-fp]').forEach(b => { const v = FP[b.dataset.fp]; b.setAttribute('aria-pressed', String(v[0] === FR.beta && v[1] === FR.G)); }); }
+  $('#frontSeg').addEventListener('click', e => { const b = e.target.closest('[data-fp]'); if (!b) return; [FR.beta, FR.G] = FP[b.dataset.fp]; frSync.forEach(f => f()); frontChanged(); });
+  syncFrontSeg();
+  function frontChanged(){ syncFrontSeg(); clearTimeout(FR.tm); FR.tm = setTimeout(() => { FR.res = simFront(FR.beta, FR.G); drawFront(); }, 50); }
+  const crossDepth = (p, lvl, dz) => { for (let i = 0; i < p.length; i++) if (p[i] < lvl) return i === 0 ? 0 : (i - 0.5) * dz + dz * (p[i - 1] - lvl) / (p[i - 1] - p[i]); return null; };
+  function simFront(beta, G){
+    const Lz = 1.5, N = 120, dz = Lz / N, th0 = 0.02;
+    const I = beta < 1e-6 ? 0.5 : 1 / beta - (1 - Math.exp(-beta)) / (beta * beta), Ds = 0.5 / I;
+    const D = t => Ds * Math.exp(beta * (t - 1)), v = t => G * t * t * t;
+    const a = new Float64Array(N), b = new Float64Array(N), c = new Float64Array(N), r = new Float64Array(N);
+    let th = new Float64Array(N).fill(th0), t = 0, dt = 1e-6, oi = 0;
+    const T = FR_T[FR_T.length - 1], prof = [], front = [];
+    while (t < T - 1e-12){
+      const h = Math.min(dt, FR_T[oi] - t);
+      let m = th;
+      for (let it = 0; it < 30; it++){
+        for (let i = 0; i < N; i++){
+          const Dm = i > 0 ? 0.5 * (D(m[i - 1]) + D(m[i])) : 0, Dp = i < N - 1 ? 0.5 * (D(m[i]) + D(m[i + 1])) : 0;
+          const vi = i > 0 ? v(m[i - 1]) : 0, vp = i < N - 1 ? v(m[i]) : 0;
+          a[i] = i > 0 ? -(Dm / (dz * dz) + vi / dz) : 0; c[i] = -Dp / (dz * dz);
+          b[i] = 1 / h + (Dm + Dp) / (dz * dz) + vp / dz; r[i] = th[i] / h;
+        }
+        const D0 = 0.5 * (D(1) + D(m[0])); b[0] += 2 * D0 / (dz * dz); r[0] += 2 * D0 / (dz * dz) + G / dz;
+        const x = thomas(a, b, c, r);
+        let d = 0; for (let i = 0; i < N; i++) d = Math.max(d, Math.abs(x[i] - m[i]));
+        m = x; if (d < 1e-5) break;
+      }
+      th = m; t += h;
+      front.push([t, crossDepth(th, 0.5, dz)]);
+      if (Math.abs(t - FR_T[oi]) < 1e-12){ prof.push(Float64Array.from(th)); oi++; }
+      dt = Math.min(dt * 1.1, 4e-4);
+    }
+    return {prof, front, N, dz};
+  }
+  function drawFront(){
+    if (!FR.res) FR.res = simFront(FR.beta, FR.G);
+    const res = FR.res, z = Array.from({length:res.N}, (_, i) => (i + 0.5) * res.dz), cols = ['var(--t1)', 'var(--t2)', 'var(--t3)', 'var(--t4)'];
+    lineChart({el:$('#frontSvg'), x0:0, x1:1, y0:0, y1:1.5, yInvert:true, Lp:48, xLabel:'water content θ (0 dry, 1 saturated)', yLabel:'depth', T:12,
+      xTicks:[0, 0.25, 0.5, 0.75, 1].map(v => ({v, l:String(v)})), yTicks:[0, 0.5, 1, 1.5].map(v => ({v, l:v.toFixed(1)})),
+      series:res.prof.map((p, k) => ({pts:[[1, 0]].concat(Array.from(p, (v, i) => [v, z[i]])), c:cols[k], w:2.2})), aria:'Water content profiles at four times'});
+    $('#frontLeg').innerHTML = FR_T.map((t, k) => leg(cols[k], `t = ${t}`)).join('');
+    const fp = res.front.filter(p => p[1] != null && p[1] > 1.5 * res.dz && p[0] >= 3e-4).map(p => [Math.log10(p[0]), Math.log10(p[1])]);
+    const xs = [-3.5, -0.69], series = [{pts:xs.map(x => [x, Math.log10(0.95) + 0.5 * x]), c:'var(--muted)', dash:'5 4', w:1.5}];
+    if (FR.G > 0) series.push({pts:[[-3.5, Math.log10(FR.G) - 3.5], [-0.69, Math.log10(FR.G) - 0.69]], c:'var(--s-in)', dash:'5 4', w:1.5});
+    series.push({pts:fp, c:'var(--accent)', w:2.5});
+    lineChart({el:$('#frontSvg2'), x0:-3.5, x1:-0.69, y0:-2, y1:0.3, Lp:48, xLabel:'time (log)', yLabel:'front depth', T:12,
+      xTicks:[-3, -2, -1].map(v => ({v, l:`1e${v}`})), yTicks:[-2, -1, 0].map(v => ({v, l:String(Math.pow(10, v))})),
+      series, aria:'Front depth against time, log-log'});
+    $('#frontLeg2').innerHTML = leg('var(--accent)', 'front depth (where θ = 0.5)') + leg('var(--muted)', 'slope ½: depth ∝ √t', true) + (FR.G > 0 ? leg('var(--s-in)', 'slope 1: depth = G·t', true) : '');
+    const zAt = tt => { const p = res.front.find(q => q[0] >= tt - 1e-12); return p ? p[1] : null; };
+    const slope = (t1, t2) => { const a = zAt(t1), b = zAt(t2); return a && b ? (Math.log(b / a) / Math.log(t2 / t1)).toFixed(2) : 'n/a'; };
+    const last = res.prof[res.prof.length - 1], w8 = crossDepth(last, 0.8, res.dz), w2 = crossDepth(last, 0.2, res.dz);
+    $('#frontKv').innerHTML = kvh('Early slope', slope(0.002, 0.01)) + kvh('Late slope', slope(0.05, 0.2)) + kvh('Front depth, t = 0.2', zAt(0.2) ? zAt(0.2).toFixed(2) : 'n/a') + kvh('Front width, t = 0.2', w8 != null && w2 != null ? (w2 - w8).toFixed(2) : 'n/a');
+  }
+
+  // 6. Picard iteration
+  const PC = {la:0, p:3};
+  tslider($('#picardCtl'), PC, {key:'la', label:'Step size Δt·k', min:-2, max:2, step:0.01, fmt:v => fmtNum2(Math.pow(10, v))}, drawPicard);
+  tslider($('#picardCtl'), PC, {key:'p', label:'Nonlinearity p', min:1.5, max:6, step:0.1, fmt:v => v.toFixed(1)}, drawPicard);
+  function drawPicard(){
+    const a = Math.pow(10, PC.la), p = PC.p, g = W => 1 / (1 + a * Math.pow(W, p - 1));
+    let lo = 0, hi = 1; for (let k = 0; k < 80; k++){ const mid = (lo + hi) / 2; if (mid + a * Math.pow(mid, p) > 1) hi = mid; else lo = mid; }
+    const Ws = (lo + hi) / 2, gp = (p - 1) * (1 - Ws), it = [1]; let conv = -1;
+    for (let m = 0; m < 60; m++){ const nx = g(it[m]); it.push(nx); if (conv < 0 && Math.abs(nx - it[m]) < 1e-6){ conv = m + 1; break; } }
+    const web = [[it[0], 0]]; for (let m = 0; m < Math.min(14, it.length - 1); m++){ web.push([it[m], it[m + 1]]); web.push([it[m + 1], it[m + 1]]); }
+    const curve = []; for (let k = 0; k <= 120; k++){ const W = k / 120 * 1.05; curve.push([W, g(W)]); }
+    lineChart({el:$('#picardSvg'), x0:0, x1:1.05, y0:0, y1:1.05, Lp:48, xLabel:'guess W[m]', yLabel:'next guess', T:12,
+      xTicks:[0, 0.25, 0.5, 0.75, 1].map(v => ({v, l:String(v)})), yTicks:[0, 0.25, 0.5, 0.75, 1].map(v => ({v, l:String(v)})),
+      series:[{pts:[[0, 0], [1.05, 1.05]], c:'var(--muted)', dash:'4 4', w:1.4}, {pts:curve, c:'var(--ink)', w:2.2}, {pts:web, c:'var(--accent)', w:1.6}],
+      dots:[{pts:it.slice(1, 15).map(w => [w, w]), c:'var(--accent)', r:2.6}, {pts:[[Ws, Ws]], c:'var(--s-wp)', r:5}], aria:'Cobweb plot of Picard iteration'});
+    $('#picardLeg').innerHTML = leg('var(--ink)', 'update g(W)') + leg('var(--muted)', 'next = guess', true) + leg('var(--accent)', 'passes') + '<span><i style="background:var(--s-wp);width:8px;height:8px;border-radius:50%"></i>answer</span>';
+    $('#picardIters').textContent = 'W: ' + it.slice(0, 9).map(w => w.toFixed(3)).join(' → ') + (it.length > 9 ? ' → …' : '');
+    const status = conv > 0 ? `<span class="goodbad ok">settles in ${conv} passes</span>` : gp > 1 ? '<span class="goodbad bad">bounces, never settles</span>' : '<span class="goodbad bad">too slow, over 60 passes</span>';
+    $('#picardKv').innerHTML = kvh('Answer W (W_old = 1)', Ws.toFixed(3)) + kvh('Removed this step', `${((1 - Ws) * 100).toFixed(0)}%`) + kvh('|g′| at answer', gp.toFixed(2)) + kvh('Picard', status);
+  }
+
+  function drawBasics(){
+    if (UI.mode !== 'basics') return;
+    const names = {potting:'potting mix', coir:'coco coir', loam:'loam', sandy:'sandy soil'};
+    const pe = soilExponent(), pSet = Math.round(clamp(pe, 1, 10) * 10) / 10;
+    $('#pEffText').innerHTML = `For the soil loaded in the lab (${names[P.preset] || 'custom constants'}), K grows roughly as Se^${pe.toFixed(1)} between 60% and 80% saturation, so that pot drains like a bucket with p ≈ ${pe.toFixed(0)}. <button class="linkbtn" type="button" id="pMatch">Set p to ${pSet.toFixed(1)}</button>`;
+    $('#pMatch').onclick = () => { BK.p = pSet; bkSyncP(); drawBucket(); };
+    $('#stiffText').textContent = stiffText();
+    drawBucket(); drawSteps(); drawTubes(); drawChain(); drawFront(); drawPicard();
+  }
+  if (window.ResizeObserver){ let rt = null; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawBasics, 80); }).observe($('#page-basics')); }
 
   // ---------- start ----------
   syncAll();

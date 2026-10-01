@@ -353,7 +353,7 @@ table.xlate td:nth-child(2){font-weight:500}
           <div><b>ODE</b>, ordinary differential equation: one quantity changing over time. The total water in a pot, W(t).</div>
           <div><b>PDE</b>, partial differential equation: a quantity changing over time <i>and</i> space. The water content at each depth, θ(z, t).</div>
         </div>
-        <p>Part 1 builds up ODEs from the idea of a slope. Part 2 extends the same ideas to PDEs, and ends with the Richards equation read term by term. Work through in order; each step uses the one before.</p>
+        <p>Part 1 builds up ODEs from the idea of a slope. Part 2 extends the same ideas to PDEs, and ends with the Richards equation read term by term. Work through in order; each step uses the one before. Steps with a letter, like 7a, slow down the parts of Part 2 that need more room.</p>
         <div class="toc" style="margin-top:8px">
           <button type="button" data-goto="pr-1"><b>1</b>Derivatives</button>
           <button type="button" data-goto="pr-2"><b>2</b>Slope fields</button>
@@ -362,9 +362,16 @@ table.xlate td:nth-child(2){font-weight:500}
           <button type="button" data-goto="pr-5"><b>5</b>Nonlinear ODEs</button>
           <button type="button" data-goto="pr-6"><b>6</b>Two tanks</button>
           <button type="button" data-goto="pr-7"><b>7</b>Two variables</button>
+          <button type="button" data-goto="pr-7a"><b>7a</b>Three views</button>
+          <button type="button" data-goto="pr-7b"><b>7b</b>Numbers grid</button>
+          <button type="button" data-goto="pr-7c"><b>7c</b>Second derivative</button>
           <button type="button" data-goto="pr-8"><b>8</b>Shape to change</button>
+          <button type="button" data-goto="pr-8a"><b>8a</b>Layer budget</button>
           <button type="button" data-goto="pr-9"><b>9</b>Heat equation</button>
+          <button type="button" data-goto="pr-9a"><b>9a</b>Time scales</button>
+          <button type="button" data-goto="pr-9b"><b>9b</b>Steady state</button>
           <button type="button" data-goto="pr-10"><b>10</b>Drift</button>
+          <button type="button" data-goto="pr-10a"><b>10a</b>Nonlinear D</button>
           <button type="button" data-goto="pr-11"><b>11</b>All together</button>
         </div>
       </section>
@@ -475,6 +482,53 @@ table.xlate td:nth-child(2){font-weight:500}
         <p class="notice"><b>Notice:</b> at the peak of the bump, the profile curves downward and u is falling in time. Out on the flanks, the profile curves upward and u is rising. Check the last two readouts at any point you pick: ∂u/∂t always equals D·∂²u/∂z². This function satisfies the <b>heat equation</b>, which is what it means to be a solution of a PDE.</p>
       </section>
 
+      <section class="card" id="pr-7a">
+        <h2>7a. Three ways to look at u(z, t)</h2>
+        <p>If the heatmap in step 7 felt abstract, this step builds it from pieces you already know. Start with ordinary profiles, one for each moment, and line them up side by side along the time axis. Each column below is one profile, standing upright with depth going down and u pushing to the right.</p>
+        <p>Now replace each column's curve with color: dark where u is high, pale where it's low. Squeeze the columns together and you get the heatmap. Nothing new is added. It's the same profiles, painted instead of drawn.</p>
+        <div class="seg full" role="group" aria-label="Example" id="p7aseg">
+          <button type="button" data-fn="bump">Bump</button>
+          <button type="button" data-fn="front">Wetting</button>
+          <button type="button" data-fn="dry">Drying</button>
+        </div>
+        <div class="ctls" id="p7actl"></div>
+        <div class="mplot tap"><svg id="p7aa" role="img"></svg></div>
+        <p class="hint">Each column is the profile at one time. Tap a column to pick it.</p>
+        <div class="mplot short-plot tap"><svg id="p7ab" role="img"></svg></div>
+        <p class="hint">The same columns, colored instead of drawn.</p>
+        <div class="mplot short-plot"><svg id="p7ac" role="img"></svg></div>
+        <div class="legend" id="p7aleg"></div>
+        <p class="notice"><b>Notice:</b> to follow <i>one depth</i> through time, read across a horizontal row of the heatmap. To see the <i>whole pot at one moment</i>, read down a single column. Step 7's two slices are exactly those two readings, and the bottom chart is the selected column laid on its side so depth runs left to right.</p>
+      </section>
+
+      <section class="card" id="pr-7b">
+        <h2>7b. Partial derivatives with real numbers</h2>
+        <p>A computer never sees a smooth u(z, t). It sees a table: one number per depth per time. Here is one, with depth down the rows (every 2 cm) and time across the columns (every hour). The numbers are water contents.</p>
+        <p>A partial derivative only ever looks in one direction. For ∂u/∂t, stay in the same row and compare the hour before with the hour after. For ∂u/∂z, stay in the same column and compare the layer above with the layer below. The other variable is held fixed simply by not leaving the row or column.</p>
+        <div class="mplot tall tap"><svg id="p7bgrid" role="img"></svg></div>
+        <p class="hint">Tap any cell. Blue outlines are used for ∂u/∂t, orange for ∂u/∂z.</p>
+        <div class="chain" id="p7bmath"></div>
+        <p class="notice"><b>Notice:</b> pick a cell near the middle of the bump (around 6 cm) at an early hour. The neighbors above and below are both lower, so the second difference is strongly negative, and along the row the value is falling. Pick a cell near the edge of the bump, at 2 or 10 cm, and both signs flip. The last two lines come out close, though not identical, because the grid is coarse: these numbers follow the heat equation, measured with nothing but subtraction and division.</p>
+      </section>
+
+      <section class="card" id="pr-7c">
+        <h2>7c. The second derivative: slope of the slope</h2>
+        <p>The heat equation turns on ∂²u/∂z², so it's worth getting a feel for it. There are two equivalent ways to see it.</p>
+        <div class="chain">
+          <div><b>slope of the slope</b>   take the slope ∂u/∂z at every depth, plot it, then take <i>its</i> slope. Where the slope is increasing, the curve bends upward.</div>
+          <div><b>compare with neighbors</b>   draw a straight line between the points a little above and a little below. If the curve sits <i>below</i> that line, it bends upward and ∂²u/∂z² &gt; 0. The gap is about (h²/2)·∂²u/∂z².</div>
+        </div>
+        <div class="ctls" id="p7cctl"></div>
+        <div class="mplot"><svg id="p7ca" role="img"></svg></div>
+        <div class="legend" id="p7cleg"></div>
+        <div class="mplot short-plot"><svg id="p7cb" role="img"></svg></div>
+        <div class="legend" id="p7clegb"></div>
+        <div class="mplot short-plot"><svg id="p7cc" role="img"></svg></div>
+        <div class="legend" id="p7clegc"></div>
+        <div class="kv" id="p7ckv"></div>
+        <p class="notice"><b>Notice:</b> in a valley, the point sits below its neighbors' average, the gap is positive, and so is ∂²u/∂z². On a hilltop it's the reverse. Shrink h and the last two readouts agree more and more closely. That neighbor comparison is exactly how the lab's solver computes curvature: (above − 2·this + below)/Δz².</p>
+      </section>
+
       <section class="card" id="pr-8">
         <h2>8. From shape to change</h2>
         <p>Why should the curvature of a profile decide how fast it changes? Follow the chain one link at a time:</p>
@@ -499,6 +553,24 @@ table.xlate td:nth-child(2){font-weight:500}
         <p class="notice"><b>Notice:</b> pick Ramp. There is flux everywhere, but nothing changes, because each layer passes on exactly what it receives. Only where the flux changes along depth, at the bends, does u rise or fall. Sharp bends mean fast change.</p>
       </section>
 
+      <section class="card" id="pr-8a">
+        <h2>8a. A layer budget you can count</h2>
+        <p>Here is step 8 with five layers and actual numbers. Water moves across each boundary in proportion to the difference between the two layers it separates:</p>
+        <div class="eq">moved across a boundary in one step<br>  = r · (u above − u below)</div>
+        <p>r bundles together D, the step length, and the layer thickness: r = D·Δt/Δz². Each layer then gains what comes in through its top boundary and loses what leaves through its bottom. The top and bottom of the column are sealed.</p>
+        <div class="ctls" id="p8actl"></div>
+        <div class="mplot tall tap"><svg id="p8aa" role="img"></svg></div>
+        <p class="hint">Tap inside a layer's column to set its level.</p>
+        <div class="btnrow">
+          <button class="btn primary" type="button" id="p8astep">Take one step</button>
+          <button class="btn" type="button" id="p8arun">Take 10 steps</button>
+          <button class="btn" type="button" id="p8areset">Start over</button>
+        </div>
+        <div class="chain" id="p8amath"></div>
+        <div class="kv" id="p8akv"></div>
+        <p class="notice"><b>Notice:</b> the total never changes, because whatever one layer loses through a boundary, its neighbor gains. Write out "in minus out" for a middle layer and it collapses to r·(above − 2·this + below): the same neighbor comparison as step 7c. That is why conservation plus downhill flow gives curvature. Now set r above 0.5 and step: the levels overshoot and seesaw, the explicit-step instability from Basics 2.</p>
+      </section>
+
       <section class="card" id="pr-9">
         <h2>9. Watch the heat equation run</h2>
         <p>Start from the profile you drew in step 8 and let ∂u/∂t = D·∂²u/∂z² play forward. A PDE also needs <b>boundary conditions</b>: what happens at the top and bottom edges.</p>
@@ -521,6 +593,37 @@ table.xlate td:nth-child(2){font-weight:500}
         <p class="notice"><b>Notice:</b> with sealed ends, the total never changes; the profile just flattens toward its average. With the top held wet, water seeps in through the boundary and the total climbs. Sharp corners vanish first, because they have the most curvature.</p>
       </section>
 
+      <section class="card" id="pr-9a">
+        <h2>9a. How long does spreading take?</h2>
+        <p>Diffusion has a built-in clock. A bump of width σ₀ spreads so that its width grows like</p>
+        <div class="eq">σ(t)² = σ₀² + 2·D·t</div>
+        <p>Width squared grows in a straight line with time, so width itself grows only as √t. To spread twice as far takes four times as long. The rule of thumb is <b>t ≈ L²/D</b>: the time for diffusion to even things out over a distance L.</p>
+        <div class="ctls" id="p9actl"></div>
+        <div class="mplot"><svg id="p9aa" role="img"></svg></div>
+        <div class="legend" id="p9aleg"></div>
+        <div class="seg full" role="group" aria-label="Width axis" id="p9aseg" style="margin-top:8px">
+          <button type="button" data-w="w">Width σ</button>
+          <button type="button" data-w="w2">Width squared σ²</button>
+        </div>
+        <div class="mplot short-plot"><svg id="p9ab" role="img"></svg></div>
+        <div class="kv" id="p9akv"></div>
+        <p class="notice"><b>Notice:</b> on the width-squared view the points fall on a straight line with slope 2D. <span id="p9alab"></span></p>
+      </section>
+
+      <section class="card" id="pr-9b">
+        <h2>9b. Steady state: when nothing changes</h2>
+        <p>Hold the top and bottom at fixed values and wait. Eventually the profile stops changing: ∂u/∂t = 0. That is a <b>steady state</b>, and setting the left side of the equation to zero turns the PDE into an ODE in z alone:</p>
+        <div class="eq">0 = D·d²u/dz² − v·du/dz</div>
+        <p>With no drift, d²u/dz² = 0 means zero curvature: a straight line between the two boundary values. With drift, the profile bends into an exponential that hugs one end.</p>
+        <div class="ctls" id="p9bctl"></div>
+        <div class="mplot"><svg id="p9ba" role="img"></svg></div>
+        <div class="legend" id="p9bleg"></div>
+        <div class="mplot short-plot"><svg id="p9bb" role="img"></svg></div>
+        <div class="legend" id="p9blegb"></div>
+        <div class="kv" id="p9bkv"></div>
+        <p class="notice"><b>Notice:</b> at steady state the flux is the same at every depth. It has to be: if any layer took in more than it passed on, it would be changing. While the profile is still settling, the flux varies with depth. In a pot, "full after draining" in the lab is a steady state with zero flux everywhere, where gravity and the pressure gradient cancel. In terms of h, that profile is a straight line: h = −(height above the base).</p>
+      </section>
+
       <section class="card" id="pr-10">
         <h2>10. Adding a drift: gravity</h2>
         <p>Diffusion spreads things out in both directions. Gravity pulls water one way. A drift at speed v adds one term:</p>
@@ -532,6 +635,20 @@ table.xlate td:nth-child(2){font-weight:500}
         <div class="mplot short-plot"><svg id="p10b" role="img"></svg></div>
         <div class="kv" id="p10kv"></div>
         <p class="notice"><b>Notice:</b> with v = 0 the bump spreads in place. With small D it slides almost unchanged. In the Richards equation the gravity term plays the drift, and its speed depends on how wet the soil is: fast in wet soil, nearly zero in dry soil. That is why wetting fronts stay sharp.</p>
+      </section>
+
+      <section class="card" id="pr-10a">
+        <h2>10a. When D depends on u</h2>
+        <p>The last ingredient before Richards: what if diffusivity depends on how much stuff is there? Moving D inside the derivative keeps the balance exact:</p>
+        <div class="eq">∂u/∂t = ∂/∂z [ D(u) · ∂u/∂z ]<br>D(u) = (m + 1) · u^m</div>
+        <p>With m = 0, D is constant and this is the heat equation. With m &gt; 0, wet places conduct well and dry places barely conduct at all, which is how soil behaves.</p>
+        <div class="ctls" id="p10actl"></div>
+        <div class="mplot short-plot"><svg id="p10aa" role="img"></svg></div>
+        <div class="legend" id="p10aleg"></div>
+        <div class="mplot"><svg id="p10ab" role="img"></svg></div>
+        <div class="legend" id="p10alegb"></div>
+        <div class="kv" id="p10akv"></div>
+        <p class="notice"><b>Notice:</b> with m = 0 the bump grows soft tails that reach across the whole column almost at once. Raise m and the edges turn steep and advance at a finite speed: dry soil ahead of the edge can't pass water along until it gets wet itself. The total is the same in every case; only how it spreads changes. This is the sharp wetting front of Basics 5 and Lesson 5, in its simplest form.</p>
       </section>
 
       <section class="card" id="pr-11">
@@ -2246,9 +2363,230 @@ const REFS = [
     $('#p10kv').innerHTML = kvh('Drift v·t at end', drift.toFixed(2)) + kvh('Spread √(2Dt)', spread.toFixed(3)) + kvh('Drift ÷ spread', spread > 0 ? (drift / spread).toFixed(1) : '∞') + kvh('Peak height at end', u10(Z10 + v * T10, T10, D, v).toFixed(2));
   }
 
+  // ---------- primer: extra steps 7a to 10a ----------
+  const erf = x => { const sg = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x); return sg * (1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); };
+  const colorSpan = (c, txt) => `<span style="color:${c};font-weight:600">${txt}</span>`;
+
+  // 7a. three views
+  const S7a = {fn:'bump', k:3, url:{}}, T7a = 0.05, NK7a = 9, DX7a = T7a / (NK7a - 1);
+  const F7a = {
+    bump:(z, t) => 0.08 / Math.sqrt(0.0064 + 0.8 * t) * Math.exp(-Math.pow(z - 0.4, 2) / (0.0064 + 0.8 * t)),
+    front:(z, t) => 0.08 + 0.87 * (1 - erf(z / (2 * Math.sqrt(1.5 * (t + 4e-4))))),
+    dry:(z, t) => 0.12 + 0.8 * erf(z / (2 * Math.sqrt(1.5 * (t + 4e-4))))
+  };
+  const s7aK = tslider($('#p7actl'), S7a, {key:'k', label:'Selected time', min:0, max:NK7a - 1, step:1, fmt:k => `t = ${(k * DX7a).toFixed(4)}`}, drawP7a);
+  function syncP7aSeg(){ document.querySelectorAll('#p7aseg [data-fn]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.fn === S7a.fn))); }
+  $('#p7aseg').addEventListener('click', e => { const b = e.target.closest('[data-fn]'); if (!b) return; S7a.fn = b.dataset.fn; syncP7aSeg(); drawP7a(); });
+  syncP7aSeg();
+  function drawP7a(){
+    const fn = F7a[S7a.fn], k0 = S7a.k, X0 = -DX7a / 2, X1 = T7a + DX7a / 2, zz = lin(0, 1, 80), times = Array.from({length:NK7a}, (_, k) => k * DX7a);
+    const xt = tk([0, 0.0125, 0.025, 0.0375, 0.05]);
+    lineChart({el:$('#p7aa'), x0:X0, x1:X1, y0:0, y1:1, yInvert:true, Lp:46, T:10, xLabel:'time →', yLabel:'depth z', xTicks:xt, yTicks:tk([0, 0.5, 1]),
+      extra:(x, y) => { const cw = (x(DX7a) - x(0)) * 0.8; return times.map((t, k) => { const x0 = x(t) - cw / 2, sel = k === k0, pts = zz.map(z => `${(x0 + fn(z, t) * cw).toFixed(1)},${y(z).toFixed(1)}`);
+        return `<rect x="${x0 - 3}" y="${y(0)}" width="${cw + 6}" height="${y(1) - y(0)}" fill="${sel ? 'var(--soft)' : 'var(--surface)'}" rx="4" opacity=".9"/><line x1="${x0}" x2="${x0}" y1="${y(0)}" y2="${y(1)}" stroke="var(--line)"/><path d="M${x0} ${y(0)}L${pts.join('L')}L${x0} ${y(1)}Z" fill="var(--water)" opacity="${sel ? 0.4 : 0.18}"/><polyline points="${pts.join(' ')}" fill="none" stroke="${sel ? 'var(--accent)' : 'var(--muted)'}" stroke-width="${sel ? 2.4 : 1.3}"/>`; }).join(''); },
+      aria:'Nine profiles standing side by side along the time axis'});
+    if (!S7a.url[S7a.fn]) S7a.url[S7a.fn] = heatURL(90, 70, (i, j) => fn((j + 0.5) / 70, (i + 0.5) / 90 * T7a));
+    const url = S7a.url[S7a.fn];
+    lineChart({el:$('#p7ab'), x0:X0, x1:X1, y0:0, y1:1, yInvert:true, Lp:46, T:8, xLabel:'time →', yLabel:'depth', xTicks:xt, yTicks:tk([0, 0.5, 1]),
+      under:(x, y) => imgTag(url, x, y, 0, T7a, 0, 1),
+      extra:(x, y) => { const cw = (x(DX7a) - x(0)), xc = x(times[k0]); return `<rect x="${xc - cw / 2}" y="${y(0)}" width="${cw}" height="${y(1) - y(0)}" fill="none" stroke="var(--surface)" stroke-width="4"/><rect x="${xc - cw / 2}" y="${y(0)}" width="${cw}" height="${y(1) - y(0)}" fill="none" stroke="var(--accent)" stroke-width="2"/>`; },
+      aria:'Heatmap of the same function'});
+    const t0 = times[k0];
+    lineChart({el:$('#p7ac'), x0:0, x1:1, y0:0, y1:1, Lp:46, T:10, xLabel:'depth z (the selected column, on its side)', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.5, 1]),
+      under:(x, y) => `<path d="M${x(0)} ${y(0)}${zz.map(z => `L${x(z)} ${y(fn(z, t0))}`).join('')}L${x(1)} ${y(0)}Z" fill="var(--water)" opacity=".2"/>`,
+      series:[{pts:zz.map(z => [z, fn(z, t0)]), c:'var(--accent)', w:2.4}], aria:'Profile at the selected time'});
+    $('#p7aleg').innerHTML = leg('var(--accent)', `profile u(z) at t = ${t0.toFixed(4)}`);
+  }
+  ['#p7aa', '#p7ab'].forEach(id => $(id).addEventListener('click', e => { const d = toData($(id), e); if (!d) return; S7a.k = clamp(Math.round(d.x / DX7a), 0, NK7a - 1); s7aK(); drawP7a(); }));
+
+  // 7b. a grid of numbers
+  const S7b = {i:2, j:1}, Z7b = [0, 2, 4, 6, 8, 10, 12], T7b = [0, 1, 2, 3, 4, 5, 6], D7b = 1;
+  const uB = (z, t) => 0.10 + 0.35 * 4 / Math.sqrt(16 + 4 * D7b * t) * Math.exp(-Math.pow(z - 6, 2) / (16 + 4 * D7b * t));
+  const G7b = Z7b.map(z => T7b.map(t => Math.round(uB(z, t) * 1000) / 1000));
+  function drawP7b(){
+    const el = $('#p7bgrid'), {W, H} = frame(el), Lp = 44, Tp = 32, cw = (W - Lp - 4) / 7, ch = (H - Tp - 4) / 7, {i, j} = S7b;
+    let s = `<text x="${Lp + cw * 3.5}" y="11" text-anchor="middle">time t →</text>`;
+    T7b.forEach((t, c) => s += `<text x="${Lp + (c + 0.5) * cw}" y="${Tp - 7}" text-anchor="middle">${t} h</text>`);
+    Z7b.forEach((z, r) => s += `<text x="${Lp - 6}" y="${Tp + (r + 0.5) * ch + 4}" text-anchor="end">${z} cm</text>`);
+    G7b.forEach((row, r) => row.forEach((v, c) => { const tt = (v - 0.1) / 0.35, dark = tt > 0.5; s += `<rect x="${Lp + c * cw + 1}" y="${Tp + r * ch + 1}" width="${cw - 2}" height="${ch - 2}" rx="4" fill="${rgb(ramp(tt))}"/><text x="${Lp + (c + 0.5) * cw}" y="${Tp + (r + 0.5) * ch + 4}" text-anchor="middle" fill="${dark ? '#ffffff' : '#1b2a22'}" font-size="${Math.min(12, cw * 0.27).toFixed(1)}">${v.toFixed(3).slice(1)}</text>`; }));
+    const box = (r, c, col, w) => `<rect x="${Lp + c * cw + 2}" y="${Tp + r * ch + 2}" width="${cw - 4}" height="${ch - 4}" rx="4" fill="none" stroke="var(--surface)" stroke-width="${w + 2.5}"/><rect x="${Lp + c * cw + 2}" y="${Tp + r * ch + 2}" width="${cw - 4}" height="${ch - 4}" rx="4" fill="none" stroke="${col}" stroke-width="${w}"/>`;
+    [j - 1, j + 1].filter(c => c >= 0 && c <= 6).forEach(c => s += box(i, c, 'var(--accent)', 3));
+    [i - 1, i + 1].filter(r => r >= 0 && r <= 6).forEach(r => s += box(r, j, 'var(--s-in)', 3));
+    s += box(i, j, 'var(--ink)', 3.5);
+    el.setAttribute('aria-label', 'Table of water content by depth and time'); el.innerHTML = s; el._g7b = {Lp, Tp, cw, ch, W, H};
+    const G = G7b, u = G[i][j], f = v => v.toFixed(3), sg = v => v.toFixed(4);
+    let ut, uz, uzz;
+    if (j > 0 && j < 6){ ut = (G[i][j + 1] - G[i][j - 1]) / 2; ut = {v:ut, t:`(${f(G[i][j + 1])} − ${f(G[i][j - 1])}) / (2 × 1 h)`}; }
+    else if (j === 0){ ut = {v:G[i][1] - u, t:`(${f(G[i][1])} − ${f(u)}) / 1 h, one-sided at the edge`}; }
+    else { ut = {v:u - G[i][5], t:`(${f(u)} − ${f(G[i][5])}) / 1 h, one-sided at the edge`}; }
+    if (i > 0 && i < 6){ uz = {v:(G[i + 1][j] - G[i - 1][j]) / 4, t:`(${f(G[i + 1][j])} − ${f(G[i - 1][j])}) / (2 × 2 cm)`}; uzz = {v:(G[i - 1][j] - 2 * u + G[i + 1][j]) / 4, t:`(${f(G[i - 1][j])} − 2 × ${f(u)} + ${f(G[i + 1][j])}) / (2 cm)²`}; }
+    else { const o = i === 0 ? 1 : 5; uz = {v:(i === 0 ? G[1][j] - u : u - G[5][j]) / 2, t:`(${f(i === 0 ? G[1][j] : u)} − ${f(i === 0 ? u : G[5][j])}) / 2 cm, one-sided at the edge`}; uzz = null; }
+    $('#p7bmath').innerHTML = `<div><b>this cell</b>   u = ${f(u)} at ${Z7b[i]} cm, hour ${T7b[j]}</div>` +
+      `<div>${colorSpan('var(--accent)', '∂u/∂t')} ≈ ${ut.t} = <b>${sg(ut.v)}</b> per hour</div>` +
+      `<div>${colorSpan('var(--s-in)', '∂u/∂z')} ≈ ${uz.t} = <b>${sg(uz.v)}</b> per cm</div>` +
+      (uzz ? `<div>${colorSpan('var(--s-in)', '∂²u/∂z²')} ≈ ${uzz.t} = <b>${sg(uzz.v)}</b> per cm²</div><div><b>D·∂²u/∂z²</b>   ${D7b} cm²/h × ${sg(uzz.v)} = <b>${sg(D7b * uzz.v)}</b> per hour, compare with ∂u/∂t above</div>`
+            : `<div><b>∂²u/∂z²</b>   needs a layer on both sides; pick a cell that isn't in the top or bottom row.</div>`);
+  }
+  $('#p7bgrid').addEventListener('click', e => { const el = $('#p7bgrid'), g = el._g7b; if (!g) return; const r = el.getBoundingClientRect(), px = (e.clientX - r.left) * g.W / r.width, py = (e.clientY - r.top) * g.H / r.height;
+    const c = Math.floor((px - g.Lp) / g.cw), rw = Math.floor((py - g.Tp) / g.ch); if (c < 0 || c > 6 || rw < 0 || rw > 6) return; S7b.i = rw; S7b.j = c; drawP7b(); });
+
+  // 7c. second derivative
+  const S7c = {z:0.3, h:0.08}, A1 = 2 * Math.PI * 1.3, A2 = 2 * Math.PI * 3.1;
+  const c7 = z => 0.45 + 0.25 * Math.sin(A1 * z + 0.6) + 0.1 * Math.sin(A2 * z);
+  const c7p = z => 0.25 * A1 * Math.cos(A1 * z + 0.6) + 0.1 * A2 * Math.cos(A2 * z);
+  const c7pp = z => -0.25 * A1 * A1 * Math.sin(A1 * z + 0.6) - 0.1 * A2 * A2 * Math.sin(A2 * z);
+  tslider($('#p7cctl'), S7c, {key:'z', label:'Point z', min:0.02, max:0.98, step:0.005, fmt:v => v.toFixed(3)}, drawP7c);
+  tslider($('#p7cctl'), S7c, {key:'h', label:'Neighbor distance h', min:0.01, max:0.2, step:0.005, fmt:v => v.toFixed(3)}, drawP7c);
+  function drawP7c(){
+    const z = S7c.z, h = Math.min(S7c.h, z, 1 - z), u = c7(z), uL = c7(z - h), uR = c7(z + h), mid = (uL + uR) / 2, gap = mid - u, sp = c7p(z), cv = c7pp(z), zz = lin(0, 1, 240);
+    const gc = gap >= 0 ? 'var(--accent)' : 'var(--s-wp)';
+    lineChart({el:$('#p7ca'), x0:0, x1:1, y0:0, y1:1, Lp:46, T:10, xLabel:'depth z', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.25, 0.5, 0.75, 1]),
+      series:[{pts:zz.map(q => [q, c7(q)]), c:'var(--ink)', w:2.2}, {pts:[[z - 0.1, u - 0.1 * sp], [z + 0.1, u + 0.1 * sp]], c:'var(--muted)', w:1.2}, {pts:[[z - h, uL], [z + h, uR]], c:'var(--s-in)', w:1.8, dash:'5 3'}],
+      dots:[{pts:[[z - h, uL], [z + h, uR]], c:'var(--s-in)', r:4.5}, {pts:[[z, u]], c:gc, r:5.5}],
+      extra:(x, y) => `<line x1="${x(z)}" x2="${x(z)}" y1="${y(u)}" y2="${y(mid)}" stroke="${gc}" stroke-width="3"/><circle cx="${x(z)}" cy="${y(mid)}" r="4" fill="var(--surface)" stroke="var(--s-in)" stroke-width="2"/>`,
+      aria:'Profile with a point, its neighbors, and their average'});
+    $('#p7cleg').innerHTML = leg('var(--ink)', 'u(z)') + leg('var(--s-in)', 'line between neighbors', true) + leg(gc, gap >= 0 ? 'gap: point below average' : 'gap: point above average');
+    lineChart({el:$('#p7cb'), x0:0, x1:1, y0:-4.5, y1:4.5, Lp:46, T:10, xLabel:'depth z', yLabel:'∂u/∂z', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([-4, -2, 0, 2, 4]), hlines:[{v:0, c:'var(--line)'}],
+      series:[{pts:zz.map(q => [q, c7p(q)]), c:'var(--t4)', w:2.2}, {pts:[[z - 0.06, sp - 0.06 * cv], [z + 0.06, sp + 0.06 * cv]], c:'var(--ink)', w:1.8}],
+      dots:[{pts:[[z, sp]], c:'var(--ink)', r:4.5}], aria:'Slope of the profile'});
+    $('#p7clegb').innerHTML = leg('var(--t4)', 'slope ∂u/∂z') + leg('var(--ink)', 'its slope: ∂²u/∂z²');
+    const bins = 60;
+    lineChart({el:$('#p7cc'), x0:0, x1:1, y0:-60, y1:60, Lp:46, T:10, xLabel:'depth z', yLabel:'∂²u/∂z²', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([-50, 0, 50]), hlines:[{v:0, c:'var(--line)'}],
+      rects:Array.from({length:bins}, (_, b) => { const v = c7pp((b + 0.5) / bins); return {x0:b / bins, x1:(b + 1) / bins, y:v, base:0, c:v >= 0 ? 'var(--accent)' : 'var(--s-wp)', o:0.8}; }),
+      cursor:z, aria:'Curvature along depth'});
+    $('#p7clegc').innerHTML = leg('var(--accent)', 'bends up (valley)') + leg('var(--s-wp)', 'bends down (hill)');
+    $('#p7ckv').innerHTML = kvh('Slope ∂u/∂z', cv === cv ? sp.toFixed(2) : '') + kvh('Curvature ∂²u/∂z²', cv.toFixed(1)) + kvh('Gap = average − u', gap.toFixed(4)) + kvh('2·gap / h²', (2 * gap / (h * h)).toFixed(1));
+  }
+
+  // 8a. layer budget with numbers
+  const S8a0 = [0.2, 0.25, 0.9, 0.3, 0.15], S8a = {u:S8a0.slice(), r:0.25, steps:0};
+  tslider($('#p8actl'), S8a, {key:'r', label:'r = D·Δt/Δz²', min:0.05, max:0.7, step:0.05, fmt:v => `${v.toFixed(2)}${v > 0.5 ? ', too big' : ''}`}, drawP8a);
+  const moves8a = () => [0, 1, 2, 3].map(k => S8a.r * (S8a.u[k] - S8a.u[k + 1]));
+  const nets8a = m => S8a.u.map((_, i) => (i > 0 ? m[i - 1] : 0) - (i < 4 ? m[i] : 0));
+  function stepP8a(){ const n = nets8a(moves8a()); S8a.u = S8a.u.map((v, i) => v + n[i]); S8a.steps++; }
+  $('#p8astep').addEventListener('click', () => { stepP8a(); drawP8a(); });
+  $('#p8arun').addEventListener('click', () => { for (let k = 0; k < 10; k++) stepP8a(); drawP8a(); });
+  $('#p8areset').addEventListener('click', () => { S8a.u = S8a0.slice(); S8a.steps = 0; drawP8a(); });
+  function drawP8a(){
+    const m = moves8a(), n = nets8a(m), U = S8a.u, ymin = Math.min(-0.42, ...U.map(v => v - 0.42)), ymax = Math.max(1.32, ...U.map(v => v + 0.4));
+    lineChart({el:$('#p8aa'), x0:0, x1:5, y0:ymin, y1:ymax, Lp:40, T:10, xLabel:'layer (top → bottom)', xTicks:[0, 1, 2, 3, 4].map(i => ({v:i + 0.5, l:String(i + 1)})), yTicks:tk([0, 0.5, 1]), hlines:[{v:0, c:'var(--ink)'}],
+      rects:U.map((v, i) => ({x0:i + 0.12, x1:i + 0.88, y:v, base:0, c:'var(--water)', o:0.55})),
+      extra:(x, y) => {
+        let s = '';
+        U.forEach((v, i) => { s += `<text x="${x(i + 0.5)}" y="${y(Math.max(v, 0)) - 5}" text-anchor="middle" fill="var(--ink)" font-size="12">${v.toFixed(3)}</text>`;
+          s += `<text x="${x(i + 0.5)}" y="${y(ymin) - 8}" text-anchor="middle" fill="${n[i] >= 0 ? 'var(--accent)' : 'var(--s-wp)'}" font-size="11.5">${n[i] >= 0 ? '+' : '−'}${Math.abs(n[i]).toFixed(3)}</text>`; });
+        s += `<text x="${x(0.05)}" y="${y(ymin) - 22}" font-size="10.5">net change this step:</text>`;
+        const ay = y(ymax) + 26, mm = Math.max(0.02, ...m.map(Math.abs));
+        m.forEach((v, k) => { const cx = x(k + 1), L = Math.max(8, Math.abs(v) / mm * 30), dir = Math.sign(v) || 1; if (Math.abs(v) > 1e-4) s += arrowSvg(cx - dir * L / 2, ay, cx + dir * L / 2, ay, 'var(--s-in)', 2.2); s += `<text x="${cx}" y="${ay - 9}" text-anchor="middle" fill="var(--s-in)" font-size="11">${Math.abs(v).toFixed(3)}</text>`; });
+        return s;
+      }, aria:'Five layers with the water moved across each boundary'});
+    const r = S8a.r, f = v => v.toFixed(3);
+    $('#p8amath').innerHTML = `<div><b>layer 3 in</b>   r·(u₂ − u₃) = ${r.toFixed(2)} × (${f(U[1])} − ${f(U[2])}) = ${sgnFmt(m[1], 3)}</div>` +
+      `<div><b>layer 3 out</b>   r·(u₃ − u₄) = ${r.toFixed(2)} × (${f(U[2])} − ${f(U[3])}) = ${sgnFmt(m[2], 3)}</div>` +
+      `<div><b>layer 3 net</b>   in − out = r·(u₂ − 2u₃ + u₄) = ${sgnFmt(n[2], 3)}</div>`;
+    $('#p8akv').innerHTML = kvh('Total of all layers', U.reduce((a, b) => a + b, 0).toFixed(3)) + kvh('Steps taken', S8a.steps) + kvh('Largest change', Math.max(...n.map(Math.abs)).toFixed(3));
+  }
+  $('#p8aa').addEventListener('click', e => { const d = toData($('#p8aa'), e); if (!d || !d.inside) return; const i = Math.floor(d.x); if (i < 0 || i > 4) return; S8a.u[i] = Math.round(clamp(d.y, 0, 1) * 100) / 100; drawP8a(); });
+
+  // 9a. time scales
+  const S9a = {lD:0, mode:'w2'}, TIMES9a = [0, 1, 4, 16, 64], SIG0 = 1;
+  tslider($('#p9actl'), S9a, {key:'lD', label:'Diffusivity D', min:-1, max:1, step:0.05, fmt:v => `${fmtNum2(Math.pow(10, v))} cm²/h`}, drawP9a);
+  function syncP9aSeg(){ document.querySelectorAll('#p9aseg [data-w]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.w === S9a.mode))); }
+  $('#p9aseg').addEventListener('click', e => { const b = e.target.closest('[data-w]'); if (!b) return; S9a.mode = b.dataset.w; syncP9aSeg(); drawP9a(); });
+  syncP9aSeg();
+  function drawP9a(){
+    const D = Math.pow(10, S9a.lD), sig = t => Math.sqrt(SIG0 * SIG0 + 2 * D * t), cols = ['var(--t1)', 'var(--t2)', 'var(--t3)', 'var(--t4)', 'var(--t5)'];
+    lineChart({el:$('#p9aa'), x0:0, x1:30, y0:0, y1:1.05, Lp:46, T:10, xLabel:'depth (cm)', yLabel:'u', xTicks:tk([0, 5, 10, 15, 20, 25, 30]), yTicks:tk([0, 0.5, 1]),
+      series:TIMES9a.map((t, k) => ({pts:lin(0, 30, 300).map(z => [z, SIG0 / sig(t) * Math.exp(-Math.pow(z - 15, 2) / (2 * sig(t) * sig(t)))]), c:cols[k], w:2.1})), aria:'Profiles of a spreading bump'});
+    $('#p9aleg').innerHTML = TIMES9a.map((t, k) => leg(cols[k], `${t} h`)).join('');
+    const sq = S9a.mode === 'w2', yv = t => sq ? sig(t) * sig(t) : sig(t), ymax = Math.max(sq ? 10 : 4, yv(64)) * 1.08;
+    const st = niceStep(ymax / 4), yt = []; for (let v = 0; v <= ymax; v += st) yt.push({v, l:v === 0 ? '0' : fmtNum(v)});
+    lineChart({el:$('#p9ab'), x0:0, x1:64, y0:0, y1:ymax, Lp:46, T:10, xLabel:'time (hours)', yLabel:sq ? 'σ² (cm²)' : 'σ (cm)', xTicks:tk([0, 16, 32, 48, 64]), yTicks:yt,
+      series:[{pts:lin(0, 64, 200).map(t => [t, yv(t)]), c:'var(--ink)', w:2}], dots:TIMES9a.map((t, k) => ({pts:[[t, yv(t)]], c:cols[k], r:5})), aria:'Width of the bump over time'});
+    const tTo = s => (s * s - SIG0 * SIG0) / (2 * D), ft = h => h < 48 ? `${h.toFixed(1)} h` : `${(h / 24).toFixed(1)} d`;
+    $('#p9akv').innerHTML = kvh('Width 2 cm after', ft(tTo(2))) + kvh('Width 4 cm after', ft(tTo(4))) + kvh('Width 8 cm after', ft(tTo(8))) + kvh('Slope of σ² line', `2D = ${fmtNum2(2 * D)}`);
+    let lab = 'Each doubling of the width takes about four times as long.';
+    if (R){ const h = -30, Dl = R.f.K(h) / R.f.C(h); lab += ` For the soil in the lab right now, at h = −30 cm, D = K/C ≈ ${fmtNum(Dl)} cm²/day, so evening out over the pot's ${R.L} cm takes on the order of L²/D ≈ ${fmtDur(R.L * R.L / Dl)}. Drier soil has a far smaller D, so the same evening out takes much longer.`; }
+    $('#p9alab').textContent = lab;
+  }
+
+  // 9b. steady state
+  const S9b = {a:0.9, b:0.2, pe:0}, TIMES9b = [0.004, 0.015, 0.04, 0.12];
+  tslider($('#p9bctl'), S9b, {key:'a', label:'Top held at', min:0, max:1, step:0.05, fmt:v => v.toFixed(2)}, drawP9b);
+  tslider($('#p9bctl'), S9b, {key:'b', label:'Bottom held at', min:0, max:1, step:0.05, fmt:v => v.toFixed(2)}, drawP9b);
+  tslider($('#p9bctl'), S9b, {key:'pe', label:'Drift strength v·L/D', min:0, max:15, step:0.5, fmt:v => v === 0 ? '0, no drift' : v.toFixed(1)}, drawP9b);
+  function steady9b(z){ const {a, b, pe} = S9b; return pe < 1e-6 ? a + (b - a) * z : a + (b - a) * Math.expm1(pe * z) / Math.expm1(pe); }
+  function sim9b(){
+    const {a, b, pe:v} = S9b, N = 80, dz = 1 / N, k = 1 / (dz * dz), out = [];
+    let u = new Float64Array(N).fill(0.5), t = 0, dt = 2e-4, oi = 0;
+    const A = new Float64Array(N), B = new Float64Array(N), C = new Float64Array(N);
+    while (oi < TIMES9b.length){
+      const h = Math.min(dt, TIMES9b[oi] - t), r = Float64Array.from(u, x => x / h);
+      for (let i = 0; i < N; i++){
+        B[i] = 1 / h; A[i] = 0; C[i] = 0;
+        if (i > 0){ B[i] += k; A[i] = -(k + v / dz); } else { B[i] += 2 * k; r[i] += 2 * k * a + v * a / dz; }
+        if (i < N - 1){ B[i] += k + v / dz; C[i] = -k; } else { B[i] += 2 * k + v / dz; r[i] += 2 * k * b; }
+      }
+      u = thomas(A, B, C, r); t += h;
+      if (Math.abs(t - TIMES9b[oi]) < 1e-12){ out.push(Float64Array.from(u)); oi++; }
+      dt = Math.min(dt * 1.2, 2e-3);
+    }
+    return {out, N, dz};
+  }
+  function drawP9b(){
+    const {a, b, pe} = S9b, sim = sim9b(), zc = Array.from({length:sim.N}, (_, i) => (i + 0.5) * sim.dz), cols = ['var(--t1)', 'var(--t2)', 'var(--t3)', 'var(--t4)'], zz = lin(0, 1, 200);
+    lineChart({el:$('#p9ba'), x0:0, x1:1, y0:0, y1:1, Lp:46, T:10, xLabel:'depth z (top → bottom)', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.25, 0.5, 0.75, 1]),
+      series:sim.out.map((p, k) => ({pts:[[0, a]].concat(Array.from(p, (v, i) => [zc[i], v]), [[1, b]]), c:cols[k], w:1.4})).concat([{pts:zz.map(z => [z, steady9b(z)]), c:'var(--ink)', w:2.8}]),
+      dots:[{pts:[[0, a], [1, b]], c:'var(--ink)', r:5.5}], aria:'Profiles settling to steady state'});
+    $('#p9bleg').innerHTML = leg('var(--ink)', 'steady state') + TIMES9b.map((t, k) => leg(cols[k], `t = ${t}`)).join('') + '<span>start: 0.5 everywhere</span>';
+    const qs = -((steady9b(0.5 + 1e-5) - steady9b(0.5 - 1e-5)) / 2e-5) + pe * steady9b(0.5);
+    const p2 = sim.out[1], qT = []; for (let i = 1; i < sim.N; i++) qT.push([i * sim.dz, -(p2[i] - p2[i - 1]) / sim.dz + pe * p2[i - 1]]);
+    const all = qT.map(p => p[1]).concat([qs]), lo = Math.min(...all), hi = Math.max(...all), pad = Math.max(0.2, (hi - lo) * 0.15);
+    const y0 = lo - pad, y1 = hi + pad, st = niceStep((y1 - y0) / 4), yt = []; for (let v = Math.ceil(y0 / st) * st; v <= y1; v += st) yt.push({v, l:fmtNum2(Math.abs(v)) === '0.00' ? '0' : (v < 0 ? '−' : '') + fmtNum2(Math.abs(v))});
+    lineChart({el:$('#p9bb'), x0:0, x1:1, y0, y1, Lp:46, T:10, xLabel:'depth z', yLabel:'flux q', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:yt, hlines:[{v:0, c:'var(--line)'}],
+      series:[{pts:qT, c:cols[1], w:1.8}, {pts:[[0, qs], [1, qs]], c:'var(--ink)', w:2.6}], aria:'Flux along depth, settling and steady'});
+    $('#p9blegb').innerHTML = leg('var(--ink)', 'flux at steady state: the same everywhere') + leg(cols[1], `flux while settling, t = ${TIMES9b[1]}`);
+    $('#p9bkv').innerHTML = kvh('Steady flux q', qs.toFixed(3)) + kvh('Direction', Math.abs(qs) < 1e-6 ? 'none' : qs > 0 ? 'downward' : 'upward') + kvh('Shape', pe === 0 ? 'straight line' : 'exponential');
+  }
+
+  // 10a. nonlinear diffusion
+  const S10a = {m:2, cache:{}, tm:null}, TIMES10a = [0.001, 0.003, 0.008, 0.02];
+  tslider($('#p10actl'), S10a, {key:'m', label:'Nonlinearity m', min:0, max:4, step:0.5, fmt:v => v === 0 ? '0, constant D' : v.toFixed(1)}, () => { clearTimeout(S10a.tm); S10a.tm = setTimeout(drawP10a, 40); });
+  function sim10a(m){
+    const key = m.toFixed(1); if (S10a.cache[key]) return S10a.cache[key];
+    const N = 150, dz = 1 / N, D = u => (m + 1) * Math.pow(Math.max(u, 0), m) + 1e-3;
+    let u = Float64Array.from({length:N}, (_, i) => 0.03 + 0.9 * Math.exp(-Math.pow(((i + 0.5) * dz - 0.5) / 0.06, 2)));
+    const a = new Float64Array(N), b = new Float64Array(N), c = new Float64Array(N), out = [];
+    let t = 0, dt = 1e-6, oi = 0;
+    while (oi < TIMES10a.length){
+      const h = Math.min(dt, TIMES10a[oi] - t); let mm = u;
+      for (let it = 0; it < 40; it++){
+        for (let i = 0; i < N; i++){ const Dm = i > 0 ? 0.5 * (D(mm[i - 1]) + D(mm[i])) : 0, Dp = i < N - 1 ? 0.5 * (D(mm[i]) + D(mm[i + 1])) : 0; a[i] = -Dm / (dz * dz); c[i] = -Dp / (dz * dz); b[i] = 1 / h + (Dm + Dp) / (dz * dz); }
+        const x = thomas(a, b, c, Float64Array.from(u, v => v / h)); let d = 0; for (let i = 0; i < N; i++) d = Math.max(d, Math.abs(x[i] - mm[i])); mm = x; if (d < 1e-6) break;
+      }
+      u = mm; t += h;
+      if (Math.abs(t - TIMES10a[oi]) < 1e-12){ out.push(Float64Array.from(u)); oi++; }
+      dt = Math.min(dt * 1.15, 2e-4);
+    }
+    const res = {out, N, dz}; S10a.cache[key] = res; return res;
+  }
+  function drawP10a(){
+    const m = S10a.m, res = sim10a(m), base = sim10a(0), zc = Array.from({length:res.N}, (_, i) => (i + 0.5) * res.dz), cols = ['var(--t1)', 'var(--t2)', 'var(--t3)', 'var(--t4)'];
+    const ym = Math.max(1, m + 1) * 1.08;
+    lineChart({el:$('#p10aa'), x0:0, x1:1, y0:0, y1:ym, Lp:46, T:10, xLabel:'u', yLabel:'D(u)', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 1, 2, 3, 4, 5].filter(v => v <= ym)),
+      series:[{pts:lin(0, 1, 100).map(u => [u, (m + 1) * Math.pow(u, m)]), c:'var(--s-in)', w:2.4}], aria:'Diffusivity as a function of u'});
+    $('#p10aleg').innerHTML = leg('var(--s-in)', m === 0 ? 'D constant' : `D(u) = ${m + 1}·u^${m}: tiny when u is small`);
+    lineChart({el:$('#p10ab'), x0:0, x1:1, y0:0, y1:1, Lp:46, T:10, xLabel:'depth z', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.25, 0.5, 0.75, 1]),
+      series:(m > 0 ? [{pts:Array.from(base.out[3], (v, i) => [zc[i], v]), c:'var(--muted)', w:1.5, dash:'4 4'}] : []).concat(res.out.map((p, k) => ({pts:Array.from(p, (v, i) => [zc[i], v]), c:cols[k], w:2.2}))),
+      aria:'Profiles spreading with nonlinear diffusivity'});
+    $('#p10alegb').innerHTML = TIMES10a.map((t, k) => leg(cols[k], `t = ${t}`)).join('') + (m > 0 ? leg('var(--muted)', 'constant D, last time', true) : '');
+    const last = res.out[3], edgeOf = p => { for (let i = Math.floor(res.N / 2); i < res.N; i++) if (p[i] < 0.1) return ((i + 0.5) * res.dz - 0.5).toFixed(2); return 'whole column'; };
+    $('#p10akv').innerHTML = kvh('Total (conserved)', (last.reduce((x, y) => x + y, 0) * res.dz).toFixed(4)) + kvh('Peak at end', Math.max(...last).toFixed(2)) + kvh('Edge distance at end', edgeOf(last)) + kvh('Edge, constant D', edgeOf(base.out[3]));
+  }
+
   function drawPrimer(){
     if (UI.mode !== 'primer') return;
-    drawP1(); drawP2(); drawP3(); drawP4(); drawP5(); drawP6(); drawP7(); drawP8(); drawP9(); drawP10();
+    drawP1(); drawP2(); drawP3(); drawP4(); drawP5(); drawP6(); drawP7(); drawP7a(); drawP7b(); drawP7c(); drawP8(); drawP8a(); drawP9(); drawP9a(); drawP9b(); drawP10(); drawP10a();
   }
   if (window.ResizeObserver){ let rt = null; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawPrimer, 80); }).observe($('#page-primer')); }
 

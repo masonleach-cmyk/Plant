@@ -1,0 +1,15 @@
+{
+  "name": "Richards lab",
+  "short_name": "Richards lab",
+  "description": "Learn and explore the Richards equation for water in potted soil.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1f3f1",
+  "theme_color": "#18221d",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

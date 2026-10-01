@@ -162,12 +162,27 @@ dl.gloss dd{margin:2px 0 0;color:var(--muted)}
 
 /* basics */
 .short{display:none}
-@media (max-width:440px){
-  .hd{gap:6px;padding:8px 8px}
-  .hd h1{font-size:16px}
-  .hd .seg button{padding:5px 7px}
-  .long{display:none} .short{display:inline}
+@media (max-width:600px){
+  .hd{flex-wrap:wrap;row-gap:6px}
+  .hd .seg{margin-left:0;width:100%;display:flex}
+  .hd .seg button{flex:1;padding:6px 4px}
 }
+@media (max-width:440px){ .long{display:none} .short{display:inline} }
+.reading h3.part{font-size:14px;color:var(--muted);margin:26px 2px 0;font-weight:600}
+.reading h3.part + .card{margin-top:6px}
+.mplot.tall{height:290px}
+.mplot.drag svg{touch-action:none;cursor:ns-resize}
+.mplot.tap svg{cursor:crosshair}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.btnrow .btn{padding:8px 12px}
+.hint{font-size:12.5px;color:var(--muted);margin:2px 0 0}
+table.steptab{width:100%;border-collapse:collapse;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;margin-top:8px}
+table.steptab th{font-family:"IBM Plex Sans",sans-serif;font-weight:600;color:var(--muted);text-align:right;padding:3px 6px;border-bottom:1px solid var(--line)}
+table.steptab td{text-align:right;padding:3px 6px;border-bottom:1px solid var(--grid)}
+table.steptab tr.now td{color:var(--accent);font-weight:500}
+.chain{display:grid;gap:4px;margin:8px 0}
+.chain div{background:var(--bg);border-radius:8px;padding:6px 10px;font-size:13.5px}
+.chain b{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;font-size:13px}
 .reading .card{margin-top:10px}
 .reading .card > h2{font-size:17px}
 .reading .card p{margin:8px 0}
@@ -209,6 +224,7 @@ table.xlate td:nth-child(2){font-weight:500}
     <span class="status" id="status" aria-live="polite"></span>
     <div class="seg" role="group" aria-label="Section" id="modeSeg">
       <button type="button" data-mode="lab">Lab</button>
+      <button type="button" data-mode="primer">Primer</button>
       <button type="button" data-mode="basics">Basics</button>
       <button type="button" data-mode="learn">Lessons</button>
       <button type="button" data-mode="ref"><span class="long">Reference</span><span class="short">Ref</span></button>
@@ -325,10 +341,220 @@ table.xlate td:nth-child(2){font-weight:500}
       </div>
     </div>
 
+    <!-- ================= PRIMER ================= -->
+    <div class="page reading" id="page-primer" hidden>
+      <h2>Primer: ODEs and PDEs</h2>
+      <p class="lead">A ground-up refresher on the math under everything else in this app. No prior memory of the course assumed. Every step has a graph you can push around.</p>
+
+      <section class="card" id="pr-intro">
+        <h2>The plan</h2>
+        <p>The Richards equation is a <b>partial differential equation</b> (PDE): it describes how the water content at every depth in a pot changes over time. To read it comfortably you need two ideas.</p>
+        <div class="chain">
+          <div><b>ODE</b>, ordinary differential equation: one quantity changing over time. The total water in a pot, W(t).</div>
+          <div><b>PDE</b>, partial differential equation: a quantity changing over time <i>and</i> space. The water content at each depth, θ(z, t).</div>
+        </div>
+        <p>Part 1 builds up ODEs from the idea of a slope. Part 2 extends the same ideas to PDEs, and ends with the Richards equation read term by term. Work through in order; each step uses the one before.</p>
+        <div class="toc" style="margin-top:8px">
+          <button type="button" data-goto="pr-1"><b>1</b>Derivatives</button>
+          <button type="button" data-goto="pr-2"><b>2</b>Slope fields</button>
+          <button type="button" data-goto="pr-3"><b>3</b>Euler steps</button>
+          <button type="button" data-goto="pr-4"><b>4</b>Exact solution</button>
+          <button type="button" data-goto="pr-5"><b>5</b>Nonlinear ODEs</button>
+          <button type="button" data-goto="pr-6"><b>6</b>Two tanks</button>
+          <button type="button" data-goto="pr-7"><b>7</b>Two variables</button>
+          <button type="button" data-goto="pr-8"><b>8</b>Shape to change</button>
+          <button type="button" data-goto="pr-9"><b>9</b>Heat equation</button>
+          <button type="button" data-goto="pr-10"><b>10</b>Drift</button>
+          <button type="button" data-goto="pr-11"><b>11</b>All together</button>
+        </div>
+      </section>
+
+      <h3 class="part">Part 1: change over time (ODEs)</h3>
+
+      <section class="card" id="pr-1">
+        <h2>1. A derivative is a slope</h2>
+        <p>Imagine weighing a pot every hour. Call the water in it W(t), in mm, at time t in hours. The <b>derivative</b> dW/dt is how fast W is changing at one instant, in mm per hour. On a graph of W against t, it is the slope of the curve.</p>
+        <p>You can't measure a slope at a single point, so start with two. The <b>secant</b> slope between t and t + Δt is rise over run:</p>
+        <div class="eq">secant slope = ΔW/Δt<br>             = [W(t + Δt) − W(t)] / Δt</div>
+        <p>Shrink Δt and the secant line rotates into the <b>tangent</b> line, which just touches the curve. The derivative is the slope of that tangent: the limit of ΔW/Δt as Δt → 0.</p>
+        <div class="ctls" id="p1ctl"></div>
+        <div class="mplot"><svg id="p1a" role="img"></svg></div>
+        <div class="legend" id="p1leg"></div>
+        <p class="sub" style="margin-top:10px">Measure the tangent slope at every time and plot it. The derivative is a new function of t:</p>
+        <div class="mplot short-plot"><svg id="p1b" role="img"></svg></div>
+        <div class="kv" id="p1kv"></div>
+        <p class="notice"><b>Notice:</b> drag Δt toward 0.1 h and the secant slope closes in on the tangent slope. Where the curve is momentarily flat (a peak or a dip of the daily wiggle), the derivative crosses zero. Where the curve falls, the derivative is negative.</p>
+      </section>
+
+      <section class="card" id="pr-2">
+        <h2>2. A differential equation is a rule for the slope</h2>
+        <p>Usually you don't know W(t). What you know is a rule for how fast it changes, given how much is there. Say watering adds water at a steady u mm/h, and the pot loses water in proportion to what it holds:</p>
+        <div class="eq">dW/dt = u − W/τ</div>
+        <p>This doesn't say what W is at noon. It says: <i>whatever W is, here is its slope.</i> The short lines below draw that rule at every time and water level. A solution is any curve that follows the lines everywhere. Each one needs a starting point, the <b>initial condition</b>.</p>
+        <div class="ctls" id="p2ctl"></div>
+        <div class="mplot tap"><svg id="p2a" role="img"></svg></div>
+        <p class="hint">Tap the chart to start a pot at that time and water level.</p>
+        <div class="legend" id="p2leg"></div>
+        <div class="btnrow"><button class="btn" type="button" id="p2clear">Clear curves</button></div>
+        <div class="kv" id="p2kv"></div>
+        <p class="notice"><b>Notice:</b> every curve heads for the dashed line, W* = u·τ, where inflow equals outflow and the slope is zero. That is an <b>equilibrium</b>. The lines are the same at every time (the rule doesn't mention t), so each solution is the same shape shifted sideways.</p>
+      </section>
+
+      <section class="card" id="pr-3">
+        <h2>3. Solving it by taking steps</h2>
+        <p>A computer solves an ODE by literally following the slope field. Stand at the current point, read the slope the rule gives, walk along it for a time Δt, and repeat. This is <b>Euler's method</b>:</p>
+        <div class="eq">W[k+1] = W[k] + Δt · f(W[k])<br>f(W) = u − W/τ</div>
+        <p>Here u = 1 mm/h, τ = 10 h, and the pot starts at 80 mm. The dashed arrow shows the step you're about to take.</p>
+        <div class="ctls" id="p3ctl"></div>
+        <div class="mplot"><svg id="p3a" role="img"></svg></div>
+        <div class="legend" id="p3leg"></div>
+        <div class="btnrow">
+          <button class="btn primary" type="button" id="p3step">Take one step</button>
+          <button class="btn" type="button" id="p3run">Run to the end</button>
+          <button class="btn" type="button" id="p3reset">Start over</button>
+        </div>
+        <div style="overflow-x:auto"><table class="steptab" id="p3tab"></table></div>
+        <p class="notice"><b>Notice:</b> each step uses the slope at its <i>start</i>, but the true slope changes during the step. With small steps the error is tiny; with big ones Euler cuts well below the true curve, because it keeps using a slope that is steeper than the real one has become. Basics 2 shows what happens when the steps get too big.</p>
+      </section>
+
+      <section class="card" id="pr-4">
+        <h2>4. The exact solution and the time constant</h2>
+        <p>This particular ODE can be solved by hand. Write W∞ = u·τ for the equilibrium, so the rule is dW/dt = (W∞ − W)/τ. Then separate the variables and integrate:</p>
+        <div class="eq">dW / (W − W∞) = −dt / τ<br>ln|W − W∞| = −t/τ + constant<br>W(t) = W∞ + (W₀ − W∞) · e^(−t/τ)</div>
+        <p>The gap between W and its final value shrinks by the same fraction every hour. τ is the <b>time constant</b>: after one τ, 63% of the gap is closed. This is the step response of a first-order system or an RC circuit.</p>
+        <div class="ctls" id="p4ctl"></div>
+        <div class="mplot"><svg id="p4a" role="img"></svg></div>
+        <div class="legend" id="p4leg"></div>
+        <div class="kv" id="p4kv"></div>
+        <p class="notice"><b>Notice:</b> the dotted tangent at t = 0 reaches the final value exactly at t = τ. Change W₀ and the curve stretches vertically, but the timing marks don't move: in a linear ODE, how fast you settle doesn't depend on how far you have to go.</p>
+      </section>
+
+      <section class="card" id="pr-5">
+        <h2>5. Nonlinear ODEs: read the rate curve</h2>
+        <p>In soil, the outflow isn't proportional to W; conductivity makes it rise much more steeply. Take</p>
+        <div class="eq">dW/dt = f(W) = u − k·W^p</div>
+        <p>With p ≠ 1 the method from step 4 no longer gives a tidy formula. You can still learn a lot by plotting the rate f against the state W. Where f &gt; 0, W grows (arrows point right); where f &lt; 0, W shrinks. Where f crosses zero is an equilibrium.</p>
+        <div class="ctls" id="p5ctl"></div>
+        <div class="mplot"><svg id="p5a" role="img"></svg></div>
+        <div class="legend" id="p5leg"></div>
+        <div class="mplot"><svg id="p5b" role="img"></svg></div>
+        <div class="legend" id="p5leg2"></div>
+        <div class="kv" id="p5kv"></div>
+        <p class="notice"><b>Notice:</b> near the equilibrium the curve is almost a straight line, so the pot behaves like the linear ODE from step 4 with a local time constant τ = 1/|f′(W*)|. That is <b>linearization</b> about an operating point. Far from it, the behavior is lopsided: with p &gt; 1, an overfull pot drops fast while a dry one recovers slowly.</p>
+      </section>
+
+      <section class="card" id="pr-6">
+        <h2>6. Two tanks: a system of ODEs</h2>
+        <p>Split the pot into a top half and a bottom half with levels u₁ and u₂. Water flows between them in proportion to the difference, and the bottom also drains. Now there are two ODEs, and each one depends on the other:</p>
+        <div class="eq">du₁/dt = −g·(u₁ − u₂)<br>du₂/dt = g·(u₁ − u₂) − d·u₂</div>
+        <p>In matrix form that is du/dt = A·u. The state is a point (u₁, u₂), and the second chart, the <b>phase plane</b>, shows where it moves.</p>
+        <div class="ctls" id="p6ctl"></div>
+        <div class="mplot"><svg id="p6a" role="img"></svg></div>
+        <div class="legend" id="p6leg"></div>
+        <div class="mplot tall tap"><svg id="p6b" role="img"></svg></div>
+        <p class="hint">Tap the phase plane to choose the starting levels.</p>
+        <div class="legend" id="p6leg2"></div>
+        <div class="kv" id="p6kv"></div>
+        <p class="notice"><b>Notice:</b> the solution is a mix of two <b>modes</b>, the eigenvectors of A (dashed lines). The fast mode is the tanks evening out; the slow mode is both draining together. A trajectory first runs parallel to the fast direction (red dashes, drawn through the start), then crawls in along the slow line toward empty. When the two time constants are far apart, the system is stiff.</p>
+      </section>
+
+      <h3 class="part">Part 2: change over time and space (PDEs)</h3>
+
+      <section class="card" id="pr-7">
+        <h2>7. A function of two variables</h2>
+        <p>Cut the pot into more and more layers and you no longer have a list of tanks, you have a smooth function u(z, t): the amount at depth z and time t. The heatmap shows it from above, with time across and depth down.</p>
+        <p>A <b>partial derivative</b> is a slope taken while the other variable is held fixed. Slice across at one time to get the profile u(z); its slope is ∂u/∂z. Slice down at one depth to get the history u(t); its slope is ∂u/∂t.</p>
+        <div class="ctls" id="p7ctl"></div>
+        <div class="mplot tap"><svg id="p7a" role="img"></svg></div>
+        <p class="hint">Tap the heatmap to pick a point.</p>
+        <div class="mplot short-plot"><svg id="p7b" role="img"></svg></div>
+        <div class="legend" id="p7legb"></div>
+        <div class="mplot short-plot"><svg id="p7c" role="img"></svg></div>
+        <div class="legend" id="p7legc"></div>
+        <div class="kv" id="p7kv"></div>
+        <p class="notice"><b>Notice:</b> at the peak of the bump, the profile curves downward and u is falling in time. Out on the flanks, the profile curves upward and u is rising. Check the last two readouts at any point you pick: ∂u/∂t always equals D·∂²u/∂z². This function satisfies the <b>heat equation</b>, which is what it means to be a solution of a PDE.</p>
+      </section>
+
+      <section class="card" id="pr-8">
+        <h2>8. From shape to change</h2>
+        <p>Why should the curvature of a profile decide how fast it changes? Follow the chain one link at a time:</p>
+        <div class="chain">
+          <div><b>slope</b>   ∂u/∂z: how steeply u changes with depth.</div>
+          <div><b>flux</b>   q = −D·∂u/∂z: stuff flows downhill, from high u to low, faster where it's steeper. (Fourier for heat, Fick for solutes, Darcy for water.)</div>
+          <div><b>balance</b>   ∂u/∂t = −∂q/∂z: a thin layer gains what flows in its top minus what flows out its bottom.</div>
+          <div><b>combine</b>   ∂u/∂t = D·∂²u/∂z²: the heat equation.</div>
+        </div>
+        <div class="seg full" role="group" aria-label="Profile preset" id="p8seg">
+          <button type="button" data-p8="bump">Bump</button>
+          <button type="button" data-p8="step">Step</button>
+          <button type="button" data-p8="ramp">Ramp</button>
+          <button type="button" data-p8="wave">Wave</button>
+        </div>
+        <div class="mplot drag"><svg id="p8a" role="img"></svg></div>
+        <p class="hint">Drag the dots up and down to draw your own profile.</p>
+        <div class="mplot short-plot"><svg id="p8b" role="img"></svg></div>
+        <div class="legend" id="p8legb"></div>
+        <div class="mplot short-plot"><svg id="p8c" role="img"></svg></div>
+        <div class="legend" id="p8legc"></div>
+        <p class="notice"><b>Notice:</b> pick Ramp. There is flux everywhere, but nothing changes, because each layer passes on exactly what it receives. Only where the flux changes along depth, at the bends, does u rise or fall. Sharp bends mean fast change.</p>
+      </section>
+
+      <section class="card" id="pr-9">
+        <h2>9. Watch the heat equation run</h2>
+        <p>Start from the profile you drew in step 8 and let ∂u/∂t = D·∂²u/∂z² play forward. A PDE also needs <b>boundary conditions</b>: what happens at the top and bottom edges.</p>
+        <div class="seg full" role="group" aria-label="Boundary conditions" id="p9seg">
+          <button type="button" data-bc="sealed">Sealed</button>
+          <button type="button" data-bc="wet">Wet top</button>
+          <button type="button" data-bc="dry">Drained ends</button>
+        </div>
+        <p class="note" id="p9note"></p>
+        <div class="mplot"><svg id="p9a" role="img"></svg></div>
+        <div class="timebar">
+          <button class="icon" id="p9play" type="button" aria-label="Play"><svg viewBox="0 0 10 10" id="p9playIco"><path d="M2 1l7 4-7 4z"/></svg></button>
+          <input type="range" id="p9t" min="0" max="60" step="1" value="0" aria-label="Time">
+          <span class="t" id="p9tl"></span>
+        </div>
+        <div class="legend" id="p9leg"></div>
+        <div class="mplot short-plot"><svg id="p9b" role="img"></svg></div>
+        <div class="mplot short-plot"><svg id="p9c" role="img"></svg></div>
+        <div class="legend" id="p9legc"></div>
+        <p class="notice"><b>Notice:</b> with sealed ends, the total never changes; the profile just flattens toward its average. With the top held wet, water seeps in through the boundary and the total climbs. Sharp corners vanish first, because they have the most curvature.</p>
+      </section>
+
+      <section class="card" id="pr-10">
+        <h2>10. Adding a drift: gravity</h2>
+        <p>Diffusion spreads things out in both directions. Gravity pulls water one way. A drift at speed v adds one term:</p>
+        <div class="eq">∂u/∂t = D·∂²u/∂z² − v·∂u/∂z</div>
+        <p>The new term on its own slides the whole shape down at speed v without changing it, like a conveyor belt. Together they spread and sink at once.</p>
+        <div class="ctls" id="p10ctl"></div>
+        <div class="mplot"><svg id="p10a" role="img"></svg></div>
+        <div class="legend" id="p10leg"></div>
+        <div class="mplot short-plot"><svg id="p10b" role="img"></svg></div>
+        <div class="kv" id="p10kv"></div>
+        <p class="notice"><b>Notice:</b> with v = 0 the bump spreads in place. With small D it slides almost unchanged. In the Richards equation the gravity term plays the drift, and its speed depends on how wet the soil is: fast in wet soil, nearly zero in dry soil. That is why wetting fronts stay sharp.</p>
+      </section>
+
+      <section class="card" id="pr-11">
+        <h2>11. Putting it together</h2>
+        <p>Here is the Richards equation again, with each piece traced back to a step in this primer:</p>
+        <div class="eq">∂θ/∂t = ∂/∂z [ K(h) (∂h/∂z − 1) ] − S</div>
+        <div class="chain">
+          <div><b>∂θ/∂t</b>   the rate of change at one fixed depth: a partial derivative in time (steps 1 and 7).</div>
+          <div><b>∂/∂z [ … ]</b>   the balance: what flows into a thin layer minus what flows out (step 8).</div>
+          <div><b>K (∂h/∂z − 1)</b>   the flux with its sign flipped: water runs downhill in total head, like q = −D ∂u/∂z (step 8). Because K depends on h, the equation is nonlinear (step 5).</div>
+          <div><b>− 1</b>   gravity inside that flux: a steady downward pull of strength K, the drift term (step 10).</div>
+          <div><b>− S</b>   roots: a sink, like the outflow in step 2.</div>
+          <div><b>solving it</b>   chop depth into cells to get many coupled tank ODEs (steps 6 and 9), then step through time (step 3).</div>
+        </div>
+        <p>The one real difference from the heat equation is that the lab works with two linked variables, θ and h, connected by the retention curve. The Basics tab takes it from here.</p>
+        <div class="btnrow"><button class="btn primary" type="button" data-goto="toy-xlate">Continue to Basics</button></div>
+      </section>
+    </div>
+
     <!-- ================= BASICS ================= -->
     <div class="page reading" id="page-basics" hidden>
       <h2>Basics</h2>
-      <p class="lead">The Richards equation taken apart into six small models. Each one isolates a single idea from the lab, with everything else stripped away. Most are ODEs or circuits you have already seen.</p>
+      <p class="lead">The Richards equation taken apart into six small models. Each one isolates a single idea from the lab, with everything else stripped away. Most are ODEs or circuits you have already seen. If derivatives, ODEs, or PDEs feel rusty, <button class="linkbtn" type="button" data-goto="pr-intro">start with the Primer</button>.</p>
 
       <section class="card" id="toy-xlate">
         <h2>The same equation in three forms</h2>
@@ -1081,7 +1307,8 @@ const REFS = [
     const Lp = o.Lp || 46, Rp = 12, T = o.T || 16, B = o.xLabel ? 34 : 22, pw = W - Lp - Rp, ph = H - T - B;
     const x = v => Lp + (v - o.x0) / (o.x1 - o.x0) * pw;
     const y = v => T + (o.yInvert ? (v - o.y0) / (o.y1 - o.y0) : 1 - (v - o.y0) / (o.y1 - o.y0)) * ph;
-    let s = '';
+    let s = o.under ? o.under(x, y) : '';
+    el._g = {W, H, Lp, T, pw, ph, x0:o.x0, x1:o.x1, y0:o.y0, y1:o.y1, inv:!!o.yInvert};
     (o.bands || []).forEach(b => { const a = x(Math.max(o.x0, b.x0)), c = x(Math.min(o.x1, b.x1)); if (c > a) s += `<rect x="${a}" y="${T}" width="${c - a}" height="${ph}" fill="${b.c}" opacity=".12"/><text x="${(a + c) / 2}" y="${T + ph - 6}" text-anchor="middle" fill="${b.c}">${b.label || ''}</text>`; });
     o.yTicks.forEach(t => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(t.v)}" y2="${y(t.v)}" stroke="var(--grid)"/><text x="${Lp - 6}" y="${y(t.v) + 4}" text-anchor="end">${t.l}</text>`; });
     o.xTicks.forEach(t => { s += `<line x1="${x(t.v)}" x2="${x(t.v)}" y1="${T}" y2="${T + ph}" stroke="var(--grid)"/><text x="${x(t.v)}" y="${T + ph + 14}" text-anchor="middle">${t.l}</text>`; });
@@ -1089,7 +1316,7 @@ const REFS = [
     if (o.yLabel) s += `<text x="10" y="${T + ph / 2}" text-anchor="middle" transform="rotate(-90 10 ${T + ph / 2})">${o.yLabel}</text>`;
     (o.hlines || []).forEach(v => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(v.v)}" y2="${y(v.v)}" stroke="${v.c}" stroke-width="1.3" ${v.dash ? `stroke-dasharray="${v.dash}"` : ''}/>` + (v.label ? `<text x="${W - Rp - 2}" y="${y(v.v) - 4}" text-anchor="end" fill="${v.c}">${v.label}</text>` : ''); });
     (o.vlines || []).forEach((v, i) => { if (v.v < o.x0 || v.v > o.x1) return; s += `<line x1="${x(v.v)}" x2="${x(v.v)}" y1="${T}" y2="${T + ph}" stroke="${v.c}" stroke-width="1.4" ${v.dash ? `stroke-dasharray="${v.dash}"` : ''}/>` + (v.label ? (x(v.v) > W - Rp - 28 ? `<text x="${x(v.v) - 3}" y="${T + 10 + 12 * (i % 3)}" text-anchor="end" fill="${v.c}">${v.label}</text>` : `<text x="${x(v.v) + 3}" y="${T + 10 + 12 * (i % 3)}" fill="${v.c}">${v.label}</text>`) : ''); });
-    (o.rects || []).forEach(r => { const xa = x(r.x0), xb = x(r.x1), ya = y(clamp(r.y, o.y0, o.y1)), yb = y(o.y0); s += `<rect x="${Math.min(xa, xb) + 0.5}" y="${Math.min(ya, yb)}" width="${Math.max(0, Math.abs(xb - xa) - 1)}" height="${Math.abs(yb - ya)}" fill="${r.c}" opacity="${r.o || 1}"/>`; });
+    (o.rects || []).forEach(r => { const xa = x(r.x0), xb = x(r.x1), ya = y(clamp(r.y, o.y0, o.y1)), yb = y(r.base != null ? r.base : o.y0); s += `<rect x="${Math.min(xa, xb) + 0.5}" y="${Math.min(ya, yb)}" width="${Math.max(0, Math.abs(xb - xa) - 1)}" height="${Math.abs(yb - ya)}" fill="${r.c}" opacity="${r.o || 1}"/>`; });
     (o.series || []).forEach(se => {
       const pts = se.pts.filter(p => isFinite(p[0]) && isFinite(p[1])).map(p => `${x(clamp(p[0], Math.min(o.x0, o.x1), Math.max(o.x0, o.x1))).toFixed(1)},${y(clamp(p[1], Math.min(o.y0, o.y1), Math.max(o.y0, o.y1))).toFixed(1)}`).join(' ');
       s += `<polyline points="${pts}" fill="none" stroke="${se.c}" stroke-width="${se.w || 2}" ${se.dash ? `stroke-dasharray="${se.dash}"` : ''} stroke-linejoin="round"/>`;
@@ -1097,6 +1324,7 @@ const REFS = [
     (o.dots || []).forEach(d => d.pts.forEach(p => { if (isFinite(p[0]) && isFinite(p[1])) s += `<circle cx="${x(clamp(p[0], o.x0, o.x1))}" cy="${y(clamp(p[1], Math.min(o.y0, o.y1), Math.max(o.y0, o.y1)))}" r="${d.r || 3}" fill="${d.c}" stroke="var(--surface)" stroke-width="1"/>`; }));
     (o.events || []).forEach(e => { const ex = x(e.x); s += `<path d="M${ex - 5} ${T - 10}h10l-5 8z" fill="${e.c}"/>`; });
     (o.marks || []).forEach(m => { s += `<line x1="${Lp}" x2="${W - Rp}" y1="${y(m.y)}" y2="${y(m.y)}" stroke="var(--ink)" stroke-dasharray="2 3" opacity=".6"/><text x="${W - Rp - 2}" y="${y(m.y) - 4}" text-anchor="end" fill="var(--ink)">${m.label}</text>`; });
+    if (o.extra) s += o.extra(x, y);
     if (o.cursor != null){ const cx = x(o.cursor); s += `<line x1="${cx}" x2="${cx}" y1="${T}" y2="${T + ph}" stroke="var(--ink)" stroke-width="1.5"/>`; }
     el.setAttribute('aria-label', o.aria || 'Chart');
     el.innerHTML = s;
@@ -1385,11 +1613,12 @@ const REFS = [
   function setMode(m){
     UI.mode = m;
     document.querySelectorAll('#modeSeg [data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === m)));
-    $('#page-lab').hidden = m !== 'lab'; $('#page-learn').hidden = m !== 'learn'; $('#page-ref').hidden = m !== 'ref'; $('#page-basics').hidden = m !== 'basics';
+    $('#page-lab').hidden = m !== 'lab'; $('#page-learn').hidden = m !== 'learn'; $('#page-ref').hidden = m !== 'ref'; $('#page-basics').hidden = m !== 'basics'; $('#page-primer').hidden = m !== 'primer';
     $('#scroll').classList.toggle('labmode', m === 'lab');
     $('#scroll').scrollTop = 0;
     if (m === 'lab') setTimeout(draw, 0);
     if (m === 'basics') setTimeout(drawBasics, 0);
+    if (m === 'primer') setTimeout(drawPrimer, 0);
   }
   document.querySelectorAll('#modeSeg [data-mode]').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
@@ -1436,7 +1665,7 @@ const REFS = [
   }
   $('#backToLesson').addEventListener('click', () => { const b = UI.back || {mode:'learn', el:'lesson-' + UI.lesson}; goTo(b.mode, b.el); });
   document.addEventListener('click', e => {
-    const g = e.target.closest('[data-goto]'); if (g){ goTo('basics', g.dataset.goto); return; }
+    const g = e.target.closest('[data-goto]'); if (g){ goTo(g.dataset.goto.startsWith('pr-') ? 'primer' : 'basics', g.dataset.goto); return; }
     const lb = e.target.closest('[data-lab]'); if (lb){ loadLesson(lb.dataset.lab, {mode:'basics', el:lb.closest('section').id}); }
   });
 
@@ -1715,6 +1944,313 @@ const REFS = [
     drawBucket(); drawSteps(); drawTubes(); drawChain(); drawFront(); drawPicard();
   }
   if (window.ResizeObserver){ let rt = null; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawBasics, 80); }).observe($('#page-basics')); }
+
+  // ---------- primer: ODEs and PDEs from the ground up ----------
+  function toData(el, e){
+    const g = el._g; if (!g) return null;
+    const r = el.getBoundingClientRect(), px = (e.clientX - r.left) * g.W / r.width, py = (e.clientY - r.top) * g.H / r.height;
+    const fx = (px - g.Lp) / g.pw, fy = (py - g.T) / g.ph;
+    return {x:g.x0 + fx * (g.x1 - g.x0), y:g.inv ? g.y0 + fy * (g.y1 - g.y0) : g.y1 - fy * (g.y1 - g.y0), inside:fx >= 0 && fx <= 1 && fy >= 0 && fy <= 1, px, py};
+  }
+  function arrowSvg(x1, y1, x2, y2, c, w){
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy); if (L < 3) return '';
+    const ux = dx / L, uy = dy / L, hs = Math.min(7, L * 0.45), bx = x2 - ux * hs, by = y2 - uy * hs, hw = hs * 0.55;
+    return `<line x1="${x1}" y1="${y1}" x2="${bx}" y2="${by}" stroke="${c}" stroke-width="${w || 1.6}"/><path d="M${x2} ${y2}L${bx - uy * hw} ${by + ux * hw}L${bx + uy * hw} ${by - ux * hw}Z" fill="${c}"/>`;
+  }
+  function heatURL(nx, ny, val){
+    const cv = document.createElement('canvas'); cv.width = nx; cv.height = ny;
+    const g = cv.getContext('2d'), img = g.createImageData(nx, ny);
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++){ const c = ramp(val(i, j)), o = (j * nx + i) * 4; img.data[o] = c[0]; img.data[o + 1] = c[1]; img.data[o + 2] = c[2]; img.data[o + 3] = 255; }
+    g.putImageData(img, 0, 0); return cv.toDataURL();
+  }
+  const imgTag = (url, x, y, x0, x1, y0, y1) => { const a = x(x0), b = x(x1), c = y(y0), d = y(y1); return `<image href="${url}" x="${Math.min(a, b)}" y="${Math.min(c, d)}" width="${Math.abs(b - a)}" height="${Math.abs(d - c)}" preserveAspectRatio="none"/>`; };
+  const tk = (arr, f) => arr.map(v => ({v, l:f ? f(v) : String(v)}));
+  const lin = (a, b, n) => Array.from({length:n + 1}, (_, k) => a + (b - a) * k / n);
+  const sgnFmt = (v, d) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(d)}`;
+
+  // 1. derivative
+  const Q1 = {t:10, ldt:Math.log10(8)};
+  const w1 = t => 70 * Math.exp(-t / 30) + 15 + 6 * Math.sin(2 * Math.PI * t / 24);
+  const dw1 = t => -70 / 30 * Math.exp(-t / 30) + 6 * 2 * Math.PI / 24 * Math.cos(2 * Math.PI * t / 24);
+  tslider($('#p1ctl'), Q1, {key:'t', label:'Time t', min:0, max:44, step:0.5, fmt:v => `${v} h`}, drawP1);
+  tslider($('#p1ctl'), Q1, {key:'ldt', label:'Gap Δt', min:-1, max:1.2, step:0.01, fmt:v => `${fmtNum2(Math.pow(10, v))} h`}, drawP1);
+  function drawP1(){
+    const t0 = Q1.t, t1 = Math.min(48, t0 + Math.pow(10, Q1.ldt)), W0 = w1(t0), W1 = w1(t1), sec = (W1 - W0) / (t1 - t0), tan = dw1(t0);
+    const curve = lin(0, 48, 240).map(t => [t, w1(t)]);
+    const secL = [t0 - 6, t1 + 6].map(t => [t, W0 + sec * (t - t0)]), tanL = [t0 - 9, t0 + 9].map(t => [t, W0 + tan * (t - t0)]);
+    lineChart({el:$('#p1a'), x0:0, x1:48, y0:0, y1:100, Lp:46, T:12, xLabel:'time t (hours)', yLabel:'W (mm)',
+      xTicks:tk([0, 12, 24, 36, 48]), yTicks:tk([0, 25, 50, 75, 100]),
+      series:[{pts:curve, c:'var(--ink)', w:2.2}, {pts:secL, c:'var(--s-in)', w:1.8, dash:'6 4'}, {pts:tanL, c:'var(--accent)', w:2.4}],
+      dots:[{pts:[[t1, W1]], c:'var(--s-in)', r:4.5}, {pts:[[t0, W0]], c:'var(--accent)', r:5}],
+      extra:(x, y) => `<line x1="${x(t0)}" x2="${x(t1)}" y1="${y(W0)}" y2="${y(W0)}" stroke="var(--s-in)" stroke-width="1" stroke-dasharray="2 2"/><line x1="${x(t1)}" x2="${x(t1)}" y1="${y(W0)}" y2="${y(W1)}" stroke="var(--s-in)" stroke-width="1" stroke-dasharray="2 2"/>` +
+        `<text x="${(x(t0) + x(t1)) / 2}" y="${y(W0) + (W1 < W0 ? -5 : 13)}" text-anchor="middle" fill="var(--s-in)">Δt</text><text x="${x(t1) + 4}" y="${(y(W0) + y(W1)) / 2 + 4}" fill="var(--s-in)">ΔW</text>`,
+      aria:'Water over time with secant and tangent lines'});
+    $('#p1leg').innerHTML = leg('var(--ink)', 'W(t)') + leg('var(--s-in)', 'secant over Δt', true) + leg('var(--accent)', 'tangent at t');
+    lineChart({el:$('#p1b'), x0:0, x1:48, y0:-5, y1:2.5, Lp:46, T:10, xLabel:'time t (hours)', yLabel:'dW/dt',
+      xTicks:tk([0, 12, 24, 36, 48]), yTicks:tk([-4, -2, 0, 2]), hlines:[{v:0, c:'var(--line)'}],
+      series:[{pts:lin(0, 48, 240).map(t => [t, dw1(t)]), c:'var(--accent)', w:2.2}], dots:[{pts:[[t0, tan]], c:'var(--accent)', r:5}], cursor:t0,
+      aria:'The derivative as a function of time'});
+    $('#p1kv').innerHTML = kvh('Secant ΔW/Δt', `${sgnFmt(sec, 2)} mm/h`) + kvh('Tangent dW/dt', `${sgnFmt(tan, 2)} mm/h`) + kvh('Difference', Math.abs(sec - tan).toFixed(3)) + kvh('W at t', `${W0.toFixed(1)} mm`);
+  }
+
+  // 2. slope field
+  const Q2 = {u:2, tau:15, seeds:[[0, 92], [0, 8], [16, 60]]};
+  tslider($('#p2ctl'), Q2, {key:'u', label:'Watering rate u', min:0, max:5, step:0.1, fmt:v => `${v.toFixed(1)} mm/h`}, drawP2);
+  tslider($('#p2ctl'), Q2, {key:'tau', label:'Loss time constant τ', min:2, max:30, step:0.5, fmt:v => `${v} h`}, drawP2);
+  function drawP2(){
+    const Ws = Q2.u * Q2.tau, f = W => Q2.u - W / Q2.tau;
+    const series = Q2.seeds.map((sd, k) => ({pts:lin(0, 48, 240).map(t => [t, Ws + (sd[1] - Ws) * Math.exp(-(t - sd[0]) / Q2.tau)]).filter(p => p[1] >= -2 && p[1] <= 102), c:`var(--t${(k % 5) + 1})`, w:2.2}));
+    lineChart({el:$('#p2a'), x0:0, x1:48, y0:0, y1:100, Lp:46, T:12, xLabel:'time t (hours)', yLabel:'W (mm)',
+      xTicks:tk([0, 12, 24, 36, 48]), yTicks:tk([0, 25, 50, 75, 100]),
+      hlines:Ws <= 100 ? [{v:Ws, c:'var(--ink)', dash:'5 4', label:'W* = u·τ'}] : [],
+      under:(x, y) => { let s = ''; for (let i = 0; i <= 12; i++) for (let j = 0; j <= 10; j++){ const t = 2 + i * 44 / 12, W = 4 + j * 92 / 10, sl = f(W); const dx = x(t + 1) - x(t), dy = y(W + sl) - y(W), L = Math.hypot(dx, dy), h = 7 / L; s += `<line x1="${x(t) - dx * h}" y1="${y(W) - dy * h}" x2="${x(t) + dx * h}" y2="${y(W) + dy * h}" stroke="var(--muted)" stroke-width="1.3" opacity=".55" stroke-linecap="round"/>`; } return s; },
+      series, dots:Q2.seeds.map((sd, k) => ({pts:[sd], c:`var(--t${(k % 5) + 1})`, r:4.5})), aria:'Slope field with solution curves'});
+    $('#p2leg').innerHTML = '<span>short lines: the slope the rule demands</span>' + leg('var(--ink)', 'equilibrium', true) + '<span>colored: solutions</span>';
+    $('#p2kv').innerHTML = kvh('Equilibrium W*', Ws <= 100 ? `${Ws.toFixed(0)} mm` : `${Ws.toFixed(0)} mm (off chart)`) + kvh('Slope at W = 0', `${sgnFmt(f(0), 1)} mm/h`) + kvh('Slope at W = 100', `${sgnFmt(f(100), 1)} mm/h`);
+  }
+  $('#p2a').addEventListener('click', e => { const d = toData($('#p2a'), e); if (!d || !d.inside) return; Q2.seeds.push([d.x, d.y]); if (Q2.seeds.length > 6) Q2.seeds.shift(); drawP2(); });
+  $('#p2clear').addEventListener('click', () => { Q2.seeds = []; drawP2(); });
+
+  // 3. Euler by hand
+  const Q3 = {dt:6, pts:[[0, 80]]}, fE3 = W => 1 - W / 10, ex3 = t => 10 + 70 * Math.exp(-t / 10);
+  tslider($('#p3ctl'), Q3, {key:'dt', label:'Step size Δt', min:0.5, max:16, step:0.5, fmt:v => `${v} h`}, () => { Q3.pts = [[0, 80]]; drawP3(); });
+  function p3step(){ const [t, W] = Q3.pts[Q3.pts.length - 1]; if (t + Q3.dt > 48.0001) return false; Q3.pts.push([t + Q3.dt, W + Q3.dt * fE3(W)]); return true; }
+  $('#p3step').addEventListener('click', () => { p3step(); drawP3(); });
+  $('#p3run').addEventListener('click', () => { while (p3step()); drawP3(); });
+  $('#p3reset').addEventListener('click', () => { Q3.pts = [[0, 80]]; drawP3(); });
+  function drawP3(){
+    const P3 = Q3.pts, last = P3[P3.length - 1], canStep = last[0] + Q3.dt <= 48.0001;
+    lineChart({el:$('#p3a'), x0:0, x1:48, y0:-20, y1:90, Lp:46, T:12, xLabel:'time t (hours)', yLabel:'W (mm)',
+      xTicks:tk([0, 12, 24, 36, 48]), yTicks:tk([-20, 0, 20, 40, 60, 80]), hlines:[{v:0, c:'var(--line)'}],
+      series:[{pts:lin(0, 48, 200).map(t => [t, ex3(t)]), c:'var(--ink)', w:1.6, dash:'4 4'}, {pts:P3, c:'var(--accent)', w:2.2}],
+      dots:[{pts:P3, c:'var(--accent)', r:4}],
+      extra:(x, y) => canStep ? arrowSvg(x(last[0]), y(last[1]), x(last[0] + Q3.dt), y(last[1] + Q3.dt * fE3(last[1])), 'var(--s-in)', 1.8) : '',
+      aria:'Euler steps compared with the exact solution'});
+    $('#p3leg').innerHTML = leg('var(--ink)', 'exact', true) + leg('var(--accent)', 'Euler steps') + leg('var(--s-in)', 'next step');
+    const rows = P3.map((p, k) => `<tr class="${k === P3.length - 1 ? 'now' : ''}"><td>${k}</td><td>${p[0].toFixed(1)}</td><td>${p[1].toFixed(2)}</td><td>${sgnFmt(fE3(p[1]), 2)}</td><td>${sgnFmt(Q3.dt * fE3(p[1]), 2)}</td><td>${ex3(p[0]).toFixed(2)}</td></tr>`).slice(-7);
+    $('#p3tab').innerHTML = `<tr><th>k</th><th>t (h)</th><th>W[k]</th><th>slope f(W)</th><th>Δt·slope</th><th>exact</th></tr>` + rows.join('');
+  }
+
+  // 4. exact solution
+  const Q4 = {W0:90, Wi:20, tau:8};
+  tslider($('#p4ctl'), Q4, {key:'W0', label:'Starting water W₀', min:0, max:100, step:1, fmt:v => `${v} mm`}, drawP4);
+  tslider($('#p4ctl'), Q4, {key:'Wi', label:'Final water W∞ = u·τ', min:0, max:100, step:1, fmt:v => `${v} mm`}, drawP4);
+  tslider($('#p4ctl'), Q4, {key:'tau', label:'Time constant τ', min:2, max:16, step:0.5, fmt:v => `${v} h`}, drawP4);
+  function drawP4(){
+    const {W0, Wi, tau} = Q4, W = t => Wi + (W0 - Wi) * Math.exp(-t / tau), marks = [1, 2, 3, 5].filter(k => k * tau <= 48);
+    lineChart({el:$('#p4a'), x0:0, x1:48, y0:0, y1:100, Lp:46, T:12, xLabel:'time t (hours)', yLabel:'W (mm)',
+      xTicks:tk([0, 12, 24, 36, 48]), yTicks:tk([0, 25, 50, 75, 100]),
+      hlines:[{v:Wi, c:'var(--ink)', dash:'5 4', label:'W∞'}],
+      vlines:marks.map(k => ({v:k * tau, c:'var(--muted)', dash:'2 3', label:k === 1 ? 'τ' : `${k}τ`})),
+      series:[{pts:[[0, W0], [tau, Wi]], c:'var(--s-in)', w:1.6, dash:'2 3'}, {pts:lin(0, 48, 240).map(t => [t, W(t)]), c:'var(--accent)', w:2.5}],
+      dots:[{pts:marks.map(k => [k * tau, W(k * tau)]), c:'var(--accent)', r:4.5}], aria:'Exact exponential solution with time-constant marks'});
+    $('#p4leg').innerHTML = leg('var(--accent)', 'W(t)') + leg('var(--s-in)', 'starting tangent', true) + '<span>● after τ, 2τ, 3τ, 5τ</span>';
+    const gap = k => `${(100 * (1 - Math.exp(-k))).toFixed(k > 3 ? 1 : 0)}%`;
+    $('#p4kv').innerHTML = kvh('Gap closed after τ', gap(1)) + kvh('after 2τ', gap(2)) + kvh('after 3τ', gap(3)) + kvh('after 5τ', gap(5));
+  }
+
+  // 5. nonlinear ODE, rate curve
+  const Q5 = {u:2, p:3};
+  tslider($('#p5ctl'), Q5, {key:'u', label:'Watering rate u', min:0.2, max:6, step:0.1, fmt:v => `${v.toFixed(1)} mm/h`}, drawP5);
+  tslider($('#p5ctl'), Q5, {key:'p', label:'Nonlinearity p', min:1, max:5, step:0.1, fmt:v => v === 1 ? '1, linear' : v.toFixed(1)}, drawP5);
+  function drawP5(){
+    const {u, p} = Q5, k = 2 / Math.pow(50, p), f = W => u - k * Math.pow(W, p), Ws = Math.pow(u / k, 1 / p), fp = -k * p * Math.pow(Ws, p - 1);
+    const y0 = Math.max(-12, Math.min(-2, f(100) - 0.5)), y1 = Math.max(1, u + 0.5);
+    lineChart({el:$('#p5a'), x0:0, x1:100, y0, y1, Lp:46, T:12, xLabel:'water W (mm)', yLabel:'dW/dt',
+      xTicks:tk([0, 25, 50, 75, 100]), yTicks:(() => { const st = niceStep((y1 - y0) / 4), a = []; for (let v = Math.ceil(y0 / st) * st; v <= y1 + 1e-9; v += st) a.push({v, l:String(Math.round(v * 10) / 10)}); return a; })(), hlines:[{v:0, c:'var(--ink)'}],
+      series:[{pts:[[Ws - 18, fp * -18], [Ws + 18, fp * 18]], c:'var(--s-in)', w:1.6, dash:'4 3'}, {pts:lin(0, 100, 200).map(W => [W, f(W)]), c:'var(--accent)', w:2.5}],
+      dots:[{pts:Ws <= 100 ? [[Ws, 0]] : [], c:'var(--s-wp)', r:5.5}],
+      extra:(x, y) => { let s = ''; for (let W = 8; W <= 96; W += 11){ if (Math.abs(W - Ws) < 6) continue; const dir = Math.sign(f(W)); s += arrowSvg(x(W) - dir * 9, y(0), x(W) + dir * 9, y(0), 'var(--s-wp)', 2); } return s; },
+      aria:'Rate of change against water level'});
+    $('#p5leg').innerHTML = leg('var(--accent)', 'rate f(W)') + leg('var(--s-in)', 'tangent at W*: linearization', true) + '<span>arrows: which way W moves</span>';
+    const starts = [5, 25, 75, 100], cols = ['var(--t1)', 'var(--t2)', 'var(--t3)', 'var(--t4)'];
+    const series = starts.map((W0, i) => { let W = W0; const pts = [[0, W]], h = 0.05; for (let n = 1; n <= 960; n++){ const k1 = f(W), k2 = f(W + h / 2 * k1), k3 = f(W + h / 2 * k2), k4 = f(W + h * k3); W += h / 6 * (k1 + 2 * k2 + 2 * k3 + k4); W = Math.max(0, W); if (n % 8 === 0) pts.push([n * h, W]); } return {pts, c:cols[i], w:2}; });
+    lineChart({el:$('#p5b'), x0:0, x1:48, y0:0, y1:100, Lp:46, T:12, xLabel:'time t (hours)', yLabel:'W (mm)', xTicks:tk([0, 12, 24, 36, 48]), yTicks:tk([0, 25, 50, 75, 100]),
+      hlines:Ws <= 100 ? [{v:Ws, c:'var(--s-wp)', dash:'5 4', label:'W*'}] : [], series, aria:'Solutions from four starting levels'});
+    $('#p5leg2').innerHTML = '<span>solutions from four starting levels</span>' + leg('var(--s-wp)', 'equilibrium', true);
+    $('#p5kv').innerHTML = kvh('Equilibrium W*', Ws <= 100 ? `${Ws.toFixed(1)} mm` : '> 100 mm') + kvh('Slope f′(W*)', `${fp.toFixed(3)} /h`) + kvh('Local τ = 1/|f′|', `${(1 / Math.abs(fp)).toFixed(1)} h`) + kvh('Outflow at W*', `${u.toFixed(1)} mm/h`);
+  }
+
+  // 6. two tanks
+  const Q6 = {g:0.5, d:0.06, u1:90, u2:10};
+  const p6s = [
+    tslider($('#p6ctl'), Q6, {key:'g', label:'Pipe between tanks g', min:0.05, max:2, step:0.05, fmt:v => `${v.toFixed(2)} /h`}, drawP6),
+    tslider($('#p6ctl'), Q6, {key:'d', label:'Bottom drain d', min:0.01, max:0.3, step:0.01, fmt:v => `${v.toFixed(2)} /h`}, drawP6),
+    tslider($('#p6ctl'), Q6, {key:'u1', label:'Top tank starts at', min:0, max:100, step:1, fmt:v => `${v} mm`}, drawP6),
+    tslider($('#p6ctl'), Q6, {key:'u2', label:'Bottom tank starts at', min:0, max:100, step:1, fmt:v => `${v} mm`}, drawP6)
+  ];
+  function drawP6(){
+    const {g, d} = Q6, F = (a, b) => [-g * (a - b), g * (a - b) - d * b];
+    let a = Q6.u1, b = Q6.u2; const h = 0.02, s1 = [[0, a]], s2 = [[0, b]], ph = [[a, b]];
+    for (let n = 1; n <= 3000; n++){
+      const k1 = F(a, b), k2 = F(a + h / 2 * k1[0], b + h / 2 * k1[1]), k3 = F(a + h / 2 * k2[0], b + h / 2 * k2[1]), k4 = F(a + h * k3[0], b + h * k3[1]);
+      a += h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]); b += h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+      if (n % 10 === 0){ s1.push([n * h, a]); s2.push([n * h, b]); ph.push([a, b]); }
+    }
+    const tr = -2 * g - d, det = g * d, disc = Math.sqrt(tr * tr / 4 - det), lf = tr / 2 - disc, ls = tr / 2 + disc;
+    const ev = l => { const v = [g, g + l], n = Math.hypot(v[0], v[1]); return [v[0] / n, v[1] / n]; }, ef = ev(lf), es = ev(ls);
+    lineChart({el:$('#p6a'), x0:0, x1:60, y0:0, y1:100, Lp:46, T:12, xLabel:'time t (hours)', yLabel:'level (mm)', xTicks:tk([0, 15, 30, 45, 60]), yTicks:tk([0, 25, 50, 75, 100]),
+      series:[{pts:s1, c:'var(--accent)', w:2.3}, {pts:s2, c:'var(--t2)', w:2.3}, {pts:s1.map((p, i) => [p[0], (p[1] + s2[i][1]) / 2]), c:'var(--muted)', w:1.5, dash:'4 4'}], aria:'Tank levels over time'});
+    $('#p6leg').innerHTML = leg('var(--accent)', 'top tank u₁') + leg('var(--t2)', 'bottom tank u₂') + leg('var(--muted)', 'average', true);
+    const line = (P0, e, c) => { let lo = -1e9, hi = 1e9; for (let k = 0; k < 2; k++){ if (Math.abs(e[k]) < 1e-12) continue; const a1 = (0 - P0[k]) / e[k], a2 = (100 - P0[k]) / e[k]; lo = Math.max(lo, Math.min(a1, a2)); hi = Math.min(hi, Math.max(a1, a2)); }
+      return {pts:hi > lo ? [[P0[0] + lo * e[0], P0[1] + lo * e[1]], [P0[0] + hi * e[0], P0[1] + hi * e[1]]] : [], c, w:1.4, dash:'6 4'}; };
+    lineChart({el:$('#p6b'), x0:0, x1:100, y0:0, y1:100, Lp:46, T:12, xLabel:'top tank u₁ (mm)', yLabel:'bottom tank u₂', xTicks:tk([0, 25, 50, 75, 100]), yTicks:tk([0, 25, 50, 75, 100]),
+      under:(x, y) => { let s = ''; for (let i = 0; i <= 7; i++) for (let j = 0; j <= 7; j++){ const p = 6 + i * 88 / 7, q = 6 + j * 88 / 7, v = F(p, q), L = Math.hypot(x(p + v[0]) - x(p), y(q + v[1]) - y(q)); if (L < 1e-9) continue; const sc = Math.min(13, 4 + 3 * Math.log10(1 + L)) / L; s += arrowSvg(x(p), y(q), x(p) + (x(p + v[0]) - x(p)) * sc, y(q) + (y(q + v[1]) - y(q)) * sc, 'var(--muted)', 1.1); } return `<g opacity=".55">${s}</g>`; },
+      series:[line([Q6.u1, Q6.u2], ef, 'var(--s-wp)'), line([0, 0], es, 'var(--s-up)'), {pts:ph, c:'var(--accent)', w:2.5}],
+      dots:[{pts:[[Q6.u1, Q6.u2]], c:'var(--accent)', r:5.5}], aria:'Phase plane of the two tanks'});
+    $('#p6leg2').innerHTML = leg('var(--accent)', 'trajectory') + leg('var(--s-wp)', 'fast mode', true) + leg('var(--s-up)', 'slow mode', true);
+    $('#p6kv').innerHTML = kvh('Fast τ = 1/|λ|', `${(1 / Math.abs(lf)).toFixed(1)} h`) + kvh('Slow τ = 1/|λ|', `${(1 / Math.abs(ls)).toFixed(1)} h`) + kvh('Ratio', `${(lf / ls).toFixed(0)}×`) + kvh('Eigenvalues λ', `${lf.toFixed(2)}, ${ls.toFixed(3)}`);
+  }
+  $('#p6b').addEventListener('click', e => { const dd = toData($('#p6b'), e); if (!dd || !dd.inside) return; Q6.u1 = Math.round(clamp(dd.x, 0, 100)); Q6.u2 = Math.round(clamp(dd.y, 0, 100)); p6s.forEach(f => f()); drawP6(); });
+
+  // 7. two variables
+  const Q7 = {z:0.25, t:0.012}, D7 = 0.2, W7 = 0.08, Z7 = 0.4, T7 = 0.05;
+  const u7 = (z, t) => W7 / Math.sqrt(W7 * W7 + 4 * D7 * t) * Math.exp(-Math.pow(z - Z7, 2) / (W7 * W7 + 4 * D7 * t));
+  const p7s = [
+    tslider($('#p7ctl'), Q7, {key:'t', label:'Time t', min:0, max:T7, step:0.0005, fmt:v => v.toFixed(4)}, drawP7),
+    tslider($('#p7ctl'), Q7, {key:'z', label:'Depth z', min:0, max:1, step:0.005, fmt:v => v.toFixed(3)}, drawP7)
+  ];
+  let url7 = null;
+  function drawP7(){
+    if (!url7) url7 = heatURL(120, 90, (i, j) => u7((j + 0.5) / 90, (i + 0.5) / 120 * T7));
+    const {z, t} = Q7, hz = 1e-4, ht = 1e-6, u = u7(z, t);
+    const uz = (u7(z + hz, t) - u7(z - hz, t)) / (2 * hz), ut = (u7(z, t + ht) - u7(z, Math.max(0, t - ht))) / (t > ht ? 2 * ht : ht), uzz = (u7(z + 1e-3, t) - 2 * u + u7(z - 1e-3, t)) / 1e-6;
+    lineChart({el:$('#p7a'), x0:0, x1:T7, y0:0, y1:1, yInvert:true, Lp:46, T:10, xLabel:'time t →', yLabel:'depth z', xTicks:tk([0, 0.01, 0.02, 0.03, 0.04, 0.05]), yTicks:tk([0, 0.5, 1]),
+      under:(x, y) => imgTag(url7, x, y, 0, T7, 0, 1),
+      extra:(x, y) => `<line x1="${x(0)}" x2="${x(T7)}" y1="${y(z)}" y2="${y(z)}" stroke="var(--surface)" stroke-width="3" opacity=".8"/><line x1="${x(0)}" x2="${x(T7)}" y1="${y(z)}" y2="${y(z)}" stroke="var(--s-in)" stroke-width="1.5"/><line x1="${x(t)}" x2="${x(t)}" y1="${y(0)}" y2="${y(1)}" stroke="var(--surface)" stroke-width="3" opacity=".8"/><line x1="${x(t)}" x2="${x(t)}" y1="${y(0)}" y2="${y(1)}" stroke="var(--accent)" stroke-width="1.5"/><circle cx="${x(t)}" cy="${y(z)}" r="5" fill="var(--ink)" stroke="var(--surface)" stroke-width="2"/>`,
+      aria:'Heatmap of u over depth and time'});
+    const tz = [z - 0.12, z + 0.12];
+    lineChart({el:$('#p7b'), x0:0, x1:1, y0:0, y1:1.05, Lp:46, T:10, xLabel:'depth z (profile at this time)', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.5, 1]),
+      series:[{pts:lin(0, 1, 200).map(zz => [zz, u7(zz, 0)]), c:'var(--muted)', w:1.3, dash:'3 3'}, {pts:lin(0, 1, 200).map(zz => [zz, u7(zz, t)]), c:'var(--accent)', w:2.4}, {pts:tz.map(zz => [zz, u + uz * (zz - z)]), c:'var(--ink)', w:1.6}],
+      dots:[{pts:[[z, u]], c:'var(--ink)', r:4.5}], aria:'Profile at the chosen time'});
+    $('#p7legb').innerHTML = leg('var(--accent)', 'u(z) at this t') + leg('var(--muted)', 'at t = 0', true) + leg('var(--ink)', 'slope ∂u/∂z');
+    const tt = [t - 0.009, t + 0.009];
+    lineChart({el:$('#p7c'), x0:0, x1:T7, y0:0, y1:1.05, Lp:46, T:10, xLabel:'time t (history at this depth)', yLabel:'u', xTicks:tk([0, 0.01, 0.02, 0.03, 0.04, 0.05]), yTicks:tk([0, 0.5, 1]),
+      series:[{pts:lin(0, T7, 200).map(tq => [tq, u7(z, tq)]), c:'var(--s-in)', w:2.4}, {pts:tt.map(tq => [tq, u + ut * (tq - t)]), c:'var(--ink)', w:1.6}],
+      dots:[{pts:[[t, u]], c:'var(--ink)', r:4.5}], aria:'History at the chosen depth'});
+    $('#p7legc').innerHTML = leg('var(--s-in)', 'u(t) at this z') + leg('var(--ink)', 'slope ∂u/∂t');
+    $('#p7kv').innerHTML = kvh('u', u.toFixed(3)) + kvh('∂u/∂z', uz.toFixed(2)) + kvh('∂²u/∂z²', uzz.toFixed(1)) + kvh('∂u/∂t', ut.toFixed(1)) + kvh('D·∂²u/∂z²', (D7 * uzz).toFixed(1));
+  }
+  $('#p7a').addEventListener('click', e => { const d = toData($('#p7a'), e); if (!d || !d.inside) return; Q7.t = Math.round(clamp(d.x, 0, T7) / 0.0005) * 0.0005; Q7.z = Math.round(clamp(d.y, 0, 1) / 0.005) * 0.005; p7s.forEach(f => f()); drawP7(); });
+
+  // 8. shape to change
+  const P8_PRESETS = {bump:[0.15, 0.15, 0.2, 0.9, 0.2, 0.15, 0.15], step:[0.85, 0.85, 0.85, 0.2, 0.2, 0.2, 0.2], ramp:[0.9, 0.78, 0.66, 0.54, 0.42, 0.3, 0.18], wave:[0.5, 0.85, 0.3, 0.8, 0.25, 0.7, 0.5]};
+  const Q8 = {hv:P8_PRESETS.bump.slice(), preset:'bump', drag:-1};
+  function prSample(hv, N){
+    const out = new Float64Array(N), n = hv.length - 1;
+    for (let i = 0; i < N; i++){
+      const s = i / (N - 1) * n, k = Math.min(n - 1, Math.floor(s)), t = s - k;
+      const p0 = hv[Math.max(0, k - 1)], p1 = hv[k], p2 = hv[k + 1], p3 = hv[Math.min(n, k + 2)];
+      out[i] = clamp(0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t), 0, 1);
+    }
+    return out;
+  }
+  function syncP8seg(){ document.querySelectorAll('#p8seg [data-p8]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p8 === Q8.preset))); }
+  $('#p8seg').addEventListener('click', e => { const b = e.target.closest('[data-p8]'); if (!b) return; Q8.preset = b.dataset.p8; Q8.hv = P8_PRESETS[Q8.preset].slice(); syncP8seg(); drawP8(); Q9.frames = null; });
+  syncP8seg();
+  function drawP8(){
+    const N = 121, dz = 1 / (N - 1), u = prSample(Q8.hv, N), zs = Array.from({length:N}, (_, i) => i * dz);
+    const q = Array.from(u, (_, i) => -(u[Math.min(N - 1, i + 1)] - u[Math.max(0, i - 1)]) / ((Math.min(N - 1, i + 1) - Math.max(0, i - 1)) * dz));
+    const rate = Array.from(u, (_, i) => i === 0 || i === N - 1 ? 0 : (u[i + 1] - 2 * u[i] + u[i - 1]) / (dz * dz));
+    const hz = Q8.hv.map((v, k) => [k / 6, v]);
+    lineChart({el:$('#p8a'), x0:0, x1:1, y0:0, y1:1, Lp:46, T:12, xLabel:'depth z (top → bottom)', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.25, 0.5, 0.75, 1]),
+      under:(x, y) => `<path d="M${x(0)} ${y(0)}${Array.from(u, (v, i) => `L${x(zs[i])} ${y(v)}`).join('')}L${x(1)} ${y(0)}Z" fill="var(--water)" opacity=".18"/>`,
+      series:[{pts:Array.from(u, (v, i) => [zs[i], v]), c:'var(--accent)', w:2.6}],
+      extra:(x, y) => hz.map((p, k) => `<circle cx="${x(p[0])}" cy="${y(p[1])}" r="${k === Q8.drag ? 10 : 8}" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.5"/>`).join(''),
+      aria:'Draggable profile'});
+    const qm = Math.max(0.5, ...q.map(Math.abs)) * 1.1;
+    lineChart({el:$('#p8b'), x0:0, x1:1, y0:-qm, y1:qm, Lp:46, T:10, xLabel:'depth z', yLabel:'flux q', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:[{v:-qm * 0.8, l:'up'}, {v:0, l:'0'}, {v:qm * 0.8, l:'down'}], hlines:[{v:0, c:'var(--line)'}],
+      series:[{pts:q.map((v, i) => [zs[i], v]), c:'var(--s-in)', w:2.2}],
+      extra:(x, y) => { let s = ''; for (let k = 1; k < 12; k++){ const i = Math.round(k / 12 * (N - 1)), v = q[i], L = Math.min(28, 4 + 26 * Math.abs(v) / qm); if (Math.abs(v) < qm * 0.03) continue; const dir = Math.sign(v); s += arrowSvg(x(zs[i]) - dir * L / 2, y(v), x(zs[i]) + dir * L / 2, y(v), 'var(--s-in)', 2); } return s; },
+      aria:'Flux along depth'});
+    $('#p8legb').innerHTML = leg('var(--s-in)', 'flux q = −D ∂u/∂z: positive flows deeper, arrows show direction');
+    const bins = 40, rb = []; for (let b = 0; b < bins; b++){ let sum = 0, c = 0; for (let i = 1; i < N - 1; i++) if (Math.floor(zs[i] * bins) === b || (b === bins - 1 && zs[i] === 1)){ sum += rate[i]; c++; } rb.push(c ? sum / c : 0); }
+    const rm = Math.max(1, ...rb.map(Math.abs)) * 1.1;
+    lineChart({el:$('#p8c'), x0:0, x1:1, y0:-rm, y1:rm, Lp:46, T:10, xLabel:'depth z', yLabel:'∂u/∂t', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:[{v:-rm * 0.8, l:'falls'}, {v:0, l:'0'}, {v:rm * 0.8, l:'rises'}], hlines:[{v:0, c:'var(--line)'}],
+      rects:rb.map((v, b) => ({x0:b / bins, x1:(b + 1) / bins, y:v, base:0, c:v >= 0 ? 'var(--accent)' : 'var(--s-wp)', o:0.85})), aria:'Rate of change along depth'});
+    $('#p8legc').innerHTML = leg('var(--accent)', 'rising: curves up, more flows in than out') + leg('var(--s-wp)', 'falling: curves down');
+  }
+  (function wireP8(){
+    const el = $('#p8a');
+    const pick = e => { const d = toData(el, e); if (!d) return -1; const g = el._g; let best = -1, bd = 44; Q8.hv.forEach((v, k) => { const px = g.Lp + k / 6 * g.pw, py = g.T + (1 - v) * g.ph, dd = Math.hypot(px - d.px, py - d.py); if (dd < bd){ bd = dd; best = k; } }); if (best < 0){ const k = Math.round(clamp(d.x, 0, 1) * 6); if (Math.abs(d.x * 6 - k) < 0.35) best = k; } return best; };
+    const move = e => { const d = toData(el, e); if (!d || Q8.drag < 0) return; Q8.hv[Q8.drag] = Math.round(clamp(d.y, 0, 1) * 100) / 100; Q8.preset = 'custom'; syncP8seg(); Q9.frames = null; drawP8(); };
+    el.addEventListener('pointerdown', e => { const k = pick(e); if (k < 0) return; Q8.drag = k; el.setPointerCapture(e.pointerId); e.preventDefault(); move(e); });
+    el.addEventListener('pointermove', e => { if (Q8.drag >= 0) move(e); });
+    const end = () => { if (Q8.drag >= 0){ Q8.drag = -1; drawP8(); if (UI.mode === 'primer') drawP9(); } };
+    el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  })();
+
+  // 9. heat equation running
+  const Q9 = {bc:'sealed', f:0, frames:null, tot:null, url:null}, N9 = 61, F9 = 60, T9 = 0.03;
+  const BC_NOTE = {sealed:'No flux through either end: q = 0 at z = 0 and z = 1 (a Neumann condition). Nothing gets in or out.',
+    wet:'u = 1 at the top (a Dirichlet condition), like a ponded surface. The bottom stays sealed.',
+    dry:'u = 0 at both ends, like a cold plate or a drain that takes everything that reaches it.'};
+  function syncP9seg(){ document.querySelectorAll('#p9seg [data-bc]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.bc === Q9.bc))); $('#p9note').textContent = BC_NOTE[Q9.bc]; }
+  $('#p9seg').addEventListener('click', e => { const b = e.target.closest('[data-bc]'); if (!b) return; Q9.bc = b.dataset.bc; Q9.frames = null; syncP9seg(); drawP9(); });
+  syncP9seg();
+  function simP9(){
+    const N = N9, dz = 1 / N, k = 1 / (dz * dz), sub = 5, dt = T9 / F9 / sub;
+    const a = new Float64Array(N), b = new Float64Array(N), c = new Float64Array(N);
+    for (let i = 0; i < N; i++){ a[i] = i > 0 ? -k : 0; c[i] = i < N - 1 ? -k : 0; b[i] = 1 / dt + (i > 0 ? k : 0) + (i < N - 1 ? k : 0); }
+    const top = Q9.bc === 'wet' ? 1 : Q9.bc === 'dry' ? 0 : null, bot = Q9.bc === 'dry' ? 0 : null;
+    if (top !== null) b[0] += 2 * k; if (bot !== null) b[N - 1] += 2 * k;
+    const s0 = prSample(Q8.hv, 241); let u = Float64Array.from({length:N}, (_, i) => s0[Math.round((i + 0.5) / N * 240)]);
+    const frames = [Float64Array.from(u)], tot = [u.reduce((x, y) => x + y, 0) * dz];
+    for (let f = 1; f <= F9; f++){
+      for (let s = 0; s < sub; s++){ const r = Float64Array.from(u, v => v / dt); if (top !== null) r[0] += 2 * k * top; if (bot !== null) r[N - 1] += 2 * k * bot; u = thomas(a, b, c, r); }
+      frames.push(Float64Array.from(u)); tot.push(u.reduce((x, y) => x + y, 0) * dz);
+    }
+    Q9.frames = frames; Q9.tot = tot;
+    Q9.url = heatURL(F9 + 1, N, (i, j) => frames[i][j]);
+  }
+  function drawP9(){
+    if (!Q9.frames) simP9();
+    const f = Q9.f, u = Q9.frames[f], zc = Array.from({length:N9}, (_, i) => (i + 0.5) / N9), tNow = f / F9 * T9;
+    lineChart({el:$('#p9a'), x0:0, x1:1, y0:0, y1:1, Lp:46, T:12, xLabel:'depth z (top → bottom)', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.25, 0.5, 0.75, 1]),
+      under:(x, y) => `<path d="M${x(0)} ${y(0)}${Array.from(u, (v, i) => `L${x(zc[i])} ${y(v)}`).join('')}L${x(1)} ${y(0)}Z" fill="var(--water)" opacity=".18"/>`,
+      series:[{pts:Array.from(Q9.frames[0], (v, i) => [zc[i], v]), c:'var(--muted)', w:1.5, dash:'4 4'}, {pts:Array.from(u, (v, i) => [zc[i], v]), c:'var(--accent)', w:2.6}], aria:'Profile evolving under the heat equation'});
+    $('#p9leg').innerHTML = leg('var(--accent)', 'now') + leg('var(--muted)', 'start (your drawing)', true);
+    $('#p9tl').textContent = `t = ${tNow.toFixed(3)}`;
+    lineChart({el:$('#p9b'), x0:0, x1:T9, y0:0, y1:1, yInvert:true, Lp:46, T:8, xLabel:'time →', yLabel:'depth', xTicks:tk([0, 0.01, 0.02, 0.03]), yTicks:tk([0, 0.5, 1]),
+      under:(x, y) => imgTag(Q9.url, x, y, 0, T9, 0, 1), cursor:tNow, aria:'Depth by time history'});
+    const tmax = Math.max(1, ...Q9.tot) * 1.05;
+    lineChart({el:$('#p9c'), x0:0, x1:T9, y0:0, y1:tmax, Lp:46, T:10, xLabel:'time', yLabel:'total', xTicks:tk([0, 0.01, 0.02, 0.03]), yTicks:tk([0, 0.5, 1].filter(v => v <= tmax)),
+      series:[{pts:Q9.tot.map((v, i) => [i / F9 * T9, v]), c:'var(--s-in)', w:2.3}], cursor:tNow, aria:'Total amount over time'});
+    $('#p9legc').innerHTML = leg('var(--s-in)', `total amount ∫u dz = ${Q9.tot[f].toFixed(3)}`);
+  }
+  let p9timer = null;
+  function p9play(on){
+    if (on){ if (Q9.f >= F9) Q9.f = 0; p9timer = setInterval(() => { Q9.f++; if (Q9.f >= F9){ Q9.f = F9; p9play(false); } $('#p9t').value = Q9.f; drawP9(); }, 70); }
+    else { clearInterval(p9timer); p9timer = null; }
+    $('#p9play').setAttribute('aria-label', on ? 'Pause' : 'Play');
+    $('#p9playIco').innerHTML = on ? '<path d="M2 1h2v8H2zM6 1h2v8H6z"/>' : '<path d="M2 1l7 4-7 4z"/>';
+  }
+  $('#p9play').addEventListener('click', () => p9play(!p9timer));
+  $('#p9t').addEventListener('input', e => { Q9.f = +e.target.value; drawP9(); });
+
+  // 10. drift
+  const Q10 = {lD:-2.5, v:1.2, url:null}, T10 = 0.4, Z10 = 0.12, W10 = 0.05;
+  const u10 = (z, t, D, v) => W10 / Math.sqrt(W10 * W10 + 4 * D * t) * Math.exp(-Math.pow(z - Z10 - v * t, 2) / (W10 * W10 + 4 * D * t));
+  tslider($('#p10ctl'), Q10, {key:'lD', label:'Diffusivity D', min:-3.5, max:-1.3, step:0.05, fmt:v => fmtSci(Math.pow(10, v))}, () => { Q10.url = null; drawP10(); });
+  tslider($('#p10ctl'), Q10, {key:'v', label:'Drift speed v', min:0, max:2, step:0.05, fmt:v => v.toFixed(2)}, () => { Q10.url = null; drawP10(); });
+  function drawP10(){
+    const D = Math.pow(10, Q10.lD), v = Q10.v, times = [0, 0.1, 0.2, 0.3, 0.4], cols = ['var(--t1)', 'var(--t2)', 'var(--t3)', 'var(--t4)', 'var(--t5)'];
+    lineChart({el:$('#p10a'), x0:0, x1:1, y0:0, y1:1.05, Lp:46, T:12, xLabel:'depth z (top → bottom)', yLabel:'u', xTicks:tk([0, 0.25, 0.5, 0.75, 1]), yTicks:tk([0, 0.5, 1]),
+      series:times.map((t, k) => ({pts:lin(0, 1, 300).map(z => [z, u10(z, t, D, v)]), c:cols[k], w:2.2})), aria:'Profiles at five times with drift and diffusion'});
+    $('#p10leg').innerHTML = times.map((t, k) => leg(cols[k], `t = ${t}`)).join('');
+    if (!Q10.url) Q10.url = heatURL(100, 90, (i, j) => u10((j + 0.5) / 90, (i + 0.5) / 100 * T10, D, v));
+    lineChart({el:$('#p10b'), x0:0, x1:T10, y0:0, y1:1, yInvert:true, Lp:46, T:8, xLabel:'time →', yLabel:'depth', xTicks:tk([0, 0.1, 0.2, 0.3, 0.4]), yTicks:tk([0, 0.5, 1]),
+      under:(x, y) => imgTag(Q10.url, x, y, 0, T10, 0, 1),
+      series:[{pts:[[0, Z10], [T10, Z10 + v * T10]], c:'var(--surface)', w:1.5, dash:'4 4'}], aria:'Depth by time view of the drifting bump'});
+    const drift = v * T10, spread = Math.sqrt(2 * D * T10);
+    $('#p10kv').innerHTML = kvh('Drift v·t at end', drift.toFixed(2)) + kvh('Spread √(2Dt)', spread.toFixed(3)) + kvh('Drift ÷ spread', spread > 0 ? (drift / spread).toFixed(1) : '∞') + kvh('Peak height at end', u10(Z10 + v * T10, T10, D, v).toFixed(2));
+  }
+
+  function drawPrimer(){
+    if (UI.mode !== 'primer') return;
+    drawP1(); drawP2(); drawP3(); drawP4(); drawP5(); drawP6(); drawP7(); drawP8(); drawP9(); drawP10();
+  }
+  if (window.ResizeObserver){ let rt = null; new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawPrimer, 80); }).observe($('#page-primer')); }
 
   // ---------- start ----------
   syncAll();
